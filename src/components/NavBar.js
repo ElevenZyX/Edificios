@@ -41,7 +41,7 @@ function NavBar() {
             <Nav className="w-100 justify-content-evenly" style={{ fontSize: '1.2rem' }}>
               <Nav.Link href="/Home" className="navbar-link" style={{ fontSize: '1.2rem' }}>{t('home')}</Nav.Link>
               <Nav.Link href="/correspondencia" className="navbar-link" style={{ fontSize: '1.2rem' }}>{t('delivery')}</Nav.Link>
-              <Nav.Link href="/visitas" className="navbar-link" style={{ fontSize: '1.2rem' }}>{t('visitors')}</Nav.Link>
+              <Nav.Link href="/Visit" className="navbar-link" style={{ fontSize: '1.2rem' }}>{t('visitors')}</Nav.Link>
               <Nav.Link href="/vehiculos" className="navbar-link" style={{ fontSize: '1.2rem' }}>{t('vehicles')}</Nav.Link>
             </Nav>
             <Button variant="outline-light" onClick={handleLogout}>{t('logout')}</Button> {/* Botón de logout */}
