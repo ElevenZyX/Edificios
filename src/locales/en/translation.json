@@ -23,7 +23,7 @@
     "registerVisit": "Register Visit",
     "consoleDptoError": "There was an error retrieving the departments:",
     "recoveringDptoError": "Error retrieving departments",
-    "rightsReserved": "All rights reserved"
-    
+    "rightsReserved": "All rights reserved",
+    "logoutSuccessMessage": "You have log out succesfully"   
   }
   

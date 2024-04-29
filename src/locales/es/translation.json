@@ -23,7 +23,8 @@
     "registerVisit": "Registrar Visita",
     "consoleDptoError": "Hubo un error al recuperar los departamentos:",
     "recoveringDptoError": "Error al recuperar los departamentos",
-    "rightsReserved": "Todos los derechos reservados"
+    "rightsReserved": "Todos los derechos reservados",
+    "logoutSuccessMessage": "Su sesión se ha cerrado exitósamente"
     
   }
   
