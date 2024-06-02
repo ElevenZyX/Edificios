@@ -1,24 +1,26 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Navbar, Nav, Container, Button, Alert } from 'react-bootstrap'; // Importa Alert de react-bootstrap
+import { Navbar, Nav, Container, Button, Alert } from 'react-bootstrap';
 import { Navigate } from 'react-router-dom';
+import * as Sentry from "@sentry/react";  // Asegúrate de que Sentry está importado
 
 function NavBar() {
   const { t } = useTranslation();
-  const [showAlert, setShowAlert] = useState(false); // Estado para mostrar la alerta
+  const [showAlert, setShowAlert] = useState(false);
+  const [loggedOut, setLoggedOut] = useState(false);
 
   const handleLogout = () => {
-    // Mostrar la alerta después de cerrar sesión
     setShowAlert(true);
-    // Redirigir a la página de inicio de sesión después de cerrar sesión
     setTimeout(() => {
       setLoggedOut(true);
-    }, 1000); // Redirigir después de 3 segundos
+    }, 1000);
   };
 
-  const [loggedOut, setLoggedOut] = useState(false); // Estado para el cierre de sesión
+  // Función para loggear el evento de selección de "Correspondencia"
+  const handleCorrespondenciaClick = () => {
+    Sentry.captureMessage('Usuario seleccionó Correspondencia', 'info');
+  };
 
-  // Redirigir a la página de inicio de sesión después del cierre de sesión
   if (loggedOut) {
     return <Navigate to="/" replace />;
   }
@@ -39,18 +41,17 @@ function NavBar() {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="w-100 justify-content-evenly" style={{ fontSize: '1.2rem' }}>
-              <Nav.Link href="/Home" className="navbar-link" style={{ fontSize: '1.2rem' }}>{t('home')}</Nav.Link>
-              <Nav.Link href="/correspondencia" className="navbar-link" style={{ fontSize: '1.2rem' }}>{t('delivery')}</Nav.Link>
-              <Nav.Link href="/Visit" className="navbar-link" style={{ fontSize: '1.2rem' }}>{t('visitors')}</Nav.Link>
-              <Nav.Link href="/vehiculos" className="navbar-link" style={{ fontSize: '1.2rem' }}>{t('vehicles')}</Nav.Link>
+              <Nav.Link href="/Home" className="navbar-link">{t('home')}</Nav.Link>
+              <Nav.Link href="/correspondencia" className="navbar-link" onClick={handleCorrespondenciaClick}>{t('delivery')}</Nav.Link>
+              <Nav.Link href="/Visit" className="navbar-link">{t('visitors')}</Nav.Link>
+              <Nav.Link href="/vehiculos" className="navbar-link">{t('vehicles')}</Nav.Link>
             </Nav>
-            <Button variant="outline-light" onClick={handleLogout}>{t('logout')}</Button> {/* Botón de logout */}
+            <Button variant="outline-light" onClick={handleLogout}>{t('logout')}</Button>
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      {/* Mostrar la alerta después de hacer clic en el botón de logout */}
       {showAlert && (
-        <Alert className= "mt-3" variant="success" onClose={() => setShowAlert(false)} dismissible>
+        <Alert className="mt-3" variant="success" onClose={() => setShowAlert(false)} dismissible>
           {t('logoutSuccessMessage')}
         </Alert>
       )}
