@@ -32,7 +32,7 @@ function Login() {
   return (
     <div className="d-flex flex-column min-vh-100"> {/* Agrega esta clase para que el footer se quede abajo */}
       <header>
-        <h1 className='text-primary text-center display-2'>BuildingBuddy</h1>
+        <h1 className='text-primary text-center display-2'>BuildingBuddyy</h1>
       </header>
       <main className="flex-grow-1">
         <Row className="justify-content-center mt-5 p-3 bg-info rounded mx-3">
