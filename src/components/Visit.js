@@ -21,18 +21,16 @@ function Visit() {
     log.debug("Recuperando la lista de departamentos..."); // Log DEBUG
     axios.get('http://localhost:8000/api/departments')
       .then(response => {
-        log.info("Departamentos recuperados con éxito."); // Log INFO
         setDepartments(response.data);
       })
       .catch(error => {
         setMessage(t('recoveringDptoError'));
         log.error("Error al recuperar departamentos:", error); // Log ERROR
       });
-  }, []);
+  }, []);  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    log.debug("Registrando visita con:", { selectedDepartment, nombre, fecha, hora }); // Log DEBUG
     try {
       const visita = {
         departamento: selectedDepartment,
@@ -46,10 +44,8 @@ function Visit() {
       setNombre('');
       setFecha('');
       setHora('');
-      log.info("Visita registrada con éxito:", response.data); // Log INFO
     } catch (error) {
       setMessage('Error al registrar la visita');
-      log.error("Error al registrar la visita:", error); // Log ERROR
     }
   };
 

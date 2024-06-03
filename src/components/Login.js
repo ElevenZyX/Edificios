@@ -30,7 +30,6 @@ function Login() {
       }
     } catch (e) {
       setError(t('loginError'));
-      log.error("Error al intentar conectar a la base de datos para el login:", e); // Log ERROR
     }
   };
 
