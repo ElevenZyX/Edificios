@@ -4,6 +4,9 @@ import axios from 'axios';
 import NavBar from './NavBar';
 import Footer from './Footer';
 import { useTranslation } from 'react-i18next';
+import log from 'loglevel'; // Import loglevel
+
+log.setLevel('DEBUG'); // Set log level to DEBUG for development purposes
 
 function Visit() {
   const { t } = useTranslation();
@@ -15,18 +18,21 @@ function Visit() {
   const [message, setMessage] = useState(null);
 
   useEffect(() => {
+    log.debug("Recuperando la lista de departamentos..."); // Log DEBUG
     axios.get('http://localhost:8000/api/departments')
       .then(response => {
+        log.info("Departamentos recuperados con éxito."); // Log INFO
         setDepartments(response.data);
       })
       .catch(error => {
         setMessage(t('recoveringDptoError'));
-        console.error(t('consoleDptoError'), error);
+        log.error("Error al recuperar departamentos:", error); // Log ERROR
       });
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    log.debug("Registrando visita con:", { selectedDepartment, nombre, fecha, hora }); // Log DEBUG
     try {
       const visita = {
         departamento: selectedDepartment,
@@ -40,10 +46,10 @@ function Visit() {
       setNombre('');
       setFecha('');
       setHora('');
-      console.log(response.data);
+      log.info("Visita registrada con éxito:", response.data); // Log INFO
     } catch (error) {
       setMessage('Error al registrar la visita');
-      console.error('Error al enviar el formulario:', error);
+      log.error("Error al registrar la visita:", error); // Log ERROR
     }
   };
 
