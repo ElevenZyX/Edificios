@@ -1,10 +1,10 @@
 import React from 'react';
 import { Container } from 'react-bootstrap';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './components/Login';
 import Home from './components/Home';
 import Visit from './components/Visit';
 import LanguageSelector from './components/LanguageSelector';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './components/AuthContext';
 

@@ -1,24 +1,24 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Navbar, Nav, Container, Button, Alert } from 'react-bootstrap'; // Importa Alert de react-bootstrap
+import { Navbar, Nav, Container, Button, Alert } from 'react-bootstrap';
 import { Navigate } from 'react-router-dom';
+import { useAuth } from './AuthContext'; // Importa el contexto de autenticación
 
 function NavBar() {
   const { t } = useTranslation();
-  const [showAlert, setShowAlert] = useState(false); // Estado para mostrar la alerta
+  const { isAuthenticated, logout } = useAuth(); // Usa el contexto de autenticación
+  const [showAlert, setShowAlert] = useState(false);
 
   const handleLogout = () => {
-    // Mostrar la alerta después de cerrar sesión
+    logout(); // Llama a la función de logout del contexto
     setShowAlert(true);
-    // Redirigir a la página de inicio de sesión después de cerrar sesión
     setTimeout(() => {
       setLoggedOut(true);
-    }, 1000); // Redirigir después de 3 segundos
+    }, 1000); // Redirigir después de 1 segundo
   };
 
-  const [loggedOut, setLoggedOut] = useState(false); // Estado para el cierre de sesión
+  const [loggedOut, setLoggedOut] = useState(false);
 
-  // Redirigir a la página de inicio de sesión después del cierre de sesión
   if (loggedOut) {
     return <Navigate to="/" replace />;
   }
@@ -44,13 +44,14 @@ function NavBar() {
               <Nav.Link href="/Visit" className="navbar-link" style={{ fontSize: '1.2rem' }}>{t('visitors')}</Nav.Link>
               <Nav.Link href="/vehiculos" className="navbar-link" style={{ fontSize: '1.2rem' }}>{t('vehicles')}</Nav.Link>
             </Nav>
-            <Button variant="outline-light" onClick={handleLogout}>{t('logout')}</Button> {/* Botón de logout */}
+            {isAuthenticated && (
+              <Button variant="outline-light" onClick={handleLogout}>{t('logout')}</Button>
+            )}
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      {/* Mostrar la alerta después de hacer clic en el botón de logout */}
       {showAlert && (
-        <Alert className= "mt-3" variant="success" onClose={() => setShowAlert(false)} dismissible>
+        <Alert className="mt-3" variant="success" onClose={() => setShowAlert(false)} dismissible>
           {t('logoutSuccessMessage')}
         </Alert>
       )}
