@@ -58,7 +58,7 @@ app.get('/api/departments', authenticateToken, async (req, res) => {
         const departments = await Department.find(); // This should be your Mongoose model
         res.json(departments);
     } catch (error) {
-        console.error("Error retrieving departments:", error);
+        console.error(error);
         res.status(500).json({ message: 'Error retrieving departments' });
     }
 });
