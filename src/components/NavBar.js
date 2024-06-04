@@ -3,11 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { Navbar, Nav, Container, Button, Alert } from 'react-bootstrap';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from './AuthContext'; // Importa el contexto de autenticación
+import { LinkContainer } from 'react-router-bootstrap';  // Asegúrate de importar LinkContainer
 
 function NavBar() {
   const { t } = useTranslation();
   const { isAuthenticated, logout } = useAuth(); // Usa el contexto de autenticación
   const [showAlert, setShowAlert] = useState(false);
+  const [loggedOut, setLoggedOut] = useState(false);
 
   const handleLogout = () => {
     logout(); // Llama a la función de logout del contexto
@@ -16,8 +18,6 @@ function NavBar() {
       setLoggedOut(true);
     }, 1000); // Redirigir después de 1 segundo
   };
-
-  const [loggedOut, setLoggedOut] = useState(false);
 
   if (loggedOut) {
     return <Navigate to="/" replace />;
@@ -35,14 +35,22 @@ function NavBar() {
       </style>
       <Navbar bg="info" expand="lg" className="mx-3 my-3 rounded">
         <Container fluid>
-          <Navbar.Brand className='ml-3' href="/home" style={{ fontSize: '1.5rem' }}>{t('welcome')}</Navbar.Brand>
+          <Navbar.Brand href="/home" style={{ fontSize: '1.5rem' }}>{t('welcome')}</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="w-100 justify-content-evenly" style={{ fontSize: '1.2rem' }}>
-              <Nav.Link href="/Home" className="navbar-link" style={{ fontSize: '1.2rem' }}>{t('home')}</Nav.Link>
-              <Nav.Link href="/correspondencia" className="navbar-link" style={{ fontSize: '1.2rem' }}>{t('delivery')}</Nav.Link>
-              <Nav.Link href="/Visit" className="navbar-link" style={{ fontSize: '1.2rem' }}>{t('visitors')}</Nav.Link>
-              <Nav.Link href="/vehiculos" className="navbar-link" style={{ fontSize: '1.2rem' }}>{t('vehicles')}</Nav.Link>
+              <LinkContainer to="/home">
+                <Nav.Link className="navbar-link">{t('home')}</Nav.Link>
+              </LinkContainer>
+              <LinkContainer to="/correspondencia">
+                <Nav.Link className="navbar-link">{t('delivery')}</Nav.Link>
+              </LinkContainer>
+              <LinkContainer to="/visit">
+                <Nav.Link className="navbar-link">{t('visitors')}</Nav.Link>
+              </LinkContainer>
+              <LinkContainer to="/vehiculos">
+                <Nav.Link className="navbar-link">{t('vehicles')}</Nav.Link>
+              </LinkContainer>
             </Nav>
             {isAuthenticated && (
               <Button variant="outline-light" onClick={handleLogout}>{t('logout')}</Button>
