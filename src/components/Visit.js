@@ -15,15 +15,24 @@ function Visit() {
   const [message, setMessage] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:8000/api/departments')
-      .then(response => {
+    const fetchDepartments = async () => {
+      try {
+        const token = localStorage.getItem('token'); // Obtén el token del almacenamiento local
+        const response = await axios.get('http://localhost:8000/api/departments', {
+          headers: {
+            Authorization: `Bearer ${token}` // Añade el token en los encabezados
+          }
+        });
+        console.log("Departments:", response.data); // Verifica qué datos estás recibiendo
         setDepartments(response.data);
-      })
-      .catch(error => {
+      } catch (error) {
         setMessage(t('recoveringDptoError'));
         console.error(t('consoleDptoError'), error);
-      });
-  }, []);
+      }
+    };
+
+    fetchDepartments();
+  }, [t]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,7 +43,12 @@ function Visit() {
         fecha,
         hora
       };
-      const response = await axios.post('http://localhost:8000/api/visitas', visita);
+      const token = localStorage.getItem('token'); // Obtén el token del almacenamiento local
+      const response = await axios.post('http://localhost:8000/api/visitas', visita, {
+        headers: {
+          Authorization: `Bearer ${token}` // Añade el token en los encabezados
+        }
+      });
       setMessage('Visita registrada con éxito');
       setSelectedDepartment('');
       setNombre('');

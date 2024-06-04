@@ -11,7 +11,8 @@ function Home() {
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <NavBar /> {/* Usa el componente Navbar */}
       <Container fluid style={{ flex: "1" }}>
-        {/* Contenido de la página */}
+        <h1 className="mt-5">{t('welcomeToHomePage')}</h1>
+        {/* Añade más contenido aquí */}
       </Container>
       <Footer /> {/* Usa el componente Footer */}
     </div>
