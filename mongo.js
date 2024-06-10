@@ -39,6 +39,8 @@ const visitSchema = new mongoose.Schema({
 
 const Visit = mongoose.model('Visit', visitSchema);
 
+
+
 const deliverySchema = new mongoose.Schema({
     department: String,
     name: String,
@@ -48,6 +50,6 @@ const deliverySchema = new mongoose.Schema({
 
 const Delivery = mongoose.model('Delivery', deliverySchema);
 
-module.exports = { Delivery };
+module.exports = {collection, Department, Visit, Delivery };
 
 
