@@ -39,4 +39,15 @@ const visitSchema = new mongoose.Schema({
 
 const Visit = mongoose.model('Visit', visitSchema);
 
-module.exports = { collection, Department, Visit };
+const deliverySchema = new mongoose.Schema({
+    department: String,
+    name: String,
+    date: Date,
+    time: String
+});
+
+const Delivery = mongoose.model('Delivery', deliverySchema);
+
+module.exports = { Delivery };
+
+

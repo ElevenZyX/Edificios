@@ -42,7 +42,8 @@ function NavBar() {
               <LinkContainer to="/home">
                 <Nav.Link className="navbar-link">{t('home')}</Nav.Link>
               </LinkContainer>
-              <LinkContainer to="/correspondencia">
+              {/* Agrega el enlace al componente Delivery */}
+              <LinkContainer to="/delivery">
                 <Nav.Link className="navbar-link">{t('delivery')}</Nav.Link>
               </LinkContainer>
               <LinkContainer to="/visit">

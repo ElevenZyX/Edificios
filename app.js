@@ -1,5 +1,5 @@
 const express = require("express");
-const { collection, Department, Visit } = require("./mongo");
+const { collection, Department, Visit, Delivery } = require("./mongo");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -77,6 +77,24 @@ app.post('/api/visitas', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error('Error saving visit:', error);
         res.status(500).json({ message: 'Error registering visit' });
+    }
+});
+
+// Nueva ruta para manejar las solicitudes de registro de entregas
+app.post('/api/deliveries', authenticateToken, async (req, res) => {
+    try {
+        const newDelivery = new Delivery({
+            department: req.body.department,
+            name: req.body.Name, // Asegúrate de que coincida con el nombre del campo en el formulario
+            date: req.body.Date, // Asegúrate de que coincida con el nombre del campo en el formulario
+            time: req.body.Time // Asegúrate de que coincida con el nombre del campo en el formulario
+        });
+
+        const savedDelivery = await newDelivery.save();
+        res.status(201).json(savedDelivery);
+    } catch (error) {
+        console.error('Error saving delivery:', error);
+        res.status(500).json({ message: 'Error registering delivery' });
     }
 });
 
