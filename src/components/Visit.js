@@ -1,4 +1,3 @@
-// Visit.js
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
 import axios from 'axios';
@@ -19,7 +18,9 @@ function Visit() {
 
   useEffect(() => {
     const fetchDepartments = async () => {
-      if (!user || !user._id) return;
+      if (!user || !user._id) {
+        return;
+      }
 
       try {
         const token = localStorage.getItem('token');
@@ -58,7 +59,6 @@ function Visit() {
       setNombre('');
       setFecha('');
       setHora('');
-      console.log(response.data);
     } catch (error) {
       setMessage('Error al registrar la visita');
       console.error('Error al enviar el formulario:', error);

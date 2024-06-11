@@ -63,13 +63,18 @@ app.get('/api/departments/:userId', authenticateToken, async (req, res) => {
       }
   
       const userBuildingName = user.name.toLowerCase();
+      console.log("User Building Name: ", userBuildingName); // Log para verificar el nombre del edificio del usuario
+  
       const departments = await Department.find({ name: userBuildingName });
+      console.log("Departments Found: ", departments); // Log para verificar los departamentos encontrados
+  
       res.json(departments);
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Error retrieving departments' });
     }
   });
+  
   
 
 app.post('/api/visitas', authenticateToken, async (req, res) => {
