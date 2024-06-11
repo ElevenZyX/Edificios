@@ -1,8 +1,11 @@
 const express = require("express");
-const { collection, Department, Visit, Delivery } = require("./mongo");
+const { Department, Delivery } = require("./mongo");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 app.use(express.json());
@@ -19,11 +22,9 @@ app.post("/login", async (req, res) => {
         const user = await collection.findOne({ username: username });
 
         if (user) {
-            // Compare provided password with hashed password in the database
             const passwordIsValid = await bcrypt.compare(password, user.password);
 
             if (passwordIsValid) {
-                // Create a JWT token
                 const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' });
                 res.json({ token });
             } else {
@@ -34,7 +35,7 @@ app.post("/login", async (req, res) => {
         }
     } catch (e) {
         console.error(e);
-        res.status(500).json({ message: 'Server error' }); // It's better to send an appropriate HTTP status code
+        res.status(500).json({ message: 'Server error' });
     }
 });
 
@@ -55,7 +56,7 @@ const authenticateToken = (req, res, next) => {
 // Protected routes
 app.get('/api/departments', authenticateToken, async (req, res) => {
     try {
-        const departments = await Department.find(); // This should be your Mongoose model
+        const departments = await Department.find();
         res.json(departments);
     } catch (error) {
         console.error(error);
@@ -63,38 +64,75 @@ app.get('/api/departments', authenticateToken, async (req, res) => {
     }
 });
 
-app.post('/api/visitas', authenticateToken, async (req, res) => {
-    try {
-        const newVisit = new Visit({
-            departamento: req.body.departamento,
-            nombre: req.body.nombre,
-            fecha: req.body.fecha,
-            hora: req.body.hora
-        });
-
-        const savedVisit = await newVisit.save();
-        res.status(201).json(savedVisit);
-    } catch (error) {
-        console.error('Error saving visit:', error);
-        res.status(500).json({ message: 'Error registering visit' });
-    }
-});
-
-// Nueva ruta para manejar las solicitudes de registro de entregas
 app.post('/api/deliveries', authenticateToken, async (req, res) => {
     try {
+        console.log('Received delivery:', req.body);
         const newDelivery = new Delivery({
             department: req.body.department,
-            name: req.body.Name, // Asegúrate de que coincida con el nombre del campo en el formulario
-            date: req.body.Date, // Asegúrate de que coincida con el nombre del campo en el formulario
-            time: req.body.Time // Asegúrate de que coincida con el nombre del campo en el formulario
+            name: req.body.Name,
+            date: req.body.Date,
+            company: req.body.Company,
+            description: req.body.Description
         });
 
         const savedDelivery = await newDelivery.save();
-        res.status(201).json(savedDelivery);
+
+        // Generate PDF
+        const doc = new PDFDocument();
+        const fileName = `delivery-${savedDelivery._id}.pdf`;
+        const filePath = path.join(__dirname, 'pdfs', fileName);
+
+        doc.pipe(fs.createWriteStream(filePath));
+
+        doc.fontSize(25).text('Package Delivery Information', { align: 'center' });
+        doc.moveDown();
+        doc.fontSize(18).text(`Department: ${savedDelivery.department}`);
+        doc.text(`Name: ${savedDelivery.name}`);
+        doc.text(`Date: ${savedDelivery.date}`);
+        doc.text(`Company: ${savedDelivery.company}`);
+        doc.text(`Description: ${savedDelivery.description}`);
+
+        doc.end();
+
+        res.status(201).json({ savedDelivery, pdfPath: filePath });
     } catch (error) {
         console.error('Error saving delivery:', error);
         res.status(500).json({ message: 'Error registering delivery' });
+    }
+});
+
+// Nueva ruta para manejar las solicitudes de descarga de PDF de entregas
+app.get('/api/deliveries/:id/pdf', authenticateToken, async (req, res) => {
+    try {
+        const deliveryId = req.params.id;
+        const delivery = await Delivery.findById(deliveryId);
+        if (!delivery) {
+            return res.status(404).json({ message: 'Delivery not found' });
+        }
+
+        // Generate PDF on the fly
+        const doc = new PDFDocument();
+        const fileName = `delivery-${deliveryId}.pdf`;
+        const filePath = path.join(__dirname, 'pdfs', fileName);
+        
+        doc.pipe(fs.createWriteStream(filePath));
+
+        doc.fontSize(25).text('Package Delivery Information', { align: 'center' });
+        doc.moveDown();
+        doc.fontSize(18).text(`Department: ${delivery.department}`);
+        doc.text(`Name: ${delivery.name}`);
+        doc.text(`Date: ${delivery.date}`);
+        doc.text(`Company: ${delivery.company}`);
+        doc.text(`Description: ${delivery.description}`);
+
+        doc.end();
+
+        // Envía el archivo PDF como respuesta
+        res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+        res.sendFile(filePath);
+    } catch (error) {
+        console.error('Error downloading PDF:', error);
+        res.status(500).json({ message: 'Error downloading PDF' });
     }
 });
 
