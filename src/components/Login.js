@@ -1,38 +1,42 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
+import axios from './axiosConfig'; // Usa la configuración de Axios
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Row, Col, Form, Button, Alert } from 'react-bootstrap';
-import Footer from './Footer'; // Importa el componente de footer
+import Footer from './Footer';
+import { useAuth } from './AuthContext';
 
 function Login() {
   const { t } = useTranslation();
-  const [username, SetUser] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [error, setError] = useState('');
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8000/", {
-        username, password
+      const response = await axios.post('/login', {
+        username,
+        password,
       });
-      if (response.data === "exist") {
-        history("/Home", { state: { id: username } });
-      } else if (response.data === "notexist") {
-        alert(t('userNotRegistered'));
+      if (response.data.token) {
+        login(response.data.token);
+        navigate('/home');
+      } else {
+        setError(t('userNotRegistered'));
       }
     } catch (e) {
-      alert(t('loginError'));
+      setError(t('loginError'));
       console.log(e);
     }
   };
 
   return (
-    <div className="d-flex flex-column min-vh-100"> {/* Agrega esta clase para que el footer se quede abajo */}
+    <div className="d-flex flex-column min-vh-100">
       <header>
-        <h1 className='text-primary text-center display-2'>BuildingBuddyy</h1>
+        <h1 className="text-primary text-center display-2">BuildingBuddyy</h1>
       </header>
       <main className="flex-grow-1">
         <Row className="justify-content-center mt-5 p-3 bg-info rounded mx-3">
@@ -41,12 +45,12 @@ function Login() {
               <h1>{t('login')}</h1>
               {error && <Alert variant="danger">{error}</Alert>}
               <Form onSubmit={handleSubmit}>
-                <Form.Group className= "my-4" controlId="formBasicUsername">
+                <Form.Group className="my-4" controlId="formBasicUsername">
                   <Form.Control
                     type="text"
                     placeholder={t('login.username')}
                     value={username}
-                    onChange={(e) => SetUser(e.target.value)}
+                    onChange={(e) => setUsername(e.target.value)}
                     className="form-control-lg"
                   />
                 </Form.Group>
@@ -68,7 +72,7 @@ function Login() {
           </Col>
         </Row>
       </main>
-      <Footer /> {/* Agrega el componente de footer */}
+      <Footer />
     </div>
   );
 }
