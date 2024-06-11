@@ -1,12 +1,15 @@
+// Visit.js
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import NavBar from './NavBar';
 import Footer from './Footer';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from './AuthContext';
 
 function Visit() {
   const { t } = useTranslation();
+  const { user, isAuthenticated } = useAuth();
   const [departments, setDepartments] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [nombre, setNombre] = useState('');
@@ -16,14 +19,15 @@ function Visit() {
 
   useEffect(() => {
     const fetchDepartments = async () => {
+      if (!user || !user._id) return;
+
       try {
-        const token = localStorage.getItem('token'); // Obtén el token del almacenamiento local
-        const response = await axios.get('http://localhost:8000/api/departments', {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`http://localhost:8000/api/departments/${user._id}`, {
           headers: {
-            Authorization: `Bearer ${token}` // Añade el token en los encabezados
+            Authorization: `Bearer ${token}`
           }
         });
-        console.log("Departments:", response.data); // Verifica qué datos estás recibiendo
         setDepartments(response.data);
       } catch (error) {
         setMessage(t('recoveringDptoError'));
@@ -32,7 +36,7 @@ function Visit() {
     };
 
     fetchDepartments();
-  }, [t]);
+  }, [t, user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,10 +47,10 @@ function Visit() {
         fecha,
         hora
       };
-      const token = localStorage.getItem('token'); // Obtén el token del almacenamiento local
+      const token = localStorage.getItem('token');
       const response = await axios.post('http://localhost:8000/api/visitas', visita, {
         headers: {
-          Authorization: `Bearer ${token}` // Añade el token en los encabezados
+          Authorization: `Bearer ${token}`
         }
       });
       setMessage('Visita registrada con éxito');
@@ -60,6 +64,10 @@ function Visit() {
       console.error('Error al enviar el formulario:', error);
     }
   };
+
+  if (!isAuthenticated) {
+    return <div>{t('loading')}</div>;
+  }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>

@@ -53,15 +53,24 @@ const authenticateToken = (req, res, next) => {
 };
 
 // Protected routes
-app.get('/api/departments', authenticateToken, async (req, res) => {
+app.get('/api/departments/:userId', authenticateToken, async (req, res) => {
     try {
-        const departments = await Department.find(); // This should be your Mongoose model
-        res.json(departments);
+      const userId = req.params.userId;
+      const user = await collection.findById(userId);
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      const userBuildingName = user.name.toLowerCase();
+      const departments = await Department.find({ name: userBuildingName });
+      res.json(departments);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error retrieving departments' });
+      console.error(error);
+      res.status(500).json({ message: 'Error retrieving departments' });
     }
-});
+  });
+  
 
 app.post('/api/visitas', authenticateToken, async (req, res) => {
     try {

@@ -8,27 +8,38 @@ mongoose.connect("mongodb+srv://Programacion:enter@proyect.t0wuu2a.mongodb.net/P
         console.log('failed');
     });
 
-const newSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        required: true
-    },
-    password: {
-        type: String,
-        required: true
-    }
-});
-
-const collection = mongoose.model("users", newSchema);
-
-const departmentSchema = new mongoose.Schema({
-    Number: {
-        type: String,
-        required: true
-    }
-});
-
-const Department = mongoose.model('departments', departmentSchema);
+    const newSchema = new mongoose.Schema({
+        username: {
+          type: String,
+          required: true
+        },
+        password: {
+          type: String,
+          required: true
+        },
+        name: {
+          type: String,
+          required: true,
+          set: v => v.toLowerCase()
+        }
+      });
+      
+      const collection = mongoose.model("users", newSchema);
+      
+      // Esquema de departamentos
+      const departmentSchema = new mongoose.Schema({
+        Number: {
+          type: String,
+          required: true
+        },
+        name: {
+          type: String,
+          required: true,
+          set: v => v.toLowerCase()
+        }
+      });
+      
+      const Department = mongoose.model('departments', departmentSchema);
 
 const visitSchema = new mongoose.Schema({
     departamento: String,
