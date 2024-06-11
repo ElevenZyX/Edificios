@@ -1,13 +1,13 @@
 // src/components/Login.test.js
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
 import { BrowserRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
-import i18n from '../i18n'; // Ajusta la ruta según sea necesario
+import i18n from './i18n'; // Ajusta la ruta según sea necesario
 import Login from './Login';
 import { AuthProvider } from './AuthContext';
 import axios from './axiosConfig';
+
 
 jest.mock('./axiosConfig', () => ({
   post: jest.fn(() => Promise.resolve({ data: { token: 'test-token' } }))
@@ -25,22 +25,21 @@ test('renders login form and submits successfully', async () => {
   );
 
   // Verificar que los elementos están en el documento
-  expect(screen.getByPlaceholderText(/login.username/i)).toBeInTheDocument();
-  expect(screen.getByPlaceholderText(/login.password/i)).toBeInTheDocument();
-  expect(screen.getByText(/login/i)).toBeInTheDocument();
+  expect(screen.getByPlaceholderText(/User/i)).toBeInTheDocument();
+  expect(screen.getByPlaceholderText(/Password/i)).toBeInTheDocument();
 
-  // Simular entrada de usuario
-  fireEvent.change(screen.getByPlaceholderText(/login.username/i), { target: { value: 'testuser' } });
-  fireEvent.change(screen.getByPlaceholderText(/login.password/i), { target: { value: 'password' } });
+  // Simular entrada de usuario y contraseña
+  fireEvent.change(screen.getByPlaceholderText(/User/i), { target: { value: 'user' } });
+  fireEvent.change(screen.getByPlaceholderText(/Password/i), { target: { value: 'user' } });
 
   // Simular envío del formulario
-  fireEvent.click(screen.getByText(/login/i));
+  fireEvent.click(screen.getByRole('button', { name: /Login/i }));
 
   // Verificar si la función login fue llamada correctamente
   await waitFor(() => {
     expect(axios.post).toHaveBeenCalledWith('/login', {
-      username: 'testuser',
-      password: 'password'
+      username: 'user',
+      password: 'user'
     });
   });
 });
