@@ -62,8 +62,13 @@ app.get('/api/departments/:userId', authenticateToken, async (req, res) => {
         return res.status(404).json({ message: 'User not found' });
       }
   
-      const userBuildingName = user.name.toLowerCase();
-      const departments = await Department.find({ name: userBuildingName });
+      // Utilizar el nombre del edificio del usuario tal cual
+      const userBuildingName = user.name;
+      // Crear una expresión regular para hacer la búsqueda insensible a mayúsculas
+      const regex = new RegExp(`^${userBuildingName}$`, 'i');  // 'i' hace que la búsqueda sea insensible a mayúsculas
+  
+      // Buscar departamentos cuyo nombre coincida con la expresión regular
+      const departments = await Department.find({ name: { $regex: regex } });
   
       res.json(departments);
     } catch (error) {
@@ -71,6 +76,7 @@ app.get('/api/departments/:userId', authenticateToken, async (req, res) => {
       res.status(500).json({ message: 'Error retrieving departments' });
     }
   });
+  
   
 
 app.post('/api/visitas', authenticateToken, async (req, res) => {

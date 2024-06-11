@@ -8,7 +8,7 @@ mongoose.connect("mongodb+srv://Programacion:enter@proyect.t0wuu2a.mongodb.net/P
         console.log('failed');
     });
 
-const newSchema = new mongoose.Schema({
+    const newSchema = new mongoose.Schema({
       username: {
         type: String,
         required: true
@@ -19,26 +19,24 @@ const newSchema = new mongoose.Schema({
       },
       name: {
         type: String,
-        required: true,
-        set: v => v.toLowerCase()
+        required: true
       }
-});
+    });
     
-const collection = mongoose.model("users", newSchema);
+    const collection = mongoose.model("users", newSchema);
     
-const departmentSchema = new mongoose.Schema({
+    const departmentSchema = new mongoose.Schema({
       Number: {
         type: String,
         required: true
       },
       name: {
         type: String,
-        required: true,
-        set: v => v.toLowerCase()
+        required: true
       }
-});
+    });
     
-const Department = mongoose.model('departments', departmentSchema);
+    const Department = mongoose.model('departments', departmentSchema);
     
 
 const visitSchema = new mongoose.Schema({
