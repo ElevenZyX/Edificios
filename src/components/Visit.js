@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 
 const validateRut = (rut) => {
-  const rutRegex = /^[0-9]{8,9}-[0-9Kk]{1}$/;
+  const rutRegex = /^[0-9]{7,9}-[0-9Kk]{1}$/;
   return rutRegex.test(rut);
 };
 
@@ -21,6 +21,7 @@ function Visit() {
   const [fecha, setFecha] = useState('');
   const [hora, setHora] = useState('');
   const [message, setMessage] = useState(null);
+  const [messageType, setMessageType] = useState(''); // Estado para el tipo de mensaje
   const [view, setView] = useState(null); // Estado para manejar la vista
 
   useEffect(() => {
@@ -39,6 +40,7 @@ function Visit() {
         setDepartments(response.data);
       } catch (error) {
         setMessage(t('recoveringDptoError'));
+        setMessageType('danger');
         console.error(t('consoleDptoError'), error);
       }
     };
@@ -50,6 +52,7 @@ function Visit() {
     e.preventDefault();
     if (!validateRut(rut)) {
       setMessage('El RUT ingresado no es válido. Debe tener el formato xxxxxxxx-x.');
+      setMessageType('danger');
       return;
     }
     try {
@@ -66,11 +69,13 @@ function Visit() {
         }
       });
       setMessage('Visita frecuente registrada con éxito');
+      setMessageType('success');
       setSelectedDepartment('');
       setNombre('');
       setRut('');
     } catch (error) {
       setMessage('Error al registrar la visita frecuente');
+      setMessageType('danger');
       console.error('Error al enviar el formulario:', error);
     }
   };
@@ -91,12 +96,14 @@ function Visit() {
         }
       });
       setMessage('Visita registrada con éxito');
+      setMessageType('success');
       setSelectedDepartment('');
       setNombre('');
       setFecha('');
       setHora('');
     } catch (error) {
       setMessage('Error al registrar la visita');
+      setMessageType('danger');
       console.error('Error al enviar el formulario:', error);
     }
   };
@@ -208,7 +215,7 @@ function Visit() {
       <Container>
         <Row className="justify-content-md-center">
           <Col lg={6}>
-            {message && <Alert variant={message.startsWith('Error') ? 'danger' : 'success'}>{message}</Alert>}
+            {message && <Alert variant={messageType}>{message}</Alert>}
             {view === 'frequent' ? renderFrequentForm() : view === 'building' ? renderForm() : renderButtons()}
           </Col>
         </Row>

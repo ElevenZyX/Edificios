@@ -54,7 +54,7 @@ const authenticateToken = (req, res, next) => {
 
 // Función para validar RUT
 const validateRut = (rut) => {
-    const rutRegex = /^[0-9]{8,9}-[0-9Kk]{1}$/;
+    const rutRegex = /^[0-9]{7,9}-[0-9Kk]{1}$/;
     return rutRegex.test(rut);
 };
 
