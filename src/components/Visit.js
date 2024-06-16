@@ -6,6 +6,11 @@ import Footer from './Footer';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 
+const validateRut = (rut) => {
+  const rutRegex = /^[0-9]{8,9}-[0-9Kk]{1}$/;
+  return rutRegex.test(rut);
+};
+
 function Visit() {
   const { t } = useTranslation();
   const { user, isAuthenticated } = useAuth();
@@ -43,6 +48,10 @@ function Visit() {
 
   const handleFrequentSubmit = async (e) => {
     e.preventDefault();
+    if (!validateRut(rut)) {
+      setMessage('El RUT ingresado no es válido. Debe tener el formato xxxxxxxx-x.');
+      return;
+    }
     try {
       const frequentVisit = {
         Number: selectedDepartment,

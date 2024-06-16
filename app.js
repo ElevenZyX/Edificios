@@ -52,6 +52,12 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
+// Función para validar RUT
+const validateRut = (rut) => {
+    const rutRegex = /^[0-9]{8,9}-[0-9Kk]{1}$/;
+    return rutRegex.test(rut);
+};
+
 // Protected routes
 app.get('/api/departments/:userId', authenticateToken, async (req, res) => {
     try {
@@ -125,10 +131,16 @@ app.get('/api/frequent', authenticateToken, async (req, res) => {
 
 app.post('/api/frequent', authenticateToken, async (req, res) => {
     try {
+        const { Number, nombre, rut } = req.body;
+
+        if (!validateRut(rut)) {
+            return res.status(400).json({ message: 'El RUT ingresado no es válido. Debe tener el formato xxxxxxxx-x.' });
+        }
+
         const newFrequent = new Frequent({
-            Number: req.body.Number,
-            nombre: req.body.nombre,
-            rut: req.body.rut,
+            Number,
+            nombre,
+            rut,
             name: req.user.name // Verifica que el nombre se pase correctamente aquí
         });
 
