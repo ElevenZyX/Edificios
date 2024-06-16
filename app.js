@@ -1,5 +1,5 @@
 const express = require("express");
-const { collection, Department, Visit, Delivery } = require("./mongo");
+const { collection, Department, Visit, Delivery, Frequent } = require("./mongo");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -24,7 +24,7 @@ app.post("/login", async (req, res) => {
 
             if (passwordIsValid) {
                 // Create a JWT token
-                const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' });
+                const token = jwt.sign({ id: user._id, name: user.name }, JWT_SECRET, { expiresIn: '1h' });
                 res.json({ token });
             } else {
                 res.status(401).json({ message: 'Invalid credentials' });
@@ -75,10 +75,8 @@ app.get('/api/departments/:userId', authenticateToken, async (req, res) => {
       console.error(error);
       res.status(500).json({ message: 'Error retrieving departments' });
     }
-  });
+});
   
-  
-
 app.post('/api/visitas', authenticateToken, async (req, res) => {
     try {
         const newVisit = new Visit({
@@ -111,6 +109,34 @@ app.post('/api/deliveries', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error('Error saving delivery:', error);
         res.status(500).json({ message: 'Error registering delivery' });
+    }
+});
+
+// Nueva ruta para manejar la colección frequent
+app.get('/api/frequent', authenticateToken, async (req, res) => {
+    try {
+        const frequents = await Frequent.find();
+        res.json(frequents);
+    } catch (error) {
+        console.error('Error retrieving frequents:', error);
+        res.status(500).json({ message: 'Error retrieving frequents' });
+    }
+});
+
+app.post('/api/frequent', authenticateToken, async (req, res) => {
+    try {
+        const newFrequent = new Frequent({
+            Number: req.body.Number,
+            nombre: req.body.nombre,
+            rut: req.body.rut,
+            name: req.user.name // Verifica que el nombre se pase correctamente aquí
+        });
+
+        const savedFrequent = await newFrequent.save();
+        res.status(201).json(savedFrequent);
+    } catch (error) {
+        console.error('Error saving frequent:', error);
+        res.status(500).json({ message: 'Error registering frequent' });
     }
 });
 

@@ -79,7 +79,6 @@ const Delivery = mongoose.model('Delivery', deliverySchema);
 
 
 
-
 const frequentSchema = new mongoose.Schema({
   Number: {
       type: String,
@@ -99,7 +98,7 @@ const frequentSchema = new mongoose.Schema({
   }
 });
 
-const Frequent = mongoose.model('frequent', frequentSchema);
+const Frequent = mongoose.model('frequent', frequentSchema, 'frequent');
 
 module.exports = { collection, Department, Visit, Delivery, Frequent };
 
