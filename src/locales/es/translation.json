@@ -24,6 +24,7 @@
     "consoleDptoError": "Hubo un error al recuperar los departamentos:",
     "recoveringDptoError": "Error al recuperar los departamentos",
     "rightsReserved": "Todos los derechos reservados",
+    "rut": "Rut Formato: xxxxxxxx-x",
     "logoutSuccessMessage": "Su sesión se ha cerrado exitósamente"
     
   }

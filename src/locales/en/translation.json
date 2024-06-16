@@ -24,6 +24,7 @@
     "consoleDptoError": "There was an error retrieving the departments:",
     "recoveringDptoError": "Error retrieving departments",
     "rightsReserved": "All rights reserved",
+    "rut": "Rut Format: xxxxxxxx-x",
     "logoutSuccessMessage": "You have log out succesfully"   
   }
   
