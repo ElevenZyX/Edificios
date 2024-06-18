@@ -9,7 +9,7 @@
     "password": "Contraseña",
     "invalidCredentials": "Usuario o contraseña inválidos",
     "userNotRegistered": "Usuario no registrado o contraseña incorrecta",
-    "loginError": "error en el inicio de sesión",
+    "loginError": "Error en el inicio de sesión",
     "home":"Inicio",
     "delivery": "Correspondencias",
     "visitors":"Visitas",
@@ -24,7 +24,11 @@
     "consoleDptoError": "Hubo un error al recuperar los departamentos:",
     "recoveringDptoError": "Error al recuperar los departamentos",
     "rightsReserved": "Todos los derechos reservados",
-    "logoutSuccessMessage": "Su sesión se ha cerrado exitósamente"
+    "logoutSuccessMessage": "Su sesión se ha cerrado exitósamente",
+    "firstSlideLabel": "Todo lo que necesitas para tu edificio",
+    "secondSlideLabel": "Mantén a tu comunidad informada",
+    "thirdSlideLabel": "Trabajamos para darte lo mejor",
+    "contactUsNow": "CONTÁCTANOS AHORA"
     
   }
   

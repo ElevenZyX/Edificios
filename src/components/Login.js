@@ -6,7 +6,8 @@ import { Row, Col, Form, Button, Alert } from 'react-bootstrap';
 import Footer from './Footer';
 import { useAuth } from './AuthContext';
 import logo from '../img/logo.png'; // Importa la imagen del logo
-
+// import '../components/Login.css'
+ 
 function Login() {
   const { t } = useTranslation();
   const [username, setUsername] = useState('');
@@ -55,9 +56,9 @@ function Login() {
     maxWidth: '600px',
     margin: '0 20px',
   };
-
+ //className='login-container'
   return (
-    <div style={containerStyle}>
+    <div  style={containerStyle}> 
       <header className="w-100 text-center">
         <img src={logo} alt="BuildingBuddyy Logo" style={logoStyle} /> {/* Usa la imagen del logo */}
       </header>
@@ -94,8 +95,9 @@ function Login() {
             </div>
           </Col>
         </Row>
+        <Footer />
       </main>
-      <Footer />
+      
     </div>
   );
 }
