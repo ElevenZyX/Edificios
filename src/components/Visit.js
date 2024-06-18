@@ -143,15 +143,20 @@ function Visit() {
   };
 
   const renderButtons = () => (
-    <div>
-      <Button onClick={() => setView('frequent')} variant="primary" className="m-2">
-        {t("RegisterFrequent")}
-      </Button>
-      <Button onClick={() => setView('building')} variant="secondary" className="m-2">
-        Registrar una visita al edificio
-      </Button>
-    </div>
+    <Row className="justify-content-center">
+      <Col md={6} className="text-center">
+        <Button onClick={() => setView('frequent')} variant="primary" className="m-2 w-100">
+          {t("RegisterFrequent")}
+        </Button>
+      </Col>
+      <Col md={6} className="text-center">
+        <Button onClick={() => setView('building')} variant="secondary" className="m-2 w-100">
+          {t('RegisterVisit')}
+        </Button>
+      </Col>
+    </Row>
   );
+  
 
   const renderRUTForm = () => (
     <Form onSubmit={handleRUTSubmit}>
@@ -208,7 +213,7 @@ function Visit() {
 
       <div className="d-flex justify-content-between">
         <Button variant="primary" type="submit" className='my-4 btn-lg'>
-          Registrar Visita Frecuente
+          {t('RegisterFrequent')}
         </Button>
         <Button variant="secondary" onClick={() => setView(null)} className='my-4 btn-lg'>
           Volver
@@ -228,16 +233,15 @@ function Visit() {
           style={{ fontSize: '1.2rem' }}
         />
       </Form.Group>
-
       <Form.Group controlId="visitasForm.DepartmentSelect">
-        <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('department')}</Form.Label>
-        <Form.Control as="select" value={selectedDepartment} onChange={e => setSelectedDepartment(e.target.value)} style={{ fontSize: '1.2rem' }}>
-          <option value="">{t('selectDepartment')}</option>
-          {departments.map((dept, index) => (
-            <option key={index} value={dept.Number}>{dept.Number}</option>
-          ))}
-        </Form.Control>
-      </Form.Group>
+  <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('department')}</Form.Label>
+  <Form.Control as="select" value={selectedDepartment} onChange={e => setSelectedDepartment(e.target.value)} style={{ fontSize: '1.2rem' }}>
+    <option value="">{t('selectDepartment')}</option>
+    {departments.map((dept, index) => (
+      <option key={index} value={dept.Number}>{dept.Number}</option>
+    ))}
+  </Form.Control>
+</Form.Group>
 
       <Form.Group controlId="visitasForm.Fecha">
         <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('date')}</Form.Label>
