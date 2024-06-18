@@ -11,7 +11,8 @@ function Delivery() {
   const { user, isAuthenticated } = useAuth(); // Obtén la información del usuario y el estado de autenticación
   const [departments, setDepartments] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
-  const [name, setName] = useState('');
+  const [typeOfPackage, setTypeOfPackage] = useState('');
+  const [company, setCompany] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [message, setMessage] = useState(null);
@@ -44,7 +45,8 @@ function Delivery() {
     try {
       const delivery = {
         department: selectedDepartment,
-        name,
+        typeOfPackage,
+        company,
         date,
         time
       };
@@ -56,7 +58,8 @@ function Delivery() {
       });
       setMessage('Delivery registered successfully');
       setSelectedDepartment('');
-      setName('');
+      setTypeOfPackage('');
+      setCompany('');
       setDate('');
       setTime('');
       console.log(response.data);
@@ -88,18 +91,28 @@ function Delivery() {
                 </Form.Control>
               </Form.Group>
 
-              <Form.Group controlId="deliveryForm.Name">
-                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('name')}</Form.Label>
+              <Form.Group controlId="deliveryForm.TypeOfPackage">
+                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('Type of package')}</Form.Label>
                 <Form.Control
                   type="text"
-                  value={name}
-                  onChange={e => setName(e.target.value)}
+                  value={typeOfPackage}
+                  onChange={e => setTypeOfPackage(e.target.value)}
+                  style={{ fontSize: '1.2rem' }}
+                />
+              </Form.Group>
+
+              <Form.Group controlId="deliveryForm.Company">
+                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('Company')}</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={company}
+                  onChange={e => setCompany(e.target.value)}
                   style={{ fontSize: '1.2rem' }}
                 />
               </Form.Group>
 
               <Form.Group controlId="deliveryForm.Date">
-                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('date')}</Form.Label>
+                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('Date')}</Form.Label>
                 <Form.Control
                   type="date"
                   value={date}
@@ -109,7 +122,7 @@ function Delivery() {
               </Form.Group>
 
               <Form.Group controlId="deliveryForm.Time">
-                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('time')}</Form.Label>
+                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('Time')}</Form.Label>
                 <Form.Control
                   type="time"
                   value={time}
@@ -119,7 +132,7 @@ function Delivery() {
               </Form.Group>
 
               <Button variant="primary" type="submit" className='my-4 btn-lg'>
-                {t('registerDelivery')}
+                {t('Register Delivery')}
               </Button>
             </Form>
           </Col>

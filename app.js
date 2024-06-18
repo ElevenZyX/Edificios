@@ -105,9 +105,10 @@ app.post('/api/deliveries', authenticateToken, async (req, res) => {
     try {
         const newDelivery = new Delivery({
             department: req.body.department,
-            name: req.body.Name, // Asegúrate de que coincida con el nombre del campo en el formulario
-            date: req.body.Date, // Asegúrate de que coincida con el nombre del campo en el formulario
-            time: req.body.Time // Asegúrate de que coincida con el nombre del campo en el formulario
+            typeOfPackage: req.body.typeOfPackage,
+            company: req.body.company,
+            date: req.body.date,
+            time: req.body.time
         });
 
         const savedDelivery = await newDelivery.save();
@@ -117,6 +118,7 @@ app.post('/api/deliveries', authenticateToken, async (req, res) => {
         res.status(500).json({ message: 'Error registering delivery' });
     }
 });
+
 
 // Nueva ruta para manejar la colección frequent
 app.get('/api/frequent', authenticateToken, async (req, res) => {
