@@ -4,21 +4,27 @@ import axios from 'axios';
 import NavBar from './NavBar';
 import Footer from './Footer';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from './AuthContext'; // Importa el contexto de autenticación
 
 function Delivery() {
   const { t } = useTranslation();
+  const { user, isAuthenticated } = useAuth(); // Obtén la información del usuario y el estado de autenticación
   const [departments, setDepartments] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
-  const [Name, setName] = useState('');
-  const [Date, setDate] = useState('');
-  const [Time, setTime] = useState('');
+  const [name, setName] = useState('');
+  const [date, setDate] = useState('');
+  const [time, setTime] = useState('');
   const [message, setMessage] = useState(null);
 
   useEffect(() => {
     const fetchDepartments = async () => {
+      if (!user || !user._id) {
+        return;
+      }
+
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:8000/api/departments', {
+        const response = await axios.get(`http://localhost:8000/api/departments/${user._id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -31,16 +37,16 @@ function Delivery() {
     };
 
     fetchDepartments();
-  }, [t]);
+  }, [t, user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const delivery = {
         department: selectedDepartment,
-        Name, // Asegúrate de que coincida con el nombre del estado
-        Date, // Asegúrate de que coincida con el nombre del estado
-        Time // Asegúrate de que coincida con el nombre del estado
+        name,
+        date,
+        time
       };
       const token = localStorage.getItem('token');
       const response = await axios.post('http://localhost:8000/api/deliveries', delivery, {
@@ -59,6 +65,10 @@ function Delivery() {
       console.error('Error submitting form:', error);
     }
   };
+
+  if (!isAuthenticated) {
+    return <div>{t('loading')}</div>;
+  }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
@@ -79,37 +89,37 @@ function Delivery() {
               </Form.Group>
 
               <Form.Group controlId="deliveryForm.Name">
-                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('Name')}</Form.Label>
+                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('name')}</Form.Label>
                 <Form.Control
                   type="text"
-                  value={Name}
+                  value={name}
                   onChange={e => setName(e.target.value)}
                   style={{ fontSize: '1.2rem' }}
                 />
               </Form.Group>
 
               <Form.Group controlId="deliveryForm.Date">
-                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('Date')}</Form.Label>
+                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('date')}</Form.Label>
                 <Form.Control
                   type="date"
-                  value={Date}
+                  value={date}
                   onChange={e => setDate(e.target.value)}
                   style={{ fontSize: '1.2rem' }}
                 />
               </Form.Group>
 
               <Form.Group controlId="deliveryForm.Time">
-                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('Time')}</Form.Label>
+                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('time')}</Form.Label>
                 <Form.Control
                   type="time"
-                  value={Time}
+                  value={time}
                   onChange={e => setTime(e.target.value)}
                   style={{ fontSize: '1.2rem' }}
                 />
               </Form.Group>
 
               <Button variant="primary" type="submit" className='my-4 btn-lg'>
-                {t('Register Delivery')}
+                {t('registerDelivery')}
               </Button>
             </Form>
           </Col>
