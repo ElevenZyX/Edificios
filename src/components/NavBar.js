@@ -35,7 +35,9 @@ function NavBar() {
       </style>
       <Navbar bg="info" expand="lg" className="mx-3 my-3 rounded">
         <Container fluid>
-          <Navbar.Brand href="/home" style={{ fontSize: '1.5rem' }}>{t('welcome')}</Navbar.Brand>
+          <LinkContainer to="/home">
+            <Navbar.Brand style={{ fontSize: '1.5rem', cursor: 'pointer' }}>{t('welcome')}</Navbar.Brand>
+          </LinkContainer>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="w-100 justify-content-evenly" style={{ fontSize: '1.2rem' }}>
