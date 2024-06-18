@@ -24,11 +24,6 @@
     "consoleDptoError": "There was an error retrieving the departments:",
     "recoveringDptoError": "Error retrieving departments",
     "rightsReserved": "All rights reserved",
-    "logoutSuccessMessage": "You have log out succesfully",
-    "firstSlideLabel": "Everything you need for your building",
-    "secondSlideLabel": "Keep your community informed",
-    "thirdSlideLabel": "We work to give you the best",
-    "contactUsNow": "CONTACT US NOW"  
-
+    "logoutSuccessMessage": "You have log out succesfully"   
   }
   

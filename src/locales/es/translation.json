@@ -24,11 +24,6 @@
     "consoleDptoError": "Hubo un error al recuperar los departamentos:",
     "recoveringDptoError": "Error al recuperar los departamentos",
     "rightsReserved": "Todos los derechos reservados",
-    "logoutSuccessMessage": "Su sesión se ha cerrado exitósamente",
-    "firstSlideLabel": "Todo lo que necesitas para tu edificio",
-    "secondSlideLabel": "Mantén a tu comunidad informada",
-    "thirdSlideLabel": "Trabajamos para darte lo mejor",
-    "contactUsNow": "CONTÁCTANOS AHORA"
-    
+    "logoutSuccessMessage": "Su sesión se ha cerrado exitósamente"
   }
   

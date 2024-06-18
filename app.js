@@ -1,5 +1,5 @@
 const express = require("express");
-const { collection, Department, Visit, Delivery } = require("./mongo");
+const { collection, Department, Visit, Delivery, Frequent } = require("./mongo");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -24,7 +24,7 @@ app.post("/login", async (req, res) => {
 
             if (passwordIsValid) {
                 // Create a JWT token
-                const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' });
+                const token = jwt.sign({ id: user._id, name: user.name }, JWT_SECRET, { expiresIn: '1h' });
                 res.json({ token });
             } else {
                 res.status(401).json({ message: 'Invalid credentials' });
@@ -52,17 +52,37 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
+// Función para validar RUT
+const validateRut = (rut) => {
+    const rutRegex = /^[0-9]{7,8}-[0-9Kk]{1}$/;
+    return rutRegex.test(rut);
+};
+
 // Protected routes
-app.get('/api/departments', authenticateToken, async (req, res) => {
+app.get('/api/departments/:userId', authenticateToken, async (req, res) => {
     try {
-        const departments = await Department.find(); // This should be your Mongoose model
-        res.json(departments);
+      const userId = req.params.userId;
+      const user = await collection.findById(userId);
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      // Utilizar el nombre del edificio del usuario tal cual
+      const userBuildingName = user.name;
+      // Crear una expresión regular para hacer la búsqueda insensible a mayúsculas
+      const regex = new RegExp(`^${userBuildingName}$`, 'i');  // 'i' hace que la búsqueda sea insensible a mayúsculas
+  
+      // Buscar departamentos cuyo nombre coincida con la expresión regular
+      const departments = await Department.find({ name: { $regex: regex } });
+  
+      res.json(departments);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error retrieving departments' });
+      console.error(error);
+      res.status(500).json({ message: 'Error retrieving departments' });
     }
 });
-
+  
 app.post('/api/visitas', authenticateToken, async (req, res) => {
     try {
         const newVisit = new Visit({
@@ -95,6 +115,40 @@ app.post('/api/deliveries', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error('Error saving delivery:', error);
         res.status(500).json({ message: 'Error registering delivery' });
+    }
+});
+
+// Nueva ruta para manejar la colección frequent
+app.get('/api/frequent', authenticateToken, async (req, res) => {
+    try {
+        const frequents = await Frequent.find();
+        res.json(frequents);
+    } catch (error) {
+        console.error('Error retrieving frequents:', error);
+        res.status(500).json({ message: 'Error retrieving frequents' });
+    }
+});
+
+app.post('/api/frequent', authenticateToken, async (req, res) => {
+    try {
+        const { Number, nombre, rut } = req.body;
+
+        if (!validateRut(rut)) {
+            return res.status(400).json({ message: 'El RUT ingresado no es válido. Debe tener el formato xxxxxxxx-x.' });
+        }
+
+        const newFrequent = new Frequent({
+            Number,
+            nombre,
+            rut,
+            name: req.user.name // Verifica que el nombre se pase correctamente aquí
+        });
+
+        const savedFrequent = await newFrequent.save();
+        res.status(201).json(savedFrequent);
+    } catch (error) {
+        console.error('Error saving frequent:', error);
+        res.status(500).json({ message: 'Error registering frequent' });
     }
 });
 

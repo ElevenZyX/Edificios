@@ -8,34 +8,57 @@ mongoose.connect("mongodb+srv://Programacion:enter@proyect.t0wuu2a.mongodb.net/P
         console.log('failed');
     });
 
-const newSchema = new mongoose.Schema({
-    username: {
+    const newSchema = new mongoose.Schema({
+      username: {
         type: String,
         required: true
-    },
-    password: {
+      },
+      password: {
         type: String,
         required: true
-    }
-});
-
-const collection = mongoose.model("users", newSchema);
-
-const departmentSchema = new mongoose.Schema({
-    Number: {
+      },
+      name: {
         type: String,
         required: true
-    }
-});
-
+      }
+    });
+    
+    const collection = mongoose.model("users", newSchema);
+    
+    const departmentSchema = new mongoose.Schema({
+      Number: {
+        type: String,
+        required: true
+      },
+      name: {
+        type: String,
+        required: true
+      }
+    });
+    
 const Department = mongoose.model('departments', departmentSchema);
 
+    
+
 const visitSchema = new mongoose.Schema({
-    departamento: String,
-    nombre: String,
-    fecha: Date,
-    hora: String
+  departamento: {
+      type: String,
+      required: true
+  },
+  nombre: {
+      type: String,
+      required: true
+  },
+  fecha: {
+      type: Date,
+      required: true
+  },
+  hora: {
+      type: String,
+      required: true
+  }
 });
+
 
 const Visit = mongoose.model('Visit', visitSchema);
 
@@ -50,6 +73,32 @@ const deliverySchema = new mongoose.Schema({
 
 const Delivery = mongoose.model('Delivery', deliverySchema);
 
-module.exports = {collection, Department, Visit, Delivery };
 
+
+
+
+
+
+const frequentSchema = new mongoose.Schema({
+  Number: {
+      type: String,
+      required: true
+  },
+  nombre: {
+      type: String,
+      required: true
+  },
+  rut: {
+      type: String,
+      required: true
+  },
+  name: {
+      type: String,
+      required: true
+  }
+});
+
+const Frequent = mongoose.model('frequent', frequentSchema, 'frequent');
+
+module.exports = { collection, Department, Visit, Delivery, Frequent };
 
