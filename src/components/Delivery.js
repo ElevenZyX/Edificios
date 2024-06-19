@@ -17,6 +17,41 @@ function Delivery() {
   const [time, setTime] = useState('');
   const [message, setMessage] = useState(null);
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const delivery = {
+        department: selectedDepartment,
+        typeOfPackage,
+        company,
+        date,
+        time
+      };
+      const token = localStorage.getItem('token');
+      const response = await axios.post('http://localhost:8000/api/deliveries', delivery, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        responseType: 'blob' // Esperamos una respuesta de tipo blob (archivo)
+      });
+
+      // Crear un objeto URL para el blob y abrirlo en una nueva ventana o pestaña
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+
+      setMessage('Delivery registered successfully');
+      setSelectedDepartment('');
+      setTypeOfPackage('');
+      setCompany('');
+      setDate('');
+      setTime('');
+    } catch (error) {
+      setMessage('Error registering delivery');
+      console.error('Error submitting form:', error);
+    }
+  };
+
   useEffect(() => {
     const fetchDepartments = async () => {
       if (!user || !user._id) {
@@ -39,35 +74,6 @@ function Delivery() {
 
     fetchDepartments();
   }, [t, user]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const delivery = {
-        department: selectedDepartment,
-        typeOfPackage,
-        company,
-        date,
-        time
-      };
-      const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:8000/api/deliveries', delivery, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setMessage('Delivery registered successfully');
-      setSelectedDepartment('');
-      setTypeOfPackage('');
-      setCompany('');
-      setDate('');
-      setTime('');
-      console.log(response.data);
-    } catch (error) {
-      setMessage('Error registering delivery');
-      console.error('Error submitting form:', error);
-    }
-  };
 
   if (!isAuthenticated) {
     return <div>{t('loading')}</div>;
