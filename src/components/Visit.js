@@ -23,7 +23,7 @@ function Visit() {
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState('');
   const [view, setView] = useState(null);
-  const [isRUTVerified, setIsRUTVerified] = useState(false);
+  const [isRUTVerified, setIsRUTVerified] = useState(null); // Cambiar el estado inicial a null
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -73,13 +73,24 @@ function Visit() {
         setMessage('RUT no registrado, por favor ingrese todos los datos.');
         setMessageType('warning');
         setIsRUTVerified(false);
+        setNombre('');
+        setSelectedDepartment('');
       }
     } catch (error) {
-      setMessage('Error al verificar el RUT');
-      setMessageType('danger');
-      console.error('Error:', error);
+      if (error.response && error.response.status === 404) {
+        setMessage('RUT no registrado, por favor ingrese todos los datos.');
+        setMessageType('warning');
+        setIsRUTVerified(false);
+        setNombre('');
+        setSelectedDepartment('');
+      } else {
+        setMessage('Error al verificar el RUT');
+        setMessageType('danger');
+        console.error('Error:', error);
+      }
     }
   };
+
 
   const handleFrequentSubmit = async (e) => {
     e.preventDefault();
@@ -135,7 +146,7 @@ function Visit() {
       setNombre('');
       setFecha('');
       setHora('');
-      setIsRUTVerified(false);
+      setIsRUTVerified(null); // Resetear el estado a null después de enviar el formulario
     } catch (error) {
       setMessage('Error al registrar la visita');
       setMessageType('danger');
@@ -264,7 +275,7 @@ function Visit() {
         <Button variant="primary" type="submit" className='my-4 btn-lg'>
           {t('registerVisit')}
         </Button>
-        <Button variant="secondary" onClick={() => { setView(null); setIsRUTVerified(false); }} className='my-4 btn-lg'>
+        <Button variant="secondary" onClick={() => { setView(null); setIsRUTVerified(null); }} className='my-4 btn-lg'>
           Volver
         </Button>
       </div>
@@ -317,7 +328,7 @@ function Visit() {
         <Button variant="primary" type="submit" className='my-4 btn-lg'>
           {t('registerVisit')}
         </Button>
-        <Button variant="secondary" onClick={() => { setView(null); setIsRUTVerified(false); }} className='my-4 btn-lg'>
+        <Button variant="secondary" onClick={() => { setView(null); setIsRUTVerified(null); }} className='my-4 btn-lg'>
           Volver
         </Button>
       </div>
@@ -335,7 +346,9 @@ function Visit() {
         <Row className="justify-content-md-center">
           <Col lg={6}>
             {message && <Alert variant={messageType}>{message}</Alert>}
-            {view === 'frequent' ? renderFrequentForm() : view === 'building' ? (isRUTVerified ? renderPartialForm() : renderRUTForm()) : renderButtons()}
+            {view === 'frequent' ? renderFrequentForm() : view === 'building' ? (
+              isRUTVerified === null ? renderRUTForm() : isRUTVerified ? renderPartialForm() : renderFullForm()
+            ) : renderButtons()}
           </Col>
         </Row>
       </Container>
