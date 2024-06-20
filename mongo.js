@@ -8,61 +8,60 @@ mongoose.connect("mongodb+srv://Programacion:enter@proyect.t0wuu2a.mongodb.net/P
         console.log('failed');
     });
 
-    const newSchema = new mongoose.Schema({
-      username: {
-        type: String,
-        required: true
-      },
-      password: {
-        type: String,
-        required: true
-      },
-      name: {
-        type: String,
-        required: true
-      }
-    });
+const newSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: true
+  },
+  password: {
+    type: String,
+    required: true
+  },
+  name: {
+    type: String,
+    required: true
+  }
+});
     
-    const collection = mongoose.model("users", newSchema);
+const collection = mongoose.model("users", newSchema);
     
-    const departmentSchema = new mongoose.Schema({
-      Number: {
-        type: String,
-        required: true
-      },
-      name: {
-        type: String,
-        required: true
-      }
-    });
+const departmentSchema = new mongoose.Schema({
+  Number: {
+    type: String,
+    required: true
+  },
+  name: {
+    type: String,
+    required: true
+  }
+});
     
 const Department = mongoose.model('departments', departmentSchema);
-
     
-
 const visitSchema = new mongoose.Schema({
   departamento: {
-      type: String,
-      required: true
+    type: String,
+    required: true
   },
   nombre: {
-      type: String,
-      required: true
+    type: String,
+    required: true
   },
   fecha: {
-      type: Date,
-      required: true
+    type: Date,
+    required: true
   },
   hora: {
-      type: String,
-      required: true
+    type: String,
+    required: true
+  },
+  name: { // Añadir este campo
+    type: String,
+    required: true
   }
 });
 
-
 const Visit = mongoose.model('Visit', visitSchema);
-
-
 
 const deliverySchema = new mongoose.Schema({
     department: String,
@@ -73,32 +72,25 @@ const deliverySchema = new mongoose.Schema({
 
 const Delivery = mongoose.model('Delivery', deliverySchema);
 
-
-
-
-
-
-
 const frequentSchema = new mongoose.Schema({
   Number: {
-      type: String,
-      required: true
+    type: String,
+    required: true
   },
   nombre: {
-      type: String,
-      required: true
+    type: String,
+    required: true
   },
   rut: {
-      type: String,
-      required: true
+    type: String,
+    required: true
   },
   name: {
-      type: String,
-      required: true
+    type: String,
+    required: true
   }
 });
 
 const Frequent = mongoose.model('frequent', frequentSchema, 'frequent');
 
 module.exports = { collection, Department, Visit, Delivery, Frequent };
-

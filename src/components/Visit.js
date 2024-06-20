@@ -21,9 +21,9 @@ function Visit() {
   const [fecha, setFecha] = useState('');
   const [hora, setHora] = useState('');
   const [message, setMessage] = useState(null);
-  const [messageType, setMessageType] = useState(''); // Estado para el tipo de mensaje
-  const [view, setView] = useState(null); // Estado para manejar la vista
-  const [isRUTVerified, setIsRUTVerified] = useState(false); // Estado para verificar si el RUT está registrado
+  const [messageType, setMessageType] = useState('');
+  const [view, setView] = useState(null);
+  const [isRUTVerified, setIsRUTVerified] = useState(false);
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -59,15 +59,15 @@ function Visit() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:8000/api/users/rut/${rut}`, {
+      const response = await axios.get(`http://localhost:8000/api/frequent/rut/${rut}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
 
       if (response.data) {
-        setNombre(response.data.name);
-        setSelectedDepartment(response.data.department);
+        setNombre(response.data.nombre);
+        setSelectedDepartment(response.data.Number);
         setIsRUTVerified(true);
       } else {
         setMessage('RUT no registrado, por favor ingrese todos los datos.');
@@ -93,7 +93,7 @@ function Visit() {
         Number: selectedDepartment,
         nombre,
         rut,
-        name: user.name // Nombre del edificio que el usuario representa
+        name: user.name
       };
       const token = localStorage.getItem('token');
       const response = await axios.post('http://localhost:8000/api/frequent', frequentVisit, {
@@ -120,7 +120,8 @@ function Visit() {
         departamento: selectedDepartment,
         nombre,
         fecha,
-        hora
+        hora,
+        name: user.name // Añade el campo name con el nombre del edificio
       };
       const token = localStorage.getItem('token');
       const response = await axios.post('http://localhost:8000/api/visitas', visita, {
@@ -134,7 +135,7 @@ function Visit() {
       setNombre('');
       setFecha('');
       setHora('');
-      setIsRUTVerified(false); // Resetear verificación de RUT
+      setIsRUTVerified(false);
     } catch (error) {
       setMessage('Error al registrar la visita');
       setMessageType('danger');
