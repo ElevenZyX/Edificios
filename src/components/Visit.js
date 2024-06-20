@@ -23,7 +23,7 @@ function Visit() {
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState('');
   const [view, setView] = useState(null);
-  const [isRUTVerified, setIsRUTVerified] = useState(null); // Cambiar el estado inicial a null
+  const [isRUTVerified, setIsRUTVerified] = useState(null);
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -54,6 +54,7 @@ function Visit() {
     if (!validateRut(rut)) {
       setMessage(t('ruterror'));
       setMessageType('danger');
+      hideMessageAfterTimeout();
       return;
     }
 
@@ -89,14 +90,15 @@ function Visit() {
         console.error('Error:', error);
       }
     }
+    hideMessageAfterTimeout();
   };
-
 
   const handleFrequentSubmit = async (e) => {
     e.preventDefault();
     if (!validateRut(rut)) {
       setMessage(t('ruterror'));
       setMessageType('danger');
+      hideMessageAfterTimeout();
       return;
     }
     try {
@@ -122,6 +124,7 @@ function Visit() {
       setMessageType('danger');
       console.error('Error:', error);
     }
+    hideMessageAfterTimeout();
   };
 
   const handleSubmit = async (e) => {
@@ -152,6 +155,14 @@ function Visit() {
       setMessageType('danger');
       console.error('Error al enviar el formulario:', error);
     }
+    hideMessageAfterTimeout();
+  };
+
+  const hideMessageAfterTimeout = () => {
+    setTimeout(() => {
+      setMessage(null);
+      setMessageType('');
+    }, 4000);
   };
 
   const renderButtons = () => (
