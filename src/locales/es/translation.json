@@ -29,7 +29,15 @@
     "ruterror": "RUT invalido, usar el formato xxxxxxxx-x",
     "visitpass": "Visita frecuente registrada con éxito",
     "visiterror":"Error al registrar//Datos incompletos",
-    "RegisterFrequent":"Registrar una visita a frecuente"
+    "RegisterFrequent":"Registrar una visita a frecuente",
+    "RUTnoRegistred":"RUT no registrado, por favor ingrese todos los datos.",
+    "ErrorRUT":"RUT error, contactar con el administrador",
+    "visitpass1":"Visita registrada con éxito",
+    "errorgeneral":"Error, contactar con el administrador",
+    "VisitButton":"Registrar una visita al edificio",
+    "verifyRUT":"Verificar RUT",
+    "return":"Volver",
+    "VisitFrequent":"Registrar Visita a Frecuente"
     
   }
   

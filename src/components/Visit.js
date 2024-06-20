@@ -71,7 +71,7 @@ function Visit() {
         setSelectedDepartment(response.data.Number);
         setIsRUTVerified(true);
       } else {
-        setMessage('RUT no registrado, por favor ingrese todos los datos.');
+        setMessage(t('RUTnoRegistred'));
         setMessageType('warning');
         setIsRUTVerified(false);
         setNombre('');
@@ -79,13 +79,13 @@ function Visit() {
       }
     } catch (error) {
       if (error.response && error.response.status === 404) {
-        setMessage('RUT no registrado, por favor ingrese todos los datos.');
+        setMessage(t('RUTnoRegistred'));
         setMessageType('warning');
         setIsRUTVerified(false);
         setNombre('');
         setSelectedDepartment('');
       } else {
-        setMessage('Error al verificar el RUT');
+        setMessage(t('ErrorRUT'));
         setMessageType('danger');
         console.error('Error:', error);
       }
@@ -143,7 +143,7 @@ function Visit() {
           Authorization: `Bearer ${token}`
         }
       });
-      setMessage('Visita registrada con éxito');
+      setMessage(t('visitpass1'));
       setMessageType('success');
       setSelectedDepartment('');
       setNombre('');
@@ -151,7 +151,7 @@ function Visit() {
       setHora('');
       setIsRUTVerified(null); // Resetear el estado a null después de enviar el formulario
     } catch (error) {
-      setMessage('Error al registrar la visita');
+      setMessage(t('visiterror'));
       setMessageType('danger');
       console.error('Error al enviar el formulario:', error);
     }
@@ -162,7 +162,7 @@ function Visit() {
     setTimeout(() => {
       setMessage(null);
       setMessageType('');
-    }, 4000);
+    }, 7000);
   };
 
   const renderButtons = () => (
@@ -171,30 +171,33 @@ function Visit() {
         {t("RegisterFrequent")}
       </Button>
       <Button onClick={() => setView('building')} variant="secondary" className="m-2">
-        Registrar una visita al edificio
+        {t("VisitButton")}
       </Button>
     </div>
   );
 
   const renderRUTForm = () => (
-    <Form onSubmit={handleRUTSubmit}>
-      <Form.Group controlId="rutForm.Rut">
-        <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('rut')}</Form.Label>
-        <Form.Control
-          type="text"
-          value={rut}
-          onChange={e => setRut(e.target.value)}
-          style={{ fontSize: '1.2rem' }}
-        />
-      </Form.Group>
+  <Form onSubmit={handleRUTSubmit}>
+    <Form.Group controlId="rutForm.Rut">
+      <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('rut')}</Form.Label>
+      <Form.Control
+      type="text"
+      value={rut}
+      onChange={e => setRut(e.target.value)}
+      style={{ fontSize: '1.2rem' }}
+    />
+    </Form.Group>
 
-      <Button variant="primary" type="submit" className='my-4 btn-lg'>
-        {t('verifyRUT')}
-      </Button>
-      <Button variant="secondary" onClick={() => setView(null)} className='my-4 btn-lg'>
-        Volver
-      </Button>
-    </Form>
+  <div className="d-flex justify-content-between">
+    <Button variant="primary" type="submit" className='my-4 btn-lg'>
+      {t('verifyRUT')}
+    </Button>
+    <Button variant="secondary" onClick={() => setView(null)} className='my-4 btn-lg'>
+      {t('return')}
+    </Button>
+  </div>
+</Form>
+
   );
 
   const renderFrequentForm = () => (
@@ -231,10 +234,10 @@ function Visit() {
 
       <div className="d-flex justify-content-between">
         <Button variant="primary" type="submit" className='my-4 btn-lg'>
-          Registrar Visita Frecuente
+        {t('VisitFrequent')}
         </Button>
         <Button variant="secondary" onClick={() => setView(null)} className='my-4 btn-lg'>
-          Volver
+        {t('return')}
         </Button>
       </div>
     </Form>
@@ -287,7 +290,7 @@ function Visit() {
           {t('registerVisit')}
         </Button>
         <Button variant="secondary" onClick={() => { setView(null); setIsRUTVerified(null); }} className='my-4 btn-lg'>
-          Volver
+        {t('return')}
         </Button>
       </div>
     </Form>
@@ -340,7 +343,7 @@ function Visit() {
           {t('registerVisit')}
         </Button>
         <Button variant="secondary" onClick={() => { setView(null); setIsRUTVerified(null); }} className='my-4 btn-lg'>
-          Volver
+        {t('return')}
         </Button>
       </div>
     </Form>
