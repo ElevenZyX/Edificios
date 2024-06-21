@@ -6,8 +6,8 @@ import { Row, Col, Form, Button, Alert } from 'react-bootstrap';
 import Footer from './Footer';
 import { useAuth } from './AuthContext';
 import logo from '../img/logo.png'; // Importa la imagen del logo
-// import '../components/Login.css'
- 
+import './styles.css'; // Importa el archivo CSS
+
 function Login() {
   const { t } = useTranslation();
   const [username, setUsername] = useState('');
@@ -35,35 +35,13 @@ function Login() {
     }
   };
 
-  const containerStyle = {
-    minHeight: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: '20px', // Agrega un poco de padding para móviles
-  };
-
-  const logoStyle = {
-    width: '100%', // Asegura que el logo ocupe el ancho completo del contenedor
-    maxWidth: '600px', // Limita el ancho máximo para que coincida con el contenedor del formulario
-    height: 'auto', // Mantiene la proporción del logo
-    marginBottom: '20px', // Espaciado constante entre el logo y el contenedor del formulario
-  };
-
-  const formContainerStyle = {
-    width: '100%',
-    maxWidth: '600px',
-    margin: '0 20px',
-  };
- //className='login-container'
   return (
-    <div  style={containerStyle}> 
-      <header className="w-100 text-center">
-        <img src={logo} alt="BuildingBuddyy Logo" style={logoStyle} /> {/* Usa la imagen del logo */}
+    <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
+      <header className="header">
+        <img src={logo} alt="BuildingBuddyy Logo" className="logo" /> {/* Usa la imagen del logo */}
       </header>
       <main className="flex-grow-1 w-100 d-flex flex-column align-items-center justify-content-start">
-        <Row className="justify-content-center p-3 bg-info rounded" style={formContainerStyle}>
+        <Row className="justify-content-center form-container w-100" style={{ maxWidth: '600px', margin: '0 20px' }}>
           <Col xs={12}>
             <div>
               <h1 className="text-center">{t('login')}</h1>
@@ -97,7 +75,6 @@ function Login() {
         </Row>
         <Footer />
       </main>
-      
     </div>
   );
 }
