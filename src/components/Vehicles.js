@@ -1,4 +1,3 @@
-// Vehicles.js
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import NavBar from './NavBar'; 
@@ -17,7 +16,7 @@ function Vehicles() {
   useEffect(() => {
     const fetchParking = async () => {
       try {
-        console.log(`Fetching parking data for ${user.name}`);
+        console.log(`Fetching parking data for ${user.name} with token: ${token}`);
         const response = await axios.get(`http://localhost:8000/api/parking/${user.name}`, {
           headers: { Authorization: `Bearer ${token}` }
         });

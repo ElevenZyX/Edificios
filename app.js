@@ -19,11 +19,9 @@ app.post("/login", async (req, res) => {
         const user = await User.findOne({ username: username });
 
         if (user) {
-            // Compare provided password with hashed password in the database
             const passwordIsValid = await bcrypt.compare(password, user.password);
 
             if (passwordIsValid) {
-                // Create a JWT token
                 const token = jwt.sign({ id: user._id, name: user.name }, JWT_SECRET, { expiresIn: '12h' });
                 res.json({ token });
             } else {
@@ -42,11 +40,19 @@ app.post("/login", async (req, res) => {
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
-    if (!token) return res.status(403).json({ message: 'No token provided' });
+    console.log(`Received token: ${token}`);
+    if (!token) {
+        console.log('No token provided');
+        return res.status(403).json({ message: 'No token provided' });
+    }
 
     jwt.verify(token, JWT_SECRET, (err, user) => {
-        if (err) return res.status(403).json({ message: 'Invalid token' });
+        if (err) {
+            console.log('Invalid token');
+            return res.status(403).json({ message: 'Invalid token' });
+        }
 
+        console.log(`Authenticated user: ${user.name}`);
         req.user = user;
         next();
     });
@@ -65,6 +71,7 @@ app.get('/api/departments/:userId', authenticateToken, async (req, res) => {
         const user = await User.findById(userId);
 
         if (!user) {
+            console.log('User not found');
             return res.status(404).json({ message: 'User not found' });
         }
 
@@ -174,6 +181,7 @@ app.get('/api/parking/:name', authenticateToken, async (req, res) => {
       console.log(`Parking not found for ${req.params.name}`);
       return res.status(404).json({ message: 'Parking not found' });
     }
+    console.log(`Parking data: ${parking}`);
     res.json(parking);
   } catch (error) {
     console.error('Error fetching parking data:', error);
@@ -199,6 +207,7 @@ app.post('/api/parking/:name/enter', authenticateToken, async (req, res) => {
 
     parking.occupiedSpaces.push({ licensePlate });
     await parking.save();
+    console.log(`Vehicle registered: ${licensePlate}`);
     res.json(parking);
   } catch (error) {
     console.error('Error registering vehicle:', error);
@@ -219,6 +228,7 @@ app.post('/api/parking/:name/exit', authenticateToken, async (req, res) => {
 
     parking.occupiedSpaces = parking.occupiedSpaces.filter(space => space.licensePlate !== licensePlate);
     await parking.save();
+    console.log(`Vehicle removed: ${licensePlate}`);
     res.json(parking);
   } catch (error) {
     console.error('Error removing vehicle:', error);
