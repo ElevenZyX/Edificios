@@ -167,9 +167,13 @@ app.get('/api/frequent/rut/:rut', authenticateToken, async (req, res) => {
 
 // Obtener el estado del estacionamiento
 app.get('/api/parking/:name', authenticateToken, async (req, res) => {
+  console.log(`Fetching parking data for ${req.params.name}`);
   try {
     const parking = await Parking.findOne({ name: req.params.name });
-    if (!parking) return res.status(404).json({ message: 'Parking not found' });
+    if (!parking) {
+      console.log(`Parking not found for ${req.params.name}`);
+      return res.status(404).json({ message: 'Parking not found' });
+    }
     res.json(parking);
   } catch (error) {
     console.error('Error fetching parking data:', error);
@@ -179,12 +183,17 @@ app.get('/api/parking/:name', authenticateToken, async (req, res) => {
 
 // Registrar la entrada de un vehículo
 app.post('/api/parking/:name/enter', authenticateToken, async (req, res) => {
+  console.log(`Registering vehicle with license plate ${req.body.licensePlate} for ${req.params.name}`);
   try {
     const { licensePlate } = req.body;
     const parking = await Parking.findOne({ name: req.params.name });
-    if (!parking) return res.status(404).json({ message: 'Parking not found' });
+    if (!parking) {
+      console.log(`Parking not found for ${req.params.name}`);
+      return res.status(404).json({ message: 'Parking not found' });
+    }
 
     if (parking.occupiedSpaces.length >= parking.spaces) {
+      console.log(`No available spaces for ${req.params.name}`);
       return res.status(400).json({ message: 'No available spaces' });
     }
 
@@ -199,10 +208,14 @@ app.post('/api/parking/:name/enter', authenticateToken, async (req, res) => {
 
 // Registrar la salida de un vehículo
 app.post('/api/parking/:name/exit', authenticateToken, async (req, res) => {
+  console.log(`Removing vehicle with license plate ${req.body.licensePlate} for ${req.params.name}`);
   try {
     const { licensePlate } = req.body;
     const parking = await Parking.findOne({ name: req.params.name });
-    if (!parking) return res.status(404).json({ message: 'Parking not found' });
+    if (!parking) {
+      console.log(`Parking not found for ${req.params.name}`);
+      return res.status(404).json({ message: 'Parking not found' });
+    }
 
     parking.occupiedSpaces = parking.occupiedSpaces.filter(space => space.licensePlate !== licensePlate);
     await parking.save();

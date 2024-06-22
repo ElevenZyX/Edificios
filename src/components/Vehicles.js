@@ -17,9 +17,11 @@ function Vehicles() {
   useEffect(() => {
     const fetchParking = async () => {
       try {
+        console.log(`Fetching parking data for ${user.name}`);
         const response = await axios.get(`http://localhost:8000/api/parking/${user.name}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
+        console.log(response.data);
         setParking(response.data);
       } catch (error) {
         console.error('Error fetching parking data:', error);
@@ -33,13 +35,14 @@ function Vehicles() {
   const handleEnter = async () => {
     try {
       const response = await axios.post(
-        `/api/parking/${user.name}/enter`,
+        `http://localhost:8000/api/parking/${user.name}/enter`,
         { licensePlate },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setParking(response.data);
       setLicensePlate('');
     } catch (error) {
+      console.error('Error registering vehicle:', error);
       setMessage('Error registering vehicle');
       setTimeout(() => setMessage(null), 4000);
     }
@@ -48,12 +51,13 @@ function Vehicles() {
   const handleExit = async (plate) => {
     try {
       const response = await axios.post(
-        `/api/parking/${user.name}/exit`,
+        `http://localhost:8000/api/parking/${user.name}/exit`,
         { licensePlate: plate },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setParking(response.data);
     } catch (error) {
+      console.error('Error removing vehicle:', error);
       setMessage('Error removing vehicle');
       setTimeout(() => setMessage(null), 4000);
     }
