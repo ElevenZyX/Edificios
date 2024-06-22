@@ -43,21 +43,21 @@ function Delivery() {
       // Enviar SMS
       await sendSMS(phoneNumber);
 
-      setMessage('Delivery registered successfully and SMS sent');
+      setMessage(t('deliveryRegisteredSuccessfully'));
       setSelectedDepartment('');
       setTypeOfPackage('');
       setCompany('');
       setDate('');
       setTime('');
     } catch (error) {
-      setMessage('Error registering delivery');
+      setMessage(t('errorRegisteringDelivery'));
       console.error('Error submitting form:', error);
     }
   };
 
   const sendSMS = async (phone) => {
     try {
-      await axios.post('http://localhost:8000/api/send-sms', { phone, message: 'Your package has arrived' });
+      await axios.post('http://localhost:8000/api/send-sms', { phone, message: t('yourPackageArrived') });
     } catch (error) {
       console.error('Error sending SMS:', error);
     }
@@ -116,7 +116,7 @@ function Delivery() {
       <Container>
         <Row className="justify-content-md-center">
           <Col lg={6}>
-            {message && <Alert variant={message.startsWith('Error') ? 'danger' : 'success'}>{message}</Alert>}
+            {message && <Alert variant={message.startsWith(t('errorPrefix')) ? 'danger' : 'success'}>{message}</Alert>}
             <Form onSubmit={handleSubmit}>
               <Form.Group controlId="deliveryForm.DepartmentSelect">
                 <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('department')}</Form.Label>
@@ -129,7 +129,7 @@ function Delivery() {
               </Form.Group>
 
               <Form.Group controlId="deliveryForm.TypeOfPackage">
-                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('Type of package')}</Form.Label>
+                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('typeOfPackage')}</Form.Label>
                 <Form.Control
                   type="text"
                   value={typeOfPackage}
@@ -139,7 +139,7 @@ function Delivery() {
               </Form.Group>
 
               <Form.Group controlId="deliveryForm.Company">
-                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('Company')}</Form.Label>
+                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('company')}</Form.Label>
                 <Form.Control
                   type="text"
                   value={company}
@@ -149,7 +149,7 @@ function Delivery() {
               </Form.Group>
 
               <Form.Group controlId="deliveryForm.Date">
-                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('Date')}</Form.Label>
+                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('date')}</Form.Label>
                 <Form.Control
                   type="date"
                   value={date}
@@ -159,7 +159,7 @@ function Delivery() {
               </Form.Group>
 
               <Form.Group controlId="deliveryForm.Time">
-                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('Time')}</Form.Label>
+                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('time')}</Form.Label>
                 <Form.Control
                   type="time"
                   value={time}
@@ -169,7 +169,7 @@ function Delivery() {
               </Form.Group>
 
               <Button variant="primary" type="submit" className='my-4 btn-lg'>
-                {t('Register Delivery')}
+                {t('registerDelivery')}
               </Button>
             </Form>
           </Col>
