@@ -133,7 +133,7 @@ app.get('/api/frequent', authenticateToken, async (req, res) => {
 
 app.post('/api/frequent', authenticateToken, async (req, res) => {
     try {
-        const { Number, nombre, rut } = req.body;
+        const { Number, nombre, rut, car } = req.body;
 
         if (!validateRut(rut)) {
             return res.status(400).json({ message: 'El RUT ingresado no es válido. Debe tener el formato xxxxxxxx-x.' });
@@ -143,7 +143,8 @@ app.post('/api/frequent', authenticateToken, async (req, res) => {
             Number,
             nombre,
             rut,
-            name: req.user.name
+            name: req.user.name,
+            car: car || 'N/A'
         });
 
         const savedFrequent = await newFrequent.save();

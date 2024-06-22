@@ -6,12 +6,21 @@ import { Container, Row, Col, Button, Form, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
 
+const validateLicensePlate = (plate) => {
+  const licensePlateRegex = /^[A-Za-z0-9]{6}$/;
+  return licensePlateRegex.test(plate);
+};
+
 function Vehicles() {
   const { t } = useTranslation();
   const { user, token } = useAuth();
   const [parking, setParking] = useState(null);
   const [licensePlate, setLicensePlate] = useState('');
+  const [name, setName] = useState('');
+  const [department, setDepartment] = useState('');
+  const [departments, setDepartments] = useState([]);
   const [message, setMessage] = useState(null);
+  const [showManualForm, setShowManualForm] = useState(false);
 
   useEffect(() => {
     const fetchParking = async () => {
@@ -31,15 +40,96 @@ function Vehicles() {
     fetchParking();
   }, [user.name, token]);
 
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      if (!user || !user._id) {
+        return;
+      }
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`http://localhost:8000/api/departments/${user._id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setDepartments(response.data);
+      } catch (error) {
+        setMessage(t('recoveringDptoError'));
+        console.error(t('consoleDptoError'), error);
+        setTimeout(() => setMessage(null), 4000);
+      }
+    };
+
+    fetchDepartments();
+  }, [t, user]);
+
   const handleEnter = async () => {
+    if (!validateLicensePlate(licensePlate)) {
+      setMessage(t('platerror'));
+      setTimeout(() => setMessage(null), 4000);
+      return;
+    }
+
     try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`http://localhost:8000/api/frequent/rut/${licensePlate.toUpperCase()}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response.data && response.data.name.toLowerCase() === user.name.toLowerCase()) {
+        const frequentUser = response.data;
+        const { nombre, Number } = frequentUser;
+
+        const postResponse = await axios.post(
+          `http://localhost:8000/api/parking/${user.name}/enter`,
+          { licensePlate: licensePlate.toUpperCase(), nombre, department: Number },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        setParking(postResponse.data);
+        setLicensePlate('');
+        setName('');
+        setDepartment('');
+      } else {
+        setMessage(t('platerror'));
+        setTimeout(() => setMessage(null), 4000);
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        setMessage(t('RUTnoRegistred'));
+        setShowManualForm(true);
+        setName('');
+        setDepartment('');
+      } else {
+        console.error('Error registering vehicle:', error);
+        setMessage('Error registering vehicle');
+      }
+      setTimeout(() => setMessage(null), 4000);
+    }
+  };
+
+  const handleManualSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateLicensePlate(licensePlate)) {
+      setMessage(t('platerror'));
+      setTimeout(() => setMessage(null), 4000);
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
       const response = await axios.post(
         `http://localhost:8000/api/parking/${user.name}/enter`,
-        { licensePlate },
+        { licensePlate: licensePlate.toUpperCase(), nombre: name, department },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setParking(response.data);
       setLicensePlate('');
+      setName('');
+      setDepartment('');
+      setShowManualForm(false); // Ocultar el formulario manual después de enviar los datos correctamente
     } catch (error) {
       console.error('Error registering vehicle:', error);
       setMessage('Error registering vehicle');
@@ -80,6 +170,8 @@ function Vehicles() {
                     {parking.occupiedSpaces[i] ? (
                       <>
                         <p>{t('licensePlate')}: {parking.occupiedSpaces[i].licensePlate}</p>
+                        <p>{t('name')}: {parking.occupiedSpaces[i].nombre}</p>
+                        <p>{t('department')}: {parking.occupiedSpaces[i].department}</p>
                         <Button variant="danger" onClick={() => handleExit(parking.occupiedSpaces[i].licensePlate)}>
                           {t('exit')}
                         </Button>
@@ -102,6 +194,32 @@ function Vehicles() {
               </Form.Group>
               <Button onClick={handleEnter}>{t('enter')}</Button>
             </Form>
+            {showManualForm && (
+              <Form onSubmit={handleManualSubmit}>
+                <Form.Group controlId="formName">
+                  <Form.Label>{t('name')}</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </Form.Group>
+                <Form.Group controlId="formDepartment">
+                  <Form.Label>{t('department')}</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={department}
+                    onChange={(e) => setDepartment(e.target.value)}
+                  >
+                    <option value="">{t('selectDepartment')}</option>
+                    {departments.map((dept, index) => (
+                      <option key={index} value={dept.Number}>{dept.Number}</option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
+                <Button type="submit">{t('enter')}</Button>
+              </Form>
+            )}
           </>
         )}
       </Container>

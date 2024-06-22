@@ -37,7 +37,11 @@
     "VisitButton":"Registrar una visita al edificio",
     "verifyRUT":"Verificar RUT",
     "return":"Volver",
-    "VisitFrequent":"Registrar Visita a Frecuente"
-    
+    "VisitFrequent":"Registrar Visita a Frecuente",
+    "platerror": "Placa patente invalida, debe tener solo 6 caracteres",
+    "Yes":"Si",
+    "No":"No",
+    "car":"¿Tienes vehiculo?",
+    "plate":"Placa Patente"
   }
   

@@ -89,6 +89,10 @@ const frequentSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
+  },
+  car: {
+    type: String,
+    required: true
   }
 });
 

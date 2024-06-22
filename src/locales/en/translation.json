@@ -37,6 +37,11 @@
     "VisitButton":"Register a visit to the building",
     "verifyRUT":"Verify RUT",
     "return":"Return",
-    "VisitFrequent":"Register Frequent Visit"
+    "VisitFrequent":"Register Frequent Visit",
+    "platerror": "Invalid license plate. Must be exactly 6 characters",
+    "Yes":"Yes",
+    "No":"No",
+    "car":"Do you have a car?",
+    "plate":"Car License Plate"
   }
   
