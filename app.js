@@ -194,7 +194,7 @@ app.get('/api/parking/:name', authenticateToken, async (req, res) => {
 app.post('/api/parking/:name/enter', authenticateToken, async (req, res) => {
   console.log(`Registering vehicle with license plate ${req.body.licensePlate} for ${req.params.name}`);
   try {
-    const { licensePlate } = req.body;
+    const { licensePlate, nombre, department } = req.body;
     const parking = await Parking.findOne({ name: req.params.name });
     if (!parking) {
       console.log(`Parking not found for ${req.params.name}`);
@@ -206,7 +206,7 @@ app.post('/api/parking/:name/enter', authenticateToken, async (req, res) => {
       return res.status(400).json({ message: 'No available spaces' });
     }
 
-    parking.occupiedSpaces.push({ licensePlate });
+    parking.occupiedSpaces.push({ licensePlate, nombre, department });
     await parking.save();
     console.log(`Vehicle registered: ${licensePlate}`);
     res.json(parking);

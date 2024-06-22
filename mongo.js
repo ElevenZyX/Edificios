@@ -101,20 +101,30 @@ const Frequent = mongoose.model('frequent', frequentSchema, 'frequent');
 const parkingSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: true,
   },
   spaces: {
     type: Number,
-    required: true
+    required: true,
   },
   occupiedSpaces: [
     {
-      licensePlate: String,
-      occupiedSince: { type: Date, default: Date.now }
-    }
-  ]
+      licensePlate: {
+        type: String,
+        required: true,
+      },
+      nombre: {
+        type: String,
+        required: true,
+      },
+      department: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 });
 
-const Parking = mongoose.model('parking', parkingSchema, 'parking'); 
+const Parking = mongoose.model('Parking', parkingSchema, 'parking'); 
 
 module.exports = { User, Department, Visit, Delivery, Frequent, Parking };

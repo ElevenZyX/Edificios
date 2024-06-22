@@ -46,7 +46,6 @@ function Vehicles() {
         return;
       }
       try {
-        const token = localStorage.getItem('token');
         const response = await axios.get(`http://localhost:8000/api/departments/${user._id}`, {
           headers: {
             Authorization: `Bearer ${token}`
@@ -61,7 +60,7 @@ function Vehicles() {
     };
 
     fetchDepartments();
-  }, [t, user]);
+  }, [t, user, token]);
 
   const handleEnter = async () => {
     if (!validateLicensePlate(licensePlate)) {
@@ -71,7 +70,6 @@ function Vehicles() {
     }
 
     try {
-      const token = localStorage.getItem('token');
       const response = await axios.get(`http://localhost:8000/api/frequent/rut/${licensePlate.toUpperCase()}`, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -80,11 +78,11 @@ function Vehicles() {
 
       if (response.data && response.data.name.toLowerCase() === user.name.toLowerCase()) {
         const frequentUser = response.data;
-        const { nombre, Number } = frequentUser;
+        const { nombre, Number: department } = frequentUser;  // Aquí aseguramos que el campo correcto sea asignado
 
         const postResponse = await axios.post(
           `http://localhost:8000/api/parking/${user.name}/enter`,
-          { licensePlate: licensePlate.toUpperCase(), nombre, department: Number },
+          { licensePlate: licensePlate.toUpperCase(), nombre, department },
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -119,7 +117,6 @@ function Vehicles() {
     }
 
     try {
-      const token = localStorage.getItem('token');
       const response = await axios.post(
         `http://localhost:8000/api/parking/${user.name}/enter`,
         { licensePlate: licensePlate.toUpperCase(), nombre: name, department },
@@ -129,7 +126,7 @@ function Vehicles() {
       setLicensePlate('');
       setName('');
       setDepartment('');
-      setShowManualForm(false); // Ocultar el formulario manual después de enviar los datos correctamente
+      setShowManualForm(false);
     } catch (error) {
       console.error('Error registering vehicle:', error);
       setMessage('Error registering vehicle');
