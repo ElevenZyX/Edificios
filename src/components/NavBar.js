@@ -51,7 +51,7 @@ function NavBar() {
               <LinkContainer to="/visit">
                 <Nav.Link className="navbar-link">{t('visitors')}</Nav.Link>
               </LinkContainer>
-              <LinkContainer to="/vehiculos">
+              <LinkContainer to="/vehicles">
                 <Nav.Link className="navbar-link">{t('vehicles')}</Nav.Link>
               </LinkContainer>
             </Nav>

@@ -3,8 +3,9 @@ import { Container } from 'react-bootstrap';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './components/Login';
 import Home from './components/Home';
-import Visit from './components/Visit'; // Importado el componente Visit
-import Delivery from './components/Delivery'; // Importado el componente Delivery
+import Visit from './components/Visit'; 
+import Delivery from './components/Delivery'; 
+import Vehicles from './components/Vehicles'; 
 import LanguageSelector from './components/LanguageSelector';
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './components/AuthContext';
@@ -26,7 +27,7 @@ function App() {
               }
             />
             <Route
-              path="/visit" // Ruta para el componente Visit
+              path="/visit" 
               element={
                 <PrivateRoute>
                   <Visit />
@@ -34,14 +35,21 @@ function App() {
               }
             />
             <Route
-              path="/delivery" // Ruta para el componente Delivery
+              path="/delivery" 
               element={
                 <PrivateRoute>
                   <Delivery />
                 </PrivateRoute>
               }
             />
-            {/* Agrega más rutas protegidas aquí */}
+            <Route
+              path="/vehicles" 
+              element={
+                <PrivateRoute>
+                  <Vehicles />
+                </PrivateRoute>
+              }
+            />
           </Routes>
         </Container>
       </Router>
