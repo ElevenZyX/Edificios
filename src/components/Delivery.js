@@ -4,17 +4,18 @@ import axios from 'axios';
 import NavBar from './NavBar';
 import Footer from './Footer';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from './AuthContext'; // Importa el contexto de autenticación
+import { useAuth } from './AuthContext';
 
 function Delivery() {
   const { t } = useTranslation();
-  const { user, isAuthenticated } = useAuth(); // Obtén la información del usuario y el estado de autenticación
+  const { user, isAuthenticated } = useAuth();
   const [departments, setDepartments] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [typeOfPackage, setTypeOfPackage] = useState('');
   const [company, setCompany] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [message, setMessage] = useState(null);
 
   const handleSubmit = async (e) => {
@@ -32,15 +33,17 @@ function Delivery() {
         headers: {
           Authorization: `Bearer ${token}`
         },
-        responseType: 'blob' // Esperamos una respuesta de tipo blob (archivo)
+        responseType: 'blob'
       });
 
-      // Crear un objeto URL para el blob y abrirlo en una nueva ventana o pestaña
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
 
-      setMessage('Delivery registered successfully');
+      // Enviar SMS
+      await sendSMS(phoneNumber);
+
+      setMessage('Delivery registered successfully and SMS sent');
       setSelectedDepartment('');
       setTypeOfPackage('');
       setCompany('');
@@ -49,6 +52,14 @@ function Delivery() {
     } catch (error) {
       setMessage('Error registering delivery');
       console.error('Error submitting form:', error);
+    }
+  };
+
+  const sendSMS = async (phone) => {
+    try {
+      await axios.post('http://localhost:8000/api/send-sms', { phone, message: 'Your package has arrived' });
+    } catch (error) {
+      console.error('Error sending SMS:', error);
     }
   };
 
@@ -74,6 +85,26 @@ function Delivery() {
 
     fetchDepartments();
   }, [t, user]);
+
+  useEffect(() => {
+    const fetchDepartmentPhone = async () => {
+      if (selectedDepartment) {
+        try {
+          const token = localStorage.getItem('token');
+          const response = await axios.get(`http://localhost:8000/api/department/${selectedDepartment}`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          setPhoneNumber(response.data.phone);
+        } catch (error) {
+          console.error('Error fetching department phone:', error);
+        }
+      }
+    };
+
+    fetchDepartmentPhone();
+  }, [selectedDepartment]);
 
   if (!isAuthenticated) {
     return <div>{t('loading')}</div>;

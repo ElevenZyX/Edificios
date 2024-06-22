@@ -4,12 +4,17 @@ const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { PDFDocument } = require('pdf-lib');
+const twilio = require('twilio');
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 const JWT_SECRET = '1234'; // Simple secret key for this project
+
+const accountSid = 'AC67444ea956f96df2af70ddc11ae55d61'; // Obtén esto de tu consola de Twilio
+const authToken = '6601faf6d91787bda760226634eafff1'; // Obtén esto de tu consola de Twilio
+const twilioClient = new twilio(accountSid, authToken);
 
 // Endpoint for login
 app.post("/login", async (req, res) => {
@@ -81,6 +86,20 @@ app.get('/api/departments/:userId', authenticateToken, async (req, res) => {
     }
 });
 
+app.get('/api/department/:number', authenticateToken, async (req, res) => {
+    const { number } = req.params;
+    try {
+        const department = await Department.findOne({ Number: number });
+        if (!department) {
+            return res.status(404).json({ message: 'Department not found' });
+        }
+        res.send(department);
+    } catch (error) {
+        console.error('Error fetching department information:', error);
+        res.status(500).send('Error fetching department information');
+    }
+});
+
 app.post('/api/visitas', authenticateToken, async (req, res) => {
     try {
         const newVisit = new Visit({
@@ -121,12 +140,14 @@ app.post('/api/frecuentes', authenticateToken, async (req, res) => {
 
 app.post('/api/deliveries', authenticateToken, async (req, res) => {
     try {
+        const { department, typeOfPackage, company, date, time } = req.body;
+
         const newDelivery = new Delivery({
-            department: req.body.department,
-            typeOfPackage: req.body.typeOfPackage,
-            company: req.body.company,
-            date: req.body.date,
-            time: req.body.time
+            department,
+            typeOfPackage,
+            company,
+            date,
+            time
         });
 
         const savedDelivery = await newDelivery.save();
@@ -145,6 +166,24 @@ app.post('/api/deliveries', authenticateToken, async (req, res) => {
 
         // Serializar el PDF a bytes
         const pdfBytes = await pdfDoc.save();
+
+        // Obtener el número de teléfono del departamento
+        const departmentInfo = await Department.findOne({ Number: department });
+        if (!departmentInfo) {
+          return res.status(404).json({ message: 'Department not found' });
+        }
+        
+        if (!departmentInfo.phone) {
+          return res.status(400).json({ message: 'Phone number not found for department' });
+        }
+
+        // Enviar SMS utilizando Twilio
+        const message = `Your package has has arrived`;
+        await twilioClient.messages.create({
+            body: message,
+            to: departmentInfo.phone,
+            from: '+19123912063'
+        });
 
         // Establecer los encabezados de la respuesta para indicar que se enviará un archivo PDF
         res.setHeader('Content-Type', 'application/pdf');
