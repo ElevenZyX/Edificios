@@ -20,11 +20,15 @@ const newSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
+  },
+  parking: {
+    type: Number, // Esto utilizará un número por defecto en mongoose que puede ser mapeado a Int32
+    required: true
   }
 });
     
 const collection = mongoose.model("users", newSchema);
-    
+
 const departmentSchema = new mongoose.Schema({
   Number: {
     type: String,
@@ -64,10 +68,10 @@ const visitSchema = new mongoose.Schema({
 const Visit = mongoose.model('Visit', visitSchema);
 
 const deliverySchema = new mongoose.Schema({
-    department: String,
-    name: String,
-    date: Date,
-    time: String
+  department: String,
+  name: String,
+  date: Date,
+  time: String
 });
 
 const Delivery = mongoose.model('Delivery', deliverySchema);
