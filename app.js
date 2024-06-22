@@ -13,7 +13,7 @@ app.use(cors());
 const JWT_SECRET = '1234'; // Simple secret key for this project
 
 const accountSid = 'AC67444ea956f96df2af70ddc11ae55d61'; // Obtén esto de tu consola de Twilio
-const authToken = '6601faf6d91787bda760226634eafff1'; // Obtén esto de tu consola de Twilio
+const authToken = '1f6513458c5555b4ed3a1c7acd6d0a0d'; // Obtén esto de tu consola de Twilio
 const twilioClient = new twilio(accountSid, authToken);
 
 // Endpoint for login
@@ -142,12 +142,19 @@ app.post('/api/deliveries', authenticateToken, async (req, res) => {
     try {
         const { department, typeOfPackage, company, date, time } = req.body;
 
+        // Obtener el nombre del edificio del departamento
+        const departmentInfo = await Department.findOne({ Number: department });
+        if (!departmentInfo) {
+          return res.status(404).json({ message: 'Department not found' });
+        }
+        
         const newDelivery = new Delivery({
             department,
             typeOfPackage,
             company,
             date,
-            time
+            time,
+            buildingName: departmentInfo.name // Guardar el nombre del edificio
         });
 
         const savedDelivery = await newDelivery.save();
@@ -168,17 +175,12 @@ app.post('/api/deliveries', authenticateToken, async (req, res) => {
         const pdfBytes = await pdfDoc.save();
 
         // Obtener el número de teléfono del departamento
-        const departmentInfo = await Department.findOne({ Number: department });
-        if (!departmentInfo) {
-          return res.status(404).json({ message: 'Department not found' });
-        }
-        
         if (!departmentInfo.phone) {
           return res.status(400).json({ message: 'Phone number not found for department' });
         }
 
         // Enviar SMS utilizando Twilio
-        const message = `Your package has has arrived`;
+        const message = `Your package has arrived`;
         await twilioClient.messages.create({
             body: message,
             to: departmentInfo.phone,

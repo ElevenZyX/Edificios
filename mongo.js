@@ -83,6 +83,10 @@ const deliverySchema = new mongoose.Schema({
   time: {
     type: String,
     required: true
+  },
+  buildingName: { // Nuevo campo
+    type: String,
+    required: false
   }
 });
 
