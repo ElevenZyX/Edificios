@@ -1,3 +1,4 @@
+// Vehicles.js
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import NavBar from './NavBar'; 
@@ -16,12 +17,14 @@ function Vehicles() {
   useEffect(() => {
     const fetchParking = async () => {
       try {
-        const response = await axios.get(`/api/parking/${user.name}`, {
+        const response = await axios.get(`http://localhost:8000/api/parking/${user.name}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setParking(response.data);
       } catch (error) {
+        console.error('Error fetching parking data:', error);
         setMessage('Error fetching parking data');
+        setTimeout(() => setMessage(null), 4000);
       }
     };
     fetchParking();
@@ -38,6 +41,7 @@ function Vehicles() {
       setLicensePlate('');
     } catch (error) {
       setMessage('Error registering vehicle');
+      setTimeout(() => setMessage(null), 4000);
     }
   };
 
@@ -51,6 +55,7 @@ function Vehicles() {
       setParking(response.data);
     } catch (error) {
       setMessage('Error removing vehicle');
+      setTimeout(() => setMessage(null), 4000);
     }
   };
 
@@ -60,14 +65,25 @@ function Vehicles() {
       <Container fluid style={{ flex: "1" }}>
         <h1 className="mt-5">{t('vehicles')}</h1>
         {message && <Alert variant="danger">{message}</Alert>}
-        {user.parking && (
+        {parking && (
           <>
-            <h2>{t('totalSpaces')}: {user.parking}</h2>
+            <h2>{t('totalSpaces')}: {parking.spaces}</h2>
+            <h3>{t('occupiedSpaces')}: {parking.occupiedSpaces.length}</h3>
             <Row>
-              {Array.from({ length: user.parking }, (_, i) => (
+              {Array.from({ length: parking.spaces }, (_, i) => (
                 <Col key={i} className="mb-3">
                   <div className="p-3 border bg-light">
                     <p>{t('spaceAvailable', { space: i + 1 })}</p>
+                    {parking.occupiedSpaces[i] ? (
+                      <>
+                        <p>{t('licensePlate')}: {parking.occupiedSpaces[i].licensePlate}</p>
+                        <Button variant="danger" onClick={() => handleExit(parking.occupiedSpaces[i].licensePlate)}>
+                          {t('exit')}
+                        </Button>
+                      </>
+                    ) : (
+                      <p>{t('available')}</p>
+                    )}
                   </div>
                 </Col>
               ))}

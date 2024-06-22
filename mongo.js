@@ -1,3 +1,4 @@
+// mongo.js
 const mongoose = require("mongoose");
 
 mongoose.connect("mongodb+srv://Programacion:enter@proyect.t0wuu2a.mongodb.net/Proyect?retryWrites=true&w=majority")
@@ -8,7 +9,7 @@ mongoose.connect("mongodb+srv://Programacion:enter@proyect.t0wuu2a.mongodb.net/P
         console.log('failed');
     });
 
-const newSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true
@@ -22,12 +23,12 @@ const newSchema = new mongoose.Schema({
     required: true
   },
   parking: {
-    type: Number, // Esto utilizará un número por defecto en mongoose que puede ser mapeado a Int32
+    type: Number,
     required: true
   }
 });
-    
-const collection = mongoose.model("users", newSchema);
+
+const User = mongoose.model("users", userSchema);
 
 const departmentSchema = new mongoose.Schema({
   Number: {
@@ -39,9 +40,9 @@ const departmentSchema = new mongoose.Schema({
     required: true
   }
 });
-    
+
 const Department = mongoose.model('departments', departmentSchema);
-    
+
 const visitSchema = new mongoose.Schema({
   departamento: {
     type: String,
@@ -59,7 +60,7 @@ const visitSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  name: { // Añadir este campo
+  name: {
     type: String,
     required: true
   }
@@ -97,4 +98,23 @@ const frequentSchema = new mongoose.Schema({
 
 const Frequent = mongoose.model('frequent', frequentSchema, 'frequent');
 
-module.exports = { collection, Department, Visit, Delivery, Frequent };
+const parkingSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  spaces: {
+    type: Number,
+    required: true
+  },
+  occupiedSpaces: [
+    {
+      licensePlate: String,
+      occupiedSince: { type: Date, default: Date.now }
+    }
+  ]
+});
+
+const Parking = mongoose.model('parking', parkingSchema, 'parking'); 
+
+module.exports = { User, Department, Visit, Delivery, Frequent, Parking };

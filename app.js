@@ -1,5 +1,5 @@
 const express = require("express");
-const { collection, Department, Visit, Delivery, Frequent } = require("./mongo");
+const { User, Department, Visit, Delivery, Frequent, Parking } = require("./mongo");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -16,7 +16,7 @@ app.post("/login", async (req, res) => {
     const { username, password } = req.body;
 
     try {
-        const user = await collection.findOne({ username: username });
+        const user = await User.findOne({ username: username });
 
         if (user) {
             // Compare provided password with hashed password in the database
@@ -34,7 +34,7 @@ app.post("/login", async (req, res) => {
         }
     } catch (e) {
         console.error(e);
-        res.status(500).json({ message: 'Server error' }); // It's better to send an appropriate HTTP status code
+        res.status(500).json({ message: 'Server error' });
     }
 });
 
@@ -61,28 +61,24 @@ const validateRut = (rut) => {
 // Protected routes
 app.get('/api/departments/:userId', authenticateToken, async (req, res) => {
     try {
-      const userId = req.params.userId;
-      const user = await collection.findById(userId);
-  
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-  
-      // Utilizar el nombre del edificio del usuario tal cual
-      const userBuildingName = user.name;
-      // Crear una expresión regular para hacer la búsqueda insensible a mayúsculas
-      const regex = new RegExp(`^${userBuildingName}$`, 'i');  // 'i' hace que la búsqueda sea insensible a mayúsculas
-  
-      // Buscar departamentos cuyo nombre coincida con la expresión regular
-      const departments = await Department.find({ name: { $regex: regex } });
-  
-      res.json(departments);
+        const userId = req.params.userId;
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const userBuildingName = user.name;
+        const regex = new RegExp(`^${userBuildingName}$`, 'i');
+        const departments = await Department.find({ name: { $regex: regex } });
+
+        res.json(departments);
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Error retrieving departments' });
+        console.error(error);
+        res.status(500).json({ message: 'Error retrieving departments' });
     }
 });
-  
+
 app.post('/api/visitas', authenticateToken, async (req, res) => {
     try {
         const newVisit = new Visit({
@@ -90,7 +86,7 @@ app.post('/api/visitas', authenticateToken, async (req, res) => {
             nombre: req.body.nombre,
             fecha: req.body.fecha,
             hora: req.body.hora,
-            name: req.user.name // Añadir el campo name con el nombre del edificio
+            name: req.user.name
         });
 
         const savedVisit = await newVisit.save();
@@ -101,14 +97,13 @@ app.post('/api/visitas', authenticateToken, async (req, res) => {
     }
 });
 
-// Nueva ruta para manejar las solicitudes de registro de entregas
 app.post('/api/deliveries', authenticateToken, async (req, res) => {
     try {
         const newDelivery = new Delivery({
             department: req.body.department,
-            name: req.body.name, // Asegúrate de que coincida con el nombre del campo en el formulario
-            date: req.body.date, // Asegúrate de que coincida con el nombre del campo en el formulario
-            time: req.body.time // Asegúrate de que coincida con el nombre del campo en el formulario
+            name: req.body.name,
+            date: req.body.date,
+            time: req.body.time
         });
 
         const savedDelivery = await newDelivery.save();
@@ -119,7 +114,6 @@ app.post('/api/deliveries', authenticateToken, async (req, res) => {
     }
 });
 
-// Nueva ruta para manejar la colección frequent
 app.get('/api/frequent', authenticateToken, async (req, res) => {
     try {
         const frequents = await Frequent.find();
@@ -142,7 +136,7 @@ app.post('/api/frequent', authenticateToken, async (req, res) => {
             Number,
             nombre,
             rut,
-            name: req.user.name // Verifica que el nombre se pase correctamente aquí
+            name: req.user.name
         });
 
         const savedFrequent = await newFrequent.save();
@@ -153,7 +147,6 @@ app.post('/api/frequent', authenticateToken, async (req, res) => {
     }
 });
 
-// Añade este endpoint en tu archivo de configuración del servidor (app.js)
 app.get('/api/frequent/rut/:rut', authenticateToken, async (req, res) => {
     try {
         const rut = req.params.rut;
@@ -168,6 +161,56 @@ app.get('/api/frequent/rut/:rut', authenticateToken, async (req, res) => {
         console.error('Error retrieving RUT from frequent:', error);
         res.status(500).json({ message: 'Error retrieving RUT' });
     }
+});
+
+// Rutas de estacionamiento
+
+// Obtener el estado del estacionamiento
+app.get('/api/parking/:name', authenticateToken, async (req, res) => {
+  try {
+    const parking = await Parking.findOne({ name: req.params.name });
+    if (!parking) return res.status(404).json({ message: 'Parking not found' });
+    res.json(parking);
+  } catch (error) {
+    console.error('Error fetching parking data:', error);
+    res.status(500).json({ message: 'Error fetching parking data' });
+  }
+});
+
+// Registrar la entrada de un vehículo
+app.post('/api/parking/:name/enter', authenticateToken, async (req, res) => {
+  try {
+    const { licensePlate } = req.body;
+    const parking = await Parking.findOne({ name: req.params.name });
+    if (!parking) return res.status(404).json({ message: 'Parking not found' });
+
+    if (parking.occupiedSpaces.length >= parking.spaces) {
+      return res.status(400).json({ message: 'No available spaces' });
+    }
+
+    parking.occupiedSpaces.push({ licensePlate });
+    await parking.save();
+    res.json(parking);
+  } catch (error) {
+    console.error('Error registering vehicle:', error);
+    res.status(500).json({ message: 'Error registering vehicle' });
+  }
+});
+
+// Registrar la salida de un vehículo
+app.post('/api/parking/:name/exit', authenticateToken, async (req, res) => {
+  try {
+    const { licensePlate } = req.body;
+    const parking = await Parking.findOne({ name: req.params.name });
+    if (!parking) return res.status(404).json({ message: 'Parking not found' });
+
+    parking.occupiedSpaces = parking.occupiedSpaces.filter(space => space.licensePlate !== licensePlate);
+    await parking.save();
+    res.json(parking);
+  } catch (error) {
+    console.error('Error removing vehicle:', error);
+    res.status(500).json({ message: 'Error removing vehicle' });
+  }
 });
 
 app.listen(8000, () => {
