@@ -89,7 +89,8 @@ app.post('/api/visitas', authenticateToken, async (req, res) => {
             departamento: req.body.departamento,
             nombre: req.body.nombre,
             fecha: req.body.fecha,
-            hora: req.body.hora
+            hora: req.body.hora,
+            name: req.user.name // Añadir el campo name con el nombre del edificio
         });
 
         const savedVisit = await newVisit.save();
@@ -105,9 +106,9 @@ app.post('/api/deliveries', authenticateToken, async (req, res) => {
     try {
         const newDelivery = new Delivery({
             department: req.body.department,
-            name: req.body.Name, // Asegúrate de que coincida con el nombre del campo en el formulario
-            date: req.body.Date, // Asegúrate de que coincida con el nombre del campo en el formulario
-            time: req.body.Time // Asegúrate de que coincida con el nombre del campo en el formulario
+            name: req.body.name, // Asegúrate de que coincida con el nombre del campo en el formulario
+            date: req.body.date, // Asegúrate de que coincida con el nombre del campo en el formulario
+            time: req.body.time // Asegúrate de que coincida con el nombre del campo en el formulario
         });
 
         const savedDelivery = await newDelivery.save();
@@ -149,6 +150,23 @@ app.post('/api/frequent', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error('Error saving frequent:', error);
         res.status(500).json({ message: 'Error registering frequent' });
+    }
+});
+
+// Añade este endpoint en tu archivo de configuración del servidor (app.js)
+app.get('/api/frequent/rut/:rut', authenticateToken, async (req, res) => {
+    try {
+        const rut = req.params.rut;
+        const frequentUser = await Frequent.findOne({ rut });
+
+        if (frequentUser) {
+            res.json(frequentUser);
+        } else {
+            res.status(404).json({ message: 'RUT not found in frequent collection' });
+        }
+    } catch (error) {
+        console.error('Error retrieving RUT from frequent:', error);
+        res.status(500).json({ message: 'Error retrieving RUT' });
     }
 });
 

@@ -21,9 +21,9 @@ function Visit() {
   const [fecha, setFecha] = useState('');
   const [hora, setHora] = useState('');
   const [message, setMessage] = useState(null);
-  const [messageType, setMessageType] = useState(''); // Estado para el tipo de mensaje
-  const [view, setView] = useState(null); // Estado para manejar la vista
-  const [isRUTVerified, setIsRUTVerified] = useState(false); // Estado para verificar si el RUT está registrado
+  const [messageType, setMessageType] = useState('');
+  const [view, setView] = useState(null);
+  const [isRUTVerified, setIsRUTVerified] = useState(null);
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -54,31 +54,43 @@ function Visit() {
     if (!validateRut(rut)) {
       setMessage(t('ruterror'));
       setMessageType('danger');
+      hideMessageAfterTimeout();
       return;
     }
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:8000/api/users/rut/${rut}`, {
+      const response = await axios.get(`http://localhost:8000/api/frequent/rut/${rut}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
 
       if (response.data) {
-        setNombre(response.data.name);
-        setSelectedDepartment(response.data.department);
+        setNombre(response.data.nombre);
+        setSelectedDepartment(response.data.Number);
         setIsRUTVerified(true);
       } else {
-        setMessage('RUT no registrado, por favor ingrese todos los datos.');
+        setMessage(t('RUTnoRegistred'));
         setMessageType('warning');
         setIsRUTVerified(false);
+        setNombre('');
+        setSelectedDepartment('');
       }
     } catch (error) {
-      setMessage('Error al verificar el RUT');
-      setMessageType('danger');
-      console.error('Error:', error);
+      if (error.response && error.response.status === 404) {
+        setMessage(t('RUTnoRegistred'));
+        setMessageType('warning');
+        setIsRUTVerified(false);
+        setNombre('');
+        setSelectedDepartment('');
+      } else {
+        setMessage(t('ErrorRUT'));
+        setMessageType('danger');
+        console.error('Error:', error);
+      }
     }
+    hideMessageAfterTimeout();
   };
 
   const handleFrequentSubmit = async (e) => {
@@ -86,6 +98,7 @@ function Visit() {
     if (!validateRut(rut)) {
       setMessage(t('ruterror'));
       setMessageType('danger');
+      hideMessageAfterTimeout();
       return;
     }
     try {
@@ -93,7 +106,7 @@ function Visit() {
         Number: selectedDepartment,
         nombre,
         rut,
-        name: user.name // Nombre del edificio que el usuario representa
+        name: user.name
       };
       const token = localStorage.getItem('token');
       const response = await axios.post('http://localhost:8000/api/frequent', frequentVisit, {
@@ -111,6 +124,7 @@ function Visit() {
       setMessageType('danger');
       console.error('Error:', error);
     }
+    hideMessageAfterTimeout();
   };
 
   const handleSubmit = async (e) => {
@@ -120,7 +134,8 @@ function Visit() {
         departamento: selectedDepartment,
         nombre,
         fecha,
-        hora
+        hora,
+        name: user.name // Añade el campo name con el nombre del edificio
       };
       const token = localStorage.getItem('token');
       const response = await axios.post('http://localhost:8000/api/visitas', visita, {
@@ -128,55 +143,62 @@ function Visit() {
           Authorization: `Bearer ${token}`
         }
       });
-      setMessage('Visita registrada con éxito');
+      setMessage(t('visitpass1'));
       setMessageType('success');
       setSelectedDepartment('');
       setNombre('');
       setFecha('');
       setHora('');
-      setIsRUTVerified(false); // Resetear verificación de RUT
+      setIsRUTVerified(null); // Resetear el estado a null después de enviar el formulario
     } catch (error) {
-      setMessage('Error al registrar la visita');
+      setMessage(t('visiterror'));
       setMessageType('danger');
       console.error('Error al enviar el formulario:', error);
     }
+    hideMessageAfterTimeout();
+  };
+
+  const hideMessageAfterTimeout = () => {
+    setTimeout(() => {
+      setMessage(null);
+      setMessageType('');
+    }, 7000);
   };
 
   const renderButtons = () => (
-    <Row className="justify-content-center">
-      <Col md={6} className="text-center">
-        <Button onClick={() => setView('frequent')} variant="primary" className="m-2 w-100">
-          {t("RegisterFrequent")}
-        </Button>
-      </Col>
-      <Col md={6} className="text-center">
-        <Button onClick={() => setView('building')} variant="secondary" className="m-2 w-100">
-          {t('RegisterVisit')}
-        </Button>
-      </Col>
-    </Row>
+    <div>
+      <Button onClick={() => setView('frequent')} variant="primary" className="m-2">
+        {t("RegisterFrequent")}
+      </Button>
+      <Button onClick={() => setView('building')} variant="secondary" className="m-2">
+        Registrar una visita al edificio
+      </Button>
+    </div>
   );
   
 
   const renderRUTForm = () => (
-    <Form onSubmit={handleRUTSubmit}>
-      <Form.Group controlId="rutForm.Rut">
-        <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('rut')}</Form.Label>
-        <Form.Control
-          type="text"
-          value={rut}
-          onChange={e => setRut(e.target.value)}
-          style={{ fontSize: '1.2rem' }}
-        />
-      </Form.Group>
+  <Form onSubmit={handleRUTSubmit}>
+    <Form.Group controlId="rutForm.Rut">
+      <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('rut')}</Form.Label>
+      <Form.Control
+      type="text"
+      value={rut}
+      onChange={e => setRut(e.target.value)}
+      style={{ fontSize: '1.2rem' }}
+    />
+    </Form.Group>
 
-      <Button variant="primary" type="submit" className='my-4 btn-lg'>
-        {t('verifyRUT')}
-      </Button>
-      <Button variant="secondary" onClick={() => setView(null)} className='my-4 btn-lg'>
-        Volver
-      </Button>
-    </Form>
+  <div className="d-flex justify-content-between">
+    <Button variant="primary" type="submit" className='my-4 btn-lg'>
+      {t('verifyRUT')}
+    </Button>
+    <Button variant="secondary" onClick={() => setView(null)} className='my-4 btn-lg'>
+      {t('return')}
+    </Button>
+  </div>
+</Form>
+
   );
 
   const renderFrequentForm = () => (
@@ -213,10 +235,10 @@ function Visit() {
 
       <div className="d-flex justify-content-between">
         <Button variant="primary" type="submit" className='my-4 btn-lg'>
-          {t('RegisterFrequent')}
+          Registrar Visita Frecuente
         </Button>
         <Button variant="secondary" onClick={() => setView(null)} className='my-4 btn-lg'>
-          Volver
+        {t('return')}
         </Button>
       </div>
     </Form>
@@ -267,8 +289,8 @@ function Visit() {
         <Button variant="primary" type="submit" className='my-4 btn-lg'>
           {t('registerVisit')}
         </Button>
-        <Button variant="secondary" onClick={() => { setView(null); setIsRUTVerified(false); }} className='my-4 btn-lg'>
-          Volver
+        <Button variant="secondary" onClick={() => { setView(null); setIsRUTVerified(null); }} className='my-4 btn-lg'>
+        {t('return')}
         </Button>
       </div>
     </Form>
@@ -320,8 +342,8 @@ function Visit() {
         <Button variant="primary" type="submit" className='my-4 btn-lg'>
           {t('registerVisit')}
         </Button>
-        <Button variant="secondary" onClick={() => { setView(null); setIsRUTVerified(false); }} className='my-4 btn-lg'>
-          Volver
+        <Button variant="secondary" onClick={() => { setView(null); setIsRUTVerified(null); }} className='my-4 btn-lg'>
+        {t('return')}
         </Button>
       </div>
     </Form>
@@ -338,7 +360,9 @@ function Visit() {
         <Row className="justify-content-md-center">
           <Col lg={6}>
             {message && <Alert variant={messageType}>{message}</Alert>}
-            {view === 'frequent' ? renderFrequentForm() : view === 'building' ? (isRUTVerified ? renderPartialForm() : renderRUTForm()) : renderButtons()}
+            {view === 'frequent' ? renderFrequentForm() : view === 'building' ? (
+              isRUTVerified === null ? renderRUTForm() : isRUTVerified ? renderPartialForm() : renderFullForm()
+            ) : renderButtons()}
           </Col>
         </Row>
       </Container>
