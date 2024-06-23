@@ -37,7 +37,7 @@ function Vehicles() {
         });
         setParking(response.data);
       } catch (error) {
-        setMessage('Error fetching parking data');
+        setMessage(t('errorgeneral'));
         setTimeout(() => setMessage(null), 4000);
       }
     };
@@ -55,7 +55,7 @@ function Vehicles() {
         setMaxHours(userData.hour);
         setNotificationMinutes(userData.alert);
       } catch (error) {
-        setMessage('Error fetching user settings');
+        setMessage(t('errorgeneral'));
         setTimeout(() => setMessage(null), 4000);
       }
     };
@@ -70,7 +70,7 @@ function Vehicles() {
         parking.occupiedSpaces.forEach(space => {
           const currentTime = new Date();
           const parkedTime = new Date(space.parkedAt);
-          const elapsedTime = (currentTime - parkedTime) / 60000; // elapsed time in minutes
+          const elapsedTime = (currentTime - parkedTime) / 60000; 
           const timeRemaining = maxTimeInMinutes - elapsedTime;
 
           if (timeRemaining <= notificationMinutes && timeRemaining > 0 && !showNotification) {
@@ -78,7 +78,7 @@ function Vehicles() {
           }
         });
       }
-    }, 60000); // check every minute
+    }, 60000); 
 
     return () => clearInterval(timer);
   }, [parking, maxHours, notificationMinutes, showNotification]);
@@ -90,7 +90,7 @@ function Vehicles() {
       });
       setDepartments(response.data);
     } catch (error) {
-      setMessage('Error fetching departments');
+      setMessage(t('errorgeneral'));
       setTimeout(() => setMessage(null), 4000);
     }
   };
@@ -133,13 +133,13 @@ function Vehicles() {
       }
     } catch (error) {
       if (error.response && error.response.status === 404) {
-        setMessage(t('RUTnoRegistred'));
+        setMessage(t('notcar'));
         setShowManualForm(true);
         fetchDepartments();
         setName('');
         setDepartment('');
       } else {
-        setMessage('Error registering vehicle');
+        setMessage(t('visiterror'));
       }
       setTimeout(() => setMessage(null), 4000);
     }
@@ -165,7 +165,7 @@ function Vehicles() {
       setDepartment('');
       setShowManualForm(false);
     } catch (error) {
-      setMessage('Error registering vehicle');
+      setMessage('visiterror');
       setTimeout(() => setMessage(null), 4000);
     }
   };
@@ -179,7 +179,7 @@ function Vehicles() {
       );
       setParking(response.data);
     } catch (error) {
-      setMessage('Error removing vehicle');
+      setMessage(t("errorgeneral"));
       setTimeout(() => setMessage(null), 4000);
     }
   };

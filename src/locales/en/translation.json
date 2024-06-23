@@ -50,6 +50,16 @@
     "deliveryRegisteredSuccessfully": "Delivery registered successfully and SMS sent",
     "yourPackageArrived": "Your package has arrived",
     "loading": "Loading...",
-    "errorPrefix": "Error"
+    "errorPrefix": "Error",
+    "notcar":"Unregistered vehicle",
+    "totalSpaces":"Total spaces",
+    "occupiedSpaces":"Occupied Spaces",
+    "timeRemaining":"time Remaining",
+    "available": "Available",
+    "enterLicensePlate": "Enter license plate",
+    "notification": "Notification",
+    "close": "Close",
+    "exit":"Remove occupancy",
+    "enter":"Enter parking"
   }
   

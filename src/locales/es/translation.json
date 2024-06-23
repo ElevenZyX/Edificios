@@ -49,5 +49,17 @@
   "deliveryRegisteredSuccessfully": "Correspondencia registrada exitosamente y SMS enviado",
   "yourPackageArrived": "Su paquete ha llegado",
   "loading": "Cargando...",
-  "errorPrefix": "Error"
+  "errorPrefix": "Error",
+  "notcar":"Vehiculo no registrado",
+  "totalSpaces": "Espacios totales",
+  "occupiedSpaces":"Espacios Ocupados",
+  "licensePlate":"Patente",
+  "timeRemaining":"Tiempo Restante",
+  "available":"Disponible",
+  "enterLicensePlate":"Ingrese placa patente",
+  "notification":"Notificación",
+  "close":"Cerrar",
+  "exit":"Eliminar ocupación",
+  "enter":"Ingresar estacionamiento"
+
 }
