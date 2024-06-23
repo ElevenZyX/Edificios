@@ -7,6 +7,7 @@ import Footer from './Footer';
 import { useAuth } from './AuthContext';
 import logo from '../img/logo.png'; // Importa la imagen del logo
 import './styles.css'; // Importa el archivo CSS
+import LanguageSelector from './LanguageSelector';
 
 function Login() {
   const { t } = useTranslation();
@@ -37,7 +38,10 @@ function Login() {
 
   return (
     <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
-      <header className="header">
+      <div className="d-flex w-100 justify-content-start p-2">
+        <LanguageSelector />
+      </div>
+      <header className="header mt-5">
         <img src={logo} alt="BuildingBuddyy Logo" className="logo" /> {/* Usa la imagen del logo */}
       </header>
       <main className="flex-grow-1 w-100 d-flex flex-column align-items-center justify-content-start">
