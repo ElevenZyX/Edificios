@@ -202,7 +202,7 @@ function Vehicles() {
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <NavBar />
       <Container fluid style={{ flex: "1" }}>
-        <h1 className="my-5 text center">{t('vehicles')}</h1>
+        <h1 className="my-5 text-center">{t('vehicles')}</h1>
         {message && <Alert variant="danger">{message}</Alert>}
         {parking && (
           <>
@@ -237,7 +237,7 @@ function Vehicles() {
             ))}
             <Form className="text-center" onSubmit={handleEnter}>
               <Form.Group controlId="formLicensePlate">
-                <Form.Label>{t('enterLicensePlate')}</Form.Label>
+                <Form.Label className='mt-3 mb-5'>{t('enterLicensePlate')}</Form.Label>
                 <Form.Control
                   type="text"
                   value={licensePlate}
@@ -245,7 +245,7 @@ function Vehicles() {
                 />
               </Form.Group>
               <Form.Group controlId="formSpaceNumber">
-                <Form.Label>{t('selectSpaceNumber')}</Form.Label>
+                <Form.Label className='mt-3 mb-5'>{t('selectSpaceNumber')}</Form.Label>
                 <Form.Control
                   as="select"
                   value={spaceNumber}
@@ -258,7 +258,7 @@ function Vehicles() {
                 </Form.Control>
               </Form.Group>
               {!showManualForm && (
-                <Button className="mt-3" type="submit">{t('enter')}</Button>
+                <Button className="mt-3 w-100 btn-lg-2" type="submit">{t('enter')}</Button>
               )}
             </Form>
             {showManualForm && (
