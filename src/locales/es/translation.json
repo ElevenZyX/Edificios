@@ -67,6 +67,7 @@
   "selectSpaceNumber": "Seleccione el número de espacio de estacionamiento",
   "contactUsNow":"¡Contáctanos!",
   "firstSlideLabel":"Bienvenido a la plataforma de la comunidad",
-  "secondSlideLabel":"Registra y administra correspondencias de manera eficiente",
-  "thirdSlideLabel":"Controla y supervisa las visitas y estacionamientos fácilmente."
+  "secondSlideLabel":"Registra y administra tu edificio de manera eficiente",
+  "thirdSlideLabel":"Controla y supervisa las visitas y estacionamientos fácilmente.",
+  "registerVisitNoFrequent": "Registrar visita no frecuente"
 }

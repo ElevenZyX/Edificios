@@ -188,7 +188,7 @@ function Visit() {
         {t("RegisterFrequent")}
       </Button>
       <Button onClick={() => setView('building')} variant="lightColor" className="m-2 btn-lg">
-        {t('registerVisitBuilding')}
+        {t('registerVisitNoFrequent')}
       </Button>
     </div>
   );

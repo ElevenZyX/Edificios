@@ -65,6 +65,7 @@
   "selectSpaceNumber": "Select the parking space number",
   "contactUsNow":"Contact Us Now!",
   "firstSlideLabel": "Welcome to the community platform",
-  "secondSlideLabel": "Register and manage mail efficiently",
-  "thirdSlideLabel": "Control and monitor visits and parking easily"
+  "secondSlideLabel": "Register and manage your building efficiently",
+  "thirdSlideLabel": "Control and monitor visits and parking easily",
+  "registerVisitNoFrequent": "Register no frequent visit"
 }
