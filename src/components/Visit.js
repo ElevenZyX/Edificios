@@ -5,16 +5,7 @@ import NavBar from './NavBar';
 import Footer from './Footer';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
-
-const validateRut = (rut) => {
-  const rutRegex = /^[0-9]{7,8}-[0-9Kk]{1}$/;
-  return rutRegex.test(rut);
-};
-
-const validateLicensePlate = (plate) => {
-  const licensePlateRegex = /^[A-Za-z0-9]{6}$/;
-  return licensePlateRegex.test(plate);
-};
+import './styles.css';
 
 function Visit() {
   const { t } = useTranslation();
@@ -55,6 +46,16 @@ function Visit() {
 
     fetchDepartments();
   }, [t, user]);
+
+  const validateRut = (rut) => {
+    const rutRegex = /^[0-9]{7,8}-[0-9Kk]{1}$/;
+    return rutRegex.test(rut);
+  };
+
+  const validateLicensePlate = (plate) => {
+    const licensePlateRegex = /^[A-Za-z0-9]{6}$/;
+    return licensePlateRegex.test(plate);
+  };
 
   const handleRUTSubmit = async (e) => {
     e.preventDefault();
@@ -183,15 +184,14 @@ function Visit() {
 
   const renderButtons = () => (
     <div>
-      <Button onClick={() => setView('frequent')} variant="primary" className="m-2">
+      <Button onClick={() => setView('frequent')} variant="lightColor" className="m-2 btn-lg">
         {t("RegisterFrequent")}
       </Button>
-      <Button onClick={() => setView('building')} variant="secondary" className="m-2">
-        Registrar una visita al edificio
+      <Button onClick={() => setView('building')} variant="lightColor" className="m-2 btn-lg">
+        {t('registerVisitBuilding')}
       </Button>
     </div>
   );
-  
 
   const renderRUTForm = () => (
     <Form onSubmit={handleRUTSubmit}>
@@ -206,10 +206,10 @@ function Visit() {
       </Form.Group>
 
       <div className="d-flex justify-content-between">
-        <Button variant="primary" type="submit" className='my-4 btn-lg'>
+        <Button variant="primary" type="submit" className='my-4 btn-lg-2'>
           {t('verifyRUT')}
         </Button>
-        <Button variant="secondary" onClick={() => setView(null)} className='my-4 btn-lg'>
+        <Button variant="secondary" onClick={() => setView(null)} className='my-4 btn-lg-2'>
           {t('return')}
         </Button>
       </div>
@@ -271,153 +271,154 @@ function Visit() {
       </Form.Group>
 
       {hasCar && (
-        <Form.Group controlId="frequentForm.Car">
-          <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('plate')}</Form.Label>
-          <Form.Control
-            type="text"
-            value={licensePlate}
-            onChange={e => setLicensePlate(e.target.value)}
-            style={{ fontSize: '1.2rem' }}
-          />
-        </Form.Group>
-      )}
+       
+       <Form.Group controlId="frequentForm.Car">
+       <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('plate')}</Form.Label>
+       <Form.Control
+         type="text"
+         value={licensePlate}
+         onChange={e => setLicensePlate(e.target.value)}
+         style={{ fontSize: '1.2rem' }}
+       />
+     </Form.Group>
+   )}
 
-      <div className="d-flex justify-content-between">
-        <Button variant="primary" type="submit" className='my-4 btn-lg'>
-          {t('VisitFrequent')}
-        </Button>
-        <Button variant="secondary" onClick={() => setView(null)} className='my-4 btn-lg'>
-          {t('return')}
-        </Button>
-      </div>
-    </Form>
-  );
+   <div className="d-flex justify-content-between">
+     <Button variant="lightColor" type="submit" className='my-4 btn-lg-2'>
+       {t('VisitFrequent')}
+     </Button>
+     <Button variant="secondary" onClick={() => setView(null)} className='my-4 btn-lg-2'>
+       {t('return')}
+     </Button>
+   </div>
+ </Form>
+);
 
-  const renderFullForm = () => (
-    <Form onSubmit={handleSubmit}>
-      <Form.Group controlId="visitasForm.Nombre">
-        <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('name')}</Form.Label>
-        <Form.Control
-          type="text"
-          value={nombre}
-          onChange={e => setNombre(e.target.value)}
-          style={{ fontSize: '1.2rem' }}
-        />
-      </Form.Group>
-      <Form.Group controlId="visitasForm.DepartmentSelect">
-  <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('department')}</Form.Label>
-  <Form.Control as="select" value={selectedDepartment} onChange={e => setSelectedDepartment(e.target.value)} style={{ fontSize: '1.2rem' }}>
-    <option value="">{t('selectDepartment')}</option>
-    {departments.map((dept, index) => (
-      <option key={index} value={dept.Number}>{dept.Number}</option>
-    ))}
-  </Form.Control>
-</Form.Group>
+const renderFullForm = () => (
+ <Form onSubmit={handleSubmit}>
+   <Form.Group controlId="visitasForm.Nombre">
+     <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('name')}</Form.Label>
+     <Form.Control
+       type="text"
+       value={nombre}
+       onChange={e => setNombre(e.target.value)}
+       style={{ fontSize: '1.2rem' }}
+     />
+   </Form.Group>
+   <Form.Group controlId="visitasForm.DepartmentSelect">
+     <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('department')}</Form.Label>
+     <Form.Control as="select" value={selectedDepartment} onChange={e => setSelectedDepartment(e.target.value)} style={{ fontSize: '1.2rem' }}>
+       <option value="">{t('selectDepartment')}</option>
+       {departments.map((dept, index) => (
+         <option key={index} value={dept.Number}>{dept.Number}</option>
+       ))}
+     </Form.Control>
+   </Form.Group>
 
-      <Form.Group controlId="visitasForm.Fecha">
-        <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('date')}</Form.Label>
-        <Form.Control
-          type="date"
-          value={fecha}
-          onChange={e => setFecha(e.target.value)}
-          style={{ fontSize: '1.2rem' }}
-        />
-      </Form.Group>
+   <Form.Group controlId="visitasForm.Fecha">
+     <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('date')}</Form.Label>
+     <Form.Control
+       type="date"
+       value={fecha}
+       onChange={e => setFecha(e.target.value)}
+       style={{ fontSize: '1.2rem' }}
+     />
+   </Form.Group>
 
-      <Form.Group controlId="visitasForm.Hora">
-        <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('time')}</Form.Label>
-        <Form.Control
-          type="time"
-          value={hora}
-          onChange={e => setHora(e.target.value)}
-          style={{ fontSize: '1.2rem' }}
-        />
-      </Form.Group>
+   <Form.Group controlId="visitasForm.Hora">
+     <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('time')}</Form.Label>
+     <Form.Control
+       type="time"
+       value={hora}
+       onChange={e => setHora(e.target.value)}
+       style={{ fontSize: '1.2rem' }}
+     />
+   </Form.Group>
 
-      <div className="d-flex justify-content-between">
-        <Button variant="primary" type="submit" className='my-4 btn-lg'>
-          {t('registerVisit')}
-        </Button>
-        <Button variant="secondary" onClick={() => { setView(null); setIsRUTVerified(null); }} className='my-4 btn-lg'>
-          {t('return')}
-        </Button>
-      </div>
-    </Form>
-  );
+   <div className="d-flex justify-content-between">
+     <Button variant="lightColor" type="submit" className='my-4 btn-lg-2'>
+       {t('registerVisit')}
+     </Button>
+     <Button variant="secondary" onClick={() => { setView(null); setIsRUTVerified(null); }} className='my-4 btn-lg-2'>
+       {t('return')}
+     </Button>
+   </div>
+ </Form>
+);
 
-  const renderPartialForm = () => (
-    <Form onSubmit={handleSubmit}>
-      <Form.Group controlId="visitasForm.Nombre">
-        <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('name')}</Form.Label>
-        <Form.Control
-          type="text"
-          value={nombre}
-          readOnly
-          style={{ fontSize: '1.2rem' }}
-        />
-      </Form.Group>
+const renderPartialForm = () => (
+ <Form onSubmit={handleSubmit}>
+   <Form.Group controlId="visitasForm.Nombre">
+     <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('name')}</Form.Label>
+     <Form.Control
+       type="text"
+       value={nombre}
+       readOnly
+       style={{ fontSize: '1.2rem' }}
+     />
+   </Form.Group>
 
-      <Form.Group controlId="visitasForm.DepartmentSelect">
-        <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('department')}</Form.Label>
-        <Form.Control
-          type="text"
-          value={selectedDepartment}
-          readOnly
-          style={{ fontSize: '1.2rem' }}
-        />
-      </Form.Group>
+   <Form.Group controlId="visitasForm.DepartmentSelect">
+     <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('department')}</Form.Label>
+     <Form.Control
+       type="text"
+       value={selectedDepartment}
+       readOnly
+       style={{ fontSize: '1.2rem' }}
+     />
+   </Form.Group>
 
-      <Form.Group controlId="visitasForm.Fecha">
-        <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('date')}</Form.Label>
-        <Form.Control
-          type="date"
-          value={fecha}
-          onChange={e => setFecha(e.target.value)}
-          style={{ fontSize: '1.2rem' }}
-        />
-      </Form.Group>
+   <Form.Group controlId="visitasForm.Fecha">
+     <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('date')}</Form.Label>
+     <Form.Control
+       type="date"
+       value={fecha}
+       onChange={e => setFecha(e.target.value)}
+       style={{ fontSize: '1.2rem' }}
+     />
+   </Form.Group>
 
-      <Form.Group controlId="visitasForm.Hora">
-        <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('time')}</Form.Label>
-        <Form.Control
-          type="time"
-          value={hora}
-          onChange={e => setHora(e.target.value)}
-          style={{ fontSize: '1.2rem' }}
-        />
-      </Form.Group>
+   <Form.Group controlId="visitasForm.Hora">
+     <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('time')}</Form.Label>
+     <Form.Control
+       type="time"
+       value={hora}
+       onChange={e => setHora(e.target.value)}
+       style={{ fontSize: '1.2rem' }}
+     />
+   </Form.Group>
 
-      <div className="d-flex justify-content-between">
-        <Button variant="primary" type="submit" className='my-4 btn-lg'>
-          {t('registerVisit')}
-        </Button>
-        <Button variant="secondary" onClick={() => { setView(null); setIsRUTVerified(null); }} className='my-4 btn-lg'>
-          {t('return')}
-        </Button>
-      </div>
-    </Form>
-  );
+   <div className="d-flex justify-content-between">
+     <Button variant="lightColor" type="submit" className='my-4 btn-lg-2'>
+       {t('registerVisit')}
+     </Button>
+     <Button variant="secondary" onClick={() => { setView(null); setIsRUTVerified(null); }} className='my-4 btn-lg-2'>
+       {t('return')}
+     </Button>
+   </div>
+ </Form>
+);
 
-  if (!isAuthenticated) {
-    return <div>{t('loading')}</div>;
-  }
+if (!isAuthenticated) {
+ return <div>{t('loading')}</div>;
+}
 
-  return (
-    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      <NavBar />
-      <Container>
-        <Row className="justify-content-md-center">
-          <Col lg={6}>
-            {message && <Alert variant={messageType}>{message}</Alert>}
-            {view === 'frequent' ? renderFrequentForm() : view === 'building' ? (
-              isRUTVerified === null ? renderRUTForm() : isRUTVerified ? renderPartialForm() : renderFullForm()
-            ) : renderButtons()}
-          </Col>
-        </Row>
-      </Container>
-      <Footer />
-    </div>
-  );
+return (
+ <div className="min-vh-100" >
+   <NavBar />
+   <Container>
+     <Row className="justify-content-md-center">
+       <Col lg={6}>
+         {message && <Alert variant={messageType}>{message}</Alert>}
+         {view === 'frequent' ? renderFrequentForm() : view === 'building' ? (
+           isRUTVerified === null ? renderRUTForm() : isRUTVerified ? renderPartialForm() : renderFullForm()
+         ) : renderButtons()}
+       </Col>
+     </Row>
+   </Container>
+   <Footer />
+ </div>
+);
 }
 
 export default Visit;
