@@ -9,22 +9,30 @@ mongoose.connect("mongodb+srv://Programacion:enter@proyect.t0wuu2a.mongodb.net/P
         console.log('failed');
     });
 
-const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: true
-  },
-  password: {
-    type: String,
-    required: true
-  },
-  name: {
-    type: String,
-    required: true
-  }
-});
-
-const User = mongoose.model("users", userSchema);
+    const userSchema = new mongoose.Schema({
+      username: {
+        type: String,
+        required: true
+      },
+      password: {
+        type: String,
+        required: true
+      },
+      name: {
+        type: String,
+        required: true
+      },
+      hour: {
+        type: Number,
+        required: true
+      },
+      alert: {
+        type: Number,
+        required: true
+      }
+    });
+    
+    const User = mongoose.model("users", userSchema);
 
 const departmentSchema = new mongoose.Schema({
   Number: {
