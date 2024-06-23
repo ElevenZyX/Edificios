@@ -9,49 +9,52 @@ import Vehicles from './components/Vehicles';
 import LanguageSelector from './components/LanguageSelector';
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './components/AuthContext';
+import './App.css'; // Importa tu archivo de estilos CSS
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <Container>
+        <div className="App">
           <LanguageSelector />
-          <Routes>
-            <Route path="/" element={<Login />} />
-            <Route
-              path="/home"
-              element={
-                <PrivateRoute>
-                  <Home />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/visit" 
-              element={
-                <PrivateRoute>
-                  <Visit />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/delivery" 
-              element={
-                <PrivateRoute>
-                  <Delivery />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/vehicles" 
-              element={
-                <PrivateRoute>
-                  <Vehicles />
-                </PrivateRoute>
-              }
-            />
-          </Routes>
-        </Container>
+          <Container fluid className="main-container">
+            <Routes>
+              <Route path="/" element={<Login />} />
+              <Route
+                path="/home"
+                element={
+                  <PrivateRoute>
+                    <Home />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/visit" 
+                element={
+                  <PrivateRoute>
+                    <Visit />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/delivery" 
+                element={
+                  <PrivateRoute>
+                    <Delivery />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/vehicles" 
+                element={
+                  <PrivateRoute>
+                    <Vehicles />
+                  </PrivateRoute>
+                }
+              />
+            </Routes>
+          </Container>
+        </div>
       </Router>
     </AuthProvider>
   );

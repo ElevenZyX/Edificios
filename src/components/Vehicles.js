@@ -5,6 +5,7 @@ import Footer from './Footer';
 import { Container, Row, Col, Button, Form, Alert, Modal } from 'react-bootstrap';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
+import "./styles.css"
 
 const validateLicensePlate = (plate) => {
   const licensePlateRegex = /^[A-Za-z0-9]{6}$/;
@@ -201,7 +202,7 @@ function Vehicles() {
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <NavBar />
       <Container fluid style={{ flex: "1" }}>
-        <h1 className="mt-5">{t('vehicles')}</h1>
+        <h1 className="my-4 text-center">{t('vehicles')}</h1>
         {message && <Alert variant="danger">{message}</Alert>}
         <Form className="text-center mb-4">
           <Form.Group controlId="formMaxTimeHours">
@@ -234,29 +235,30 @@ function Vehicles() {
         </Form>
         {parking && (
           <>
-            <h2>{t('totalSpaces')}: {parking.spaces}</h2>
-            <h3>{t('occupiedSpaces')}: {parking.occupiedSpaces.length}</h3>
+           <h2 className="mb-3">{t('totalSpaces')}: {parking.spaces}</h2>
+            <h2 className="mb-4">{t('occupiedSpaces')}: {parking.occupiedSpaces.length}</h2>
             <Row>
-              {Array.from({ length: parking.spaces }, (_, i) => (
-                <Col key={i} className="mb-3">
-                  <div className="p-3 border bg-light">
-                    {parking.occupiedSpaces[i] ? (
-                      <>
-                        <p>{t('licensePlate')}: {parking.occupiedSpaces[i].licensePlate}</p>
-                        <p>{t('name')}: {parking.occupiedSpaces[i].nombre}</p>
-                        <p>{t('department')}: {parking.occupiedSpaces[i].department}</p>
-                        <p>{t('timeRemaining')}: {Math.max(0, (convertToMinutes(maxHours, maxMinutes) - ((new Date() - new Date(parking.occupiedSpaces[i].parkedAt)) / 60000)).toFixed(2))} min</p>
-                        <Button variant="danger" onClick={() => handleExit(parking.occupiedSpaces[i].licensePlate)}>
-                          {t('exit')}
-                        </Button>
-                      </>
-                    ) : (
-                      <p>{t('available')}</p>
-                    )}
-                  </div>
-                </Col>
-              ))}
-            </Row>
+  {Array.from({ length: parking.spaces }, (_, i) => (
+    <Col key={i} className="mb-3">
+      <div className="p-3 border bg-light text-center">
+        {parking.occupiedSpaces[i] ? (
+          <>
+            <p>{t('licensePlate')}: {parking.occupiedSpaces[i].licensePlate}</p>
+            <p>{t('name')}: {parking.occupiedSpaces[i].nombre}</p>
+            <p>{t('department')}: {parking.occupiedSpaces[i].department}</p>
+            <p>{t('timeRemaining')}: {Math.max(0, (convertToMinutes(maxHours, maxMinutes) - ((new Date() - new Date(parking.occupiedSpaces[i].parkedAt)) / 60000)).toFixed(2))} min</p>
+            <Button variant="danger" onClick={() => handleExit(parking.occupiedSpaces[i].licensePlate)}>
+              {t('exit')}
+            </Button>
+          </>
+        ) : (
+          <p>{t('available')}</p>
+        )}
+      </div>
+    </Col>
+  ))}
+</Row>
+
             <Form className="text-center" onSubmit={handleEnter}>
               <Form.Group controlId="formLicensePlate">
                 <Form.Label>{t('enterLicensePlate')}</Form.Label>
@@ -267,7 +269,7 @@ function Vehicles() {
                 />
               </Form.Group>
               {!showManualForm && (
-                <Button className="mt-3" type="submit">{t('enter')}</Button>
+                <Button className="mt-3 w-100 btn-lg-2" type="submit">{t('enter')}</Button>
               )}
             </Form>
             {showManualForm && (

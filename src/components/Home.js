@@ -1,9 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Container, Carousel, Button } from 'react-bootstrap';
-import NavBar from './NavBar'; // Importa el componente Navbar
-import Footer from './Footer'; // Importa el componente Footer
-import building1 from '../img/building1.jpg'; // Importa tus imágenes
+import NavBar from './NavBar';
+import Footer from './Footer';
+import building1 from '../img/building1.jpg';
 import building2 from '../img/building2.jpeg';
 import building3 from '../img/building3.jpg';
 
@@ -33,10 +33,16 @@ function Home() {
     textAlign: 'center',
   };
 
+  const pageStyle = {
+    minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+  };
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      <NavBar /> {/* Usa el componente Navbar */}
-      <Container fluid style={{ flex: "1", padding: "0" }}>
+    <div style={pageStyle}>
+      <NavBar />
+      <Container fluid style={{ flex: '1', padding: '0' }}>
         <Carousel>
           <Carousel.Item>
             <img
@@ -72,11 +78,11 @@ function Home() {
             </Carousel.Caption>
           </Carousel.Item>
         </Carousel>
-        <Button 
+        <Button
           style={buttonStyle}
           href="https://wa.link/qaz3jv"
-          target="_blank" // Esto abrirá el enlace en una nueva pestaña
-          rel="noopener noreferrer" // Añade seguridad al enlace
+          target="_blank"
+          rel="noopener noreferrer"
         >
           {t('contactUsNow')}
         </Button>

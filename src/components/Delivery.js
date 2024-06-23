@@ -168,7 +168,7 @@ function Delivery() {
                 />
               </Form.Group>
 
-              <Button variant="primary" type="submit" className='my-4 btn-lg'>
+              <Button variant="primary" type="submit" className='my-4 btn-lg-2 w-100'>
                 {t('registerDelivery')}
               </Button>
             </Form>
