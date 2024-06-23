@@ -333,15 +333,7 @@ app.get('/api/parking/:name', authenticateToken, async (req, res) => {
       const maxHours = user.hour;
       const notificationMinutes = user.alert;
   
-      parking.occupiedSpaces.push({
-        licensePlate,
-        nombre,
-        department,
-        parkedAt: new Date(),
-        spaceNumber,
-        maxHours,
-        notificationMinutes
-      });
+      parking.occupiedSpaces.push({ licensePlate, nombre, department, spaceNumber, parkedAt: new Date(), maxHours, notificationMinutes });
       parking.availableSpaces = parking.availableSpaces.filter(space => space !== spaceNumber);
       await parking.save();
       console.log(`Vehicle registered: ${licensePlate}`);
@@ -363,11 +355,10 @@ app.get('/api/parking/:name', authenticateToken, async (req, res) => {
         return res.status(404).json({ message: 'Parking not found' });
       }
   
-      const spaceToRemove = parking.occupiedSpaces.find(space => space.licensePlate === licensePlate);
-      parking.occupiedSpaces = parking.occupiedSpaces.filter(space => space.licensePlate !== licensePlate);
-      if (spaceToRemove) {
-        parking.availableSpaces.push(spaceToRemove.spaceNumber);
-      }
+      const spaceIndex = parking.occupiedSpaces.findIndex(space => space.licensePlate === licensePlate);
+      const removedSpace = parking.occupiedSpaces[spaceIndex];
+      parking.occupiedSpaces.splice(spaceIndex, 1);
+      parking.availableSpaces.push(removedSpace.spaceNumber);
       await parking.save();
       console.log(`Vehicle removed: ${licensePlate}`);
       res.json(parking);
@@ -376,8 +367,6 @@ app.get('/api/parking/:name', authenticateToken, async (req, res) => {
       res.status(500).json({ message: 'Error removing vehicle' });
     }
   });
-  
-
 app.listen(8000, () => {
     console.log("Server running on port 8000");
 });

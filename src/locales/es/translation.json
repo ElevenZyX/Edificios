@@ -63,6 +63,8 @@
   "enter":"Ingresar estacionamiento",
   "timeAlmostUp": "La patente",
   "in": "le faltan",
-  "minutes": "minutos para que se cumpla el tiempo"
+  "minutes": "minutos para que se cumpla el tiempo",
+  "spaceNumber":"Número de estacionamiento",
+  "selectSpaceNumber":"Selecciona el número del estacionamiento"
 
 }

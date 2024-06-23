@@ -18,14 +18,13 @@ function Vehicles() {
   const [licensePlate, setLicensePlate] = useState('');
   const [name, setName] = useState('');
   const [department, setDepartment] = useState('');
-  const [departments, setDepartments] = useState([]);
   const [spaceNumber, setSpaceNumber] = useState('');
+  const [departments, setDepartments] = useState([]);
   const [message, setMessage] = useState(null);
   const [showManualForm, setShowManualForm] = useState(false);
-  const [maxHours, setMaxHours] = useState(1); // default max time in hours
-  const [notificationMinutes, setNotificationMinutes] = useState(15); // default notification time in minutes
+  const [maxHours, setMaxHours] = useState(1); 
+  const [notificationMinutes, setNotificationMinutes] = useState(15); 
   const [showNotification, setShowNotification] = useState(false);
-  const [notificationDetails, setNotificationDetails] = useState({ licensePlate: '', timeRemaining: 0 });
 
   const convertToMinutes = (hours) => {
     return hours * 60;
@@ -75,11 +74,7 @@ function Vehicles() {
           const elapsedTime = (currentTime - parkedTime) / 60000; 
           const timeRemaining = maxTimeInMinutes - elapsedTime;
 
-          if (timeRemaining <= notificationMinutes && timeRemaining > 0) {
-            setNotificationDetails({
-              licensePlate: space.licensePlate,
-              timeRemaining: Math.ceil(timeRemaining)
-            });
+          if (timeRemaining <= notificationMinutes && timeRemaining > 0 && !showNotification) {
             setShowNotification(true);
           }
         });
@@ -87,7 +82,7 @@ function Vehicles() {
     }, 60000); 
 
     return () => clearInterval(timer);
-  }, [parking, maxHours, notificationMinutes]);
+  }, [parking, maxHours, notificationMinutes, showNotification]);
 
   const fetchDepartments = async () => {
     try {
@@ -102,8 +97,8 @@ function Vehicles() {
   };
 
   const handleEnter = async (e) => {
-    e.preventDefault();  
-    if (!validateLicensePlate(licensePlate) || !spaceNumber) {
+    e.preventDefault();
+    if (!validateLicensePlate(licensePlate)) {
       setMessage(t('platerror'));
       setTimeout(() => setMessage(null), 4000);
       return;
@@ -118,7 +113,7 @@ function Vehicles() {
 
       if (response.data && response.data.name.toLowerCase() === user.name.toLowerCase()) {
         const frequentUser = response.data;
-        const { nombre, Number: department } = frequentUser;  
+        const { nombre, Number: department } = frequentUser; 
 
         const postResponse = await axios.post(
           `http://localhost:8000/api/parking/${user.name}/enter`,
@@ -145,6 +140,7 @@ function Vehicles() {
         fetchDepartments();
         setName('');
         setDepartment('');
+        setSpaceNumber('');
       } else {
         setMessage(t('visiterror'));
       }
@@ -154,7 +150,7 @@ function Vehicles() {
 
   const handleManualSubmit = async (e) => {
     e.preventDefault();
-    if (!validateLicensePlate(licensePlate) || !spaceNumber) {
+    if (!validateLicensePlate(licensePlate)) {
       setMessage(t('platerror'));
       setTimeout(() => setMessage(null), 4000);
       return;
@@ -203,29 +199,31 @@ function Vehicles() {
             <h2>{t('totalSpaces')}: {parking.spaces}</h2>
             <h3>{t('occupiedSpaces')}: {parking.occupiedSpaces.length}</h3>
             <Row>
-              {Array.from({ length: parking.spaces }, (_, i) => (
+              {parking.availableSpaces.filter(space => !parking.occupiedSpaces.find(s => s.spaceNumber === space)).map((space, i) => (
                 <Col key={i} className="mb-3">
                   <div className="p-3 border bg-light">
-                    {parking.occupiedSpaces[i] ? (
-                      <>
-                        <p>{t('licensePlate')}: {parking.occupiedSpaces[i].licensePlate}</p>
-                        <p>{t('name')}: {parking.occupiedSpaces[i].nombre}</p>
-                        <p>{t('department')}: {parking.occupiedSpaces[i].department}</p>
-                        <p>{t('timeRemaining')}: {Math.max(0, (convertToMinutes(maxHours) - ((new Date() - new Date(parking.occupiedSpaces[i].parkedAt)) / 60000)).toFixed(2))} min</p>
-                        <Button variant="danger" onClick={() => handleExit(parking.occupiedSpaces[i].licensePlate)}>
-                          {t('exit')}
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <p>{t('available')}</p>
-                        <p>{parking.availableSpaces[i]}</p>
-                      </>
-                    )}
+                    <p>{t('available')}</p>
+                    <p>{space}</p>
                   </div>
                 </Col>
               ))}
             </Row>
+            {parking.occupiedSpaces.map((space, i) => (
+              <Row key={i}>
+                <Col className="mb-3">
+                  <div className="p-3 border bg-light">
+                    <p>{t('licensePlate')}: {space.licensePlate}</p>
+                    <p>{t('name')}: {space.nombre}</p>
+                    <p>{t('department')}: {space.department}</p>
+                    <p>{t('spaceNumber')}: {space.spaceNumber}</p>
+                    <p>{t('timeRemaining')}: {Math.max(0, (convertToMinutes(maxHours) - ((new Date() - new Date(space.parkedAt)) / 60000)).toFixed(2))} min</p>
+                    <Button variant="danger" onClick={() => handleExit(space.licensePlate)}>
+                      {t('exit')}
+                    </Button>
+                  </div>
+                </Col>
+              </Row>
+            ))}
             <Form className="text-center" onSubmit={handleEnter}>
               <Form.Group controlId="formLicensePlate">
                 <Form.Label>{t('enterLicensePlate')}</Form.Label>
@@ -236,14 +234,14 @@ function Vehicles() {
                 />
               </Form.Group>
               <Form.Group controlId="formSpaceNumber">
-                <Form.Label>{t('spaceNumber')}</Form.Label>
+                <Form.Label>{t('selectSpaceNumber')}</Form.Label>
                 <Form.Control
                   as="select"
                   value={spaceNumber}
                   onChange={(e) => setSpaceNumber(e.target.value)}
                 >
                   <option value="">{t('selectSpaceNumber')}</option>
-                  {parking.availableSpaces.map((space, index) => (
+                  {parking.availableSpaces.filter(space => !parking.occupiedSpaces.find(s => s.spaceNumber === space)).map((space, index) => (
                     <option key={index} value={space}>{space}</option>
                   ))}
                 </Form.Control>
@@ -275,6 +273,19 @@ function Vehicles() {
                     ))}
                   </Form.Control>
                 </Form.Group>
+                <Form.Group controlId="formSpaceNumber">
+                  <Form.Label>{t('selectSpaceNumber')}</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={spaceNumber}
+                    onChange={(e) => setSpaceNumber(e.target.value)}
+                  >
+                    <option value="">{t('selectSpaceNumber')}</option>
+                    {parking.availableSpaces.filter(space => !parking.occupiedSpaces.find(s => s.spaceNumber === space)).map((space, index) => (
+                      <option key={index} value={space}>{space}</option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
                 <Button type="submit" className="mt-3">{t('enter')}</Button>
               </Form>
             )}
@@ -286,9 +297,7 @@ function Vehicles() {
         <Modal.Header closeButton>
           <Modal.Title>{t('notification')}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          {t('timeAlmostUp')} {notificationDetails.licensePlate} {t('in')} {notificationDetails.timeRemaining} {t('minutes')}
-        </Modal.Body>
+        <Modal.Body>{t('timeAlmostUp')}</Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={() => setShowNotification(false)}>
             {t('close')}

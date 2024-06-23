@@ -63,6 +63,8 @@
     "enter":"Enter parking",
     "timeAlmostUp": "The license plate",
     "in": "has",
-    "minutes": "minutes left before the time is up"
+    "minutes": "minutes left before the time is up",
+    "spaceNumber":"Parking space number",
+    "selectSpaceNumber":"Select the parking space number"
   }
   
