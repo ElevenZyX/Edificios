@@ -25,7 +25,7 @@ function Vehicles() {
   const [maxHours, setMaxHours] = useState(1); 
   const [notificationMinutes, setNotificationMinutes] = useState(15); 
   const [showNotification, setShowNotification] = useState(false);
-  const [notificationDetails, setNotificationDetails] = useState({});
+  const [notificationDetails, setNotificationDetails] = useState({ licensePlate: '', timeRemaining: 0 });
 
   const convertToMinutes = (hours) => {
     return hours * 60;
@@ -76,10 +76,7 @@ function Vehicles() {
           const timeRemaining = maxTimeInMinutes - elapsedTime;
 
           if (timeRemaining <= notificationMinutes && timeRemaining > 0 && !showNotification) {
-            setNotificationDetails({
-              licensePlate: space.licensePlate,
-              timeRemaining: notificationMinutes
-            });
+            setNotificationDetails({ licensePlate: space.licensePlate, timeRemaining: timeRemaining.toFixed(2) });
             setShowNotification(true);
           }
         });
@@ -193,6 +190,14 @@ function Vehicles() {
     }
   };
 
+  const sortSpaces = (spaces) => {
+    return spaces.sort((a, b) => {
+      const numA = parseInt(a.slice(1), 10);
+      const numB = parseInt(b.slice(1), 10);
+      return numA - numB;
+    });
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <NavBar />
@@ -204,16 +209,14 @@ function Vehicles() {
             <h2>{t('totalSpaces')}: {parking.spaces}</h2>
             <h3>{t('occupiedSpaces')}: {parking.occupiedSpaces.length}</h3>
             <Row>
-              {parking.availableSpaces.filter(space => !parking.occupiedSpaces.find(s => s.spaceNumber === space))
-                .sort((a, b) => a.localeCompare(b))
-                .map((space, i) => (
-                  <Col key={i} className="mb-3">
-                    <div className="p-3 border bg-light">
-                      <p>{t('available')}</p>
-                      <p>{space}</p>
-                    </div>
-                  </Col>
-                ))}
+              {sortSpaces(parking.availableSpaces.filter(space => !parking.occupiedSpaces.find(s => s.spaceNumber === space))).map((space, i) => (
+                <Col key={i} className="mb-3">
+                  <div className="p-3 border bg-light">
+                    <p>{t('available')}</p>
+                    <p>{space}</p>
+                  </div>
+                </Col>
+              ))}
             </Row>
             {parking.occupiedSpaces.map((space, i) => (
               <Row key={i}>
@@ -240,23 +243,19 @@ function Vehicles() {
                   onChange={(e) => setLicensePlate(e.target.value)}
                 />
               </Form.Group>
-              {!showManualForm && (
-                <Form.Group controlId="formSpaceNumber">
-                  <Form.Label>{t('selectSpaceNumber')}</Form.Label>
-                  <Form.Control
-                    as="select"
-                    value={spaceNumber}
-                    onChange={(e) => setSpaceNumber(e.target.value)}
-                  >
-                    <option value="">{t('selectSpaceNumber')}</option>
-                    {parking.availableSpaces.filter(space => !parking.occupiedSpaces.find(s => s.spaceNumber === space))
-                      .sort((a, b) => a.localeCompare(b))
-                      .map((space, index) => (
-                        <option key={index} value={space}>{space}</option>
-                      ))}
-                  </Form.Control>
-                </Form.Group>
-              )}
+              <Form.Group controlId="formSpaceNumber">
+                <Form.Label>{t('selectSpaceNumber')}</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={spaceNumber}
+                  onChange={(e) => setSpaceNumber(e.target.value)}
+                >
+                  <option value="">{t('selectSpaceNumber')}</option>
+                  {sortSpaces(parking.availableSpaces.filter(space => !parking.occupiedSpaces.find(s => s.spaceNumber === space))).map((space, index) => (
+                    <option key={index} value={space}>{space}</option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
               {!showManualForm && (
                 <Button className="mt-3" type="submit">{t('enter')}</Button>
               )}
@@ -284,7 +283,7 @@ function Vehicles() {
                     ))}
                   </Form.Control>
                 </Form.Group>
-                <Form.Group controlId="formSpaceNumberManual">
+                <Form.Group controlId="formSpaceNumber">
                   <Form.Label>{t('selectSpaceNumber')}</Form.Label>
                   <Form.Control
                     as="select"
@@ -292,11 +291,9 @@ function Vehicles() {
                     onChange={(e) => setSpaceNumber(e.target.value)}
                   >
                     <option value="">{t('selectSpaceNumber')}</option>
-                    {parking.availableSpaces.filter(space => !parking.occupiedSpaces.find(s => s.spaceNumber === space))
-                      .sort((a, b) => a.localeCompare(b))
-                      .map((space, index) => (
-                        <option key={index} value={space}>{space}</option>
-                      ))}
+                    {sortSpaces(parking.availableSpaces.filter(space => !parking.occupiedSpaces.find(s => s.spaceNumber === space))).map((space, index) => (
+                      <option key={index} value={space}>{space}</option>
+                    ))}
                   </Form.Control>
                 </Form.Group>
                 <Button type="submit" className="mt-3">{t('enter')}</Button>
@@ -310,9 +307,7 @@ function Vehicles() {
         <Modal.Header closeButton>
           <Modal.Title>{t('notification')}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          {t('timeAlmostUp')} {notificationDetails.licensePlate} {t('in')} {notificationDetails.timeRemaining} {t('minutes')}
-        </Modal.Body>
+        <Modal.Body>{`${t('timeAlmostUp')} ${notificationDetails.licensePlate} ${t('in')} ${notificationDetails.timeRemaining} ${t('minutes')}`}</Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={() => setShowNotification(false)}>
             {t('close')}
