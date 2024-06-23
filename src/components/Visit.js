@@ -11,6 +11,11 @@ const validateRut = (rut) => {
   return rutRegex.test(rut);
 };
 
+const validateLicensePlate = (plate) => {
+  const licensePlateRegex = /^[A-Za-z0-9]{6}$/;
+  return licensePlateRegex.test(plate);
+};
+
 function Visit() {
   const { t } = useTranslation();
   const { user, isAuthenticated } = useAuth();
@@ -24,6 +29,8 @@ function Visit() {
   const [messageType, setMessageType] = useState('');
   const [view, setView] = useState(null);
   const [isRUTVerified, setIsRUTVerified] = useState(null);
+  const [hasCar, setHasCar] = useState(false);
+  const [licensePlate, setLicensePlate] = useState('');
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -101,12 +108,19 @@ function Visit() {
       hideMessageAfterTimeout();
       return;
     }
+    if (hasCar && !validateLicensePlate(licensePlate)) {
+      setMessage(t('platerror'));
+      setMessageType('danger');
+      hideMessageAfterTimeout();
+      return;
+    }
     try {
       const frequentVisit = {
         Number: selectedDepartment,
         nombre,
         rut,
-        name: user.name
+        name: user.name,
+        car: hasCar ? licensePlate : 'N/A'
       };
       const token = localStorage.getItem('token');
       const response = await axios.post('http://localhost:8000/api/frequent', frequentVisit, {
@@ -119,6 +133,8 @@ function Visit() {
       setSelectedDepartment('');
       setNombre('');
       setRut('');
+      setHasCar(false);
+      setLicensePlate('');
     } catch (error) {
       setMessage(t('visiterror'));
       setMessageType('danger');
@@ -178,27 +194,26 @@ function Visit() {
   
 
   const renderRUTForm = () => (
-  <Form onSubmit={handleRUTSubmit}>
-    <Form.Group controlId="rutForm.Rut">
-      <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('rut')}</Form.Label>
-      <Form.Control
-      type="text"
-      value={rut}
-      onChange={e => setRut(e.target.value)}
-      style={{ fontSize: '1.2rem' }}
-    />
-    </Form.Group>
+    <Form onSubmit={handleRUTSubmit}>
+      <Form.Group controlId="rutForm.Rut">
+        <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('rut')}</Form.Label>
+        <Form.Control
+          type="text"
+          value={rut}
+          onChange={e => setRut(e.target.value)}
+          style={{ fontSize: '1.2rem' }}
+        />
+      </Form.Group>
 
-  <div className="d-flex justify-content-between">
-    <Button variant="primary" type="submit" className='my-4 btn-lg'>
-      {t('verifyRUT')}
-    </Button>
-    <Button variant="secondary" onClick={() => setView(null)} className='my-4 btn-lg'>
-      {t('return')}
-    </Button>
-  </div>
-</Form>
-
+      <div className="d-flex justify-content-between">
+        <Button variant="primary" type="submit" className='my-4 btn-lg'>
+          {t('verifyRUT')}
+        </Button>
+        <Button variant="secondary" onClick={() => setView(null)} className='my-4 btn-lg'>
+          {t('return')}
+        </Button>
+      </div>
+    </Form>
   );
 
   const renderFrequentForm = () => (
@@ -233,12 +248,46 @@ function Visit() {
         />
       </Form.Group>
 
+      <Form.Group controlId="frequentForm.HasCar">
+        <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('car')}</Form.Label>
+        <div>
+          <Form.Check
+            type="radio"
+            name="hasCar"
+            checked={hasCar}
+            onChange={() => setHasCar(true)}
+            style={{ fontSize: '1.2rem' }}
+            label={t('Yes')}
+          />
+          <Form.Check
+            type="radio"
+            name="hasCar"
+            checked={!hasCar}
+            onChange={() => setHasCar(false)}
+            style={{ fontSize: '1.2rem' }}
+            label={t('No')}
+          />
+        </div>
+      </Form.Group>
+
+      {hasCar && (
+        <Form.Group controlId="frequentForm.Car">
+          <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('plate')}</Form.Label>
+          <Form.Control
+            type="text"
+            value={licensePlate}
+            onChange={e => setLicensePlate(e.target.value)}
+            style={{ fontSize: '1.2rem' }}
+          />
+        </Form.Group>
+      )}
+
       <div className="d-flex justify-content-between">
         <Button variant="primary" type="submit" className='my-4 btn-lg'>
-          Registrar Visita Frecuente
+          {t('VisitFrequent')}
         </Button>
         <Button variant="secondary" onClick={() => setView(null)} className='my-4 btn-lg'>
-        {t('return')}
+          {t('return')}
         </Button>
       </div>
     </Form>
@@ -290,7 +339,7 @@ function Visit() {
           {t('registerVisit')}
         </Button>
         <Button variant="secondary" onClick={() => { setView(null); setIsRUTVerified(null); }} className='my-4 btn-lg'>
-        {t('return')}
+          {t('return')}
         </Button>
       </div>
     </Form>
@@ -343,7 +392,7 @@ function Visit() {
           {t('registerVisit')}
         </Button>
         <Button variant="secondary" onClick={() => { setView(null); setIsRUTVerified(null); }} className='my-4 btn-lg'>
-        {t('return')}
+          {t('return')}
         </Button>
       </div>
     </Form>

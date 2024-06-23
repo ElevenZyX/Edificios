@@ -28,6 +28,19 @@
     "ruterror": "Invalid RUT, use the format xxxxxxxx-x",
     "visitpass": "Frequent visit successfully registered",
     "visiterror": "Error registering // Incomplete data",
-    "RegisterFrequent": "Register a frequent visit"
+    "RegisterFrequent": "Register a frequent visit",
+    "RUTnoRegistred":"RUT not registered, please enter all the data.",
+    "ErrorRUT":"RUT error, contact the administrator",
+    "visitpass1":"Visit registered successfully",
+    "errorgeneral":"Error, contact the administrator",
+    "VisitButton":"Register a visit to the building",
+    "verifyRUT":"Verify RUT",
+    "return":"Return",
+    "VisitFrequent":"Register Frequent Visit",
+    "platerror": "Invalid license plate. Must be exactly 6 characters",
+    "Yes":"Yes",
+    "No":"No",
+    "car":"Do you have a car?",
+    "plate":"Car License Plate"
   }
   

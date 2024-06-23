@@ -82,7 +82,7 @@ function Home() {
         </Button>
         {/* Añade más contenido aquí */}
       </Container>
-      <Footer /> {/* Usa el componente Footer */}
+      <Footer />
     </div>
   );
 }

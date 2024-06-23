@@ -1,3 +1,4 @@
+// mongo.js
 const mongoose = require("mongoose");
 
 mongoose.connect("mongodb+srv://Programacion:enter@proyect.t0wuu2a.mongodb.net/Proyect?retryWrites=true&w=majority")
@@ -8,7 +9,7 @@ mongoose.connect("mongodb+srv://Programacion:enter@proyect.t0wuu2a.mongodb.net/P
         console.log('failed');
     });
 
-const newSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true
@@ -22,9 +23,9 @@ const newSchema = new mongoose.Schema({
     required: true
   }
 });
-    
-const collection = mongoose.model("users", newSchema);
-    
+
+const User = mongoose.model("users", userSchema);
+
 const departmentSchema = new mongoose.Schema({
   Number: {
     type: String,
@@ -35,9 +36,9 @@ const departmentSchema = new mongoose.Schema({
     required: true
   }
 });
-    
+
 const Department = mongoose.model('departments', departmentSchema);
-    
+
 const visitSchema = new mongoose.Schema({
   departamento: {
     type: String,
@@ -55,7 +56,7 @@ const visitSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  name: { // Añadir este campo
+  name: {
     type: String,
     required: true
   }
@@ -64,10 +65,10 @@ const visitSchema = new mongoose.Schema({
 const Visit = mongoose.model('Visit', visitSchema);
 
 const deliverySchema = new mongoose.Schema({
-    department: String,
-    name: String,
-    date: Date,
-    time: String
+  department: String,
+  name: String,
+  date: Date,
+  time: String
 });
 
 const Delivery = mongoose.model('Delivery', deliverySchema);
@@ -88,9 +89,47 @@ const frequentSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
+  },
+  car: {
+    type: String,
+    required: true
   }
 });
 
 const Frequent = mongoose.model('frequent', frequentSchema, 'frequent');
 
-module.exports = { collection, Department, Visit, Delivery, Frequent };
+const parkingSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  spaces: {
+    type: Number,
+    required: true,
+  },
+  occupiedSpaces: [
+    {
+      licensePlate: {
+        type: String,
+        required: true,
+      },
+      nombre: {
+        type: String,
+        required: true,
+      },
+      department: {
+        type: String,
+        required: true,
+      },
+      parkedAt: {
+        type: Date,
+        default: Date.now,
+        required: true,
+      },
+    },
+  ],
+});
+
+const Parking = mongoose.model('Parking', parkingSchema, 'parking');
+
+module.exports = { User, Department, Visit, Delivery, Frequent, Parking };
