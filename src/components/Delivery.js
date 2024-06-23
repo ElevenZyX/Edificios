@@ -4,21 +4,74 @@ import axios from 'axios';
 import NavBar from './NavBar';
 import Footer from './Footer';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from './AuthContext';
 
 function Delivery() {
   const { t } = useTranslation();
+  const { user, isAuthenticated } = useAuth();
   const [departments, setDepartments] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
-  const [Name, setName] = useState('');
-  const [Date, setDate] = useState('');
-  const [Time, setTime] = useState('');
+  const [typeOfPackage, setTypeOfPackage] = useState('');
+  const [company, setCompany] = useState('');
+  const [date, setDate] = useState('');
+  const [time, setTime] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [message, setMessage] = useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const delivery = {
+        department: selectedDepartment,
+        typeOfPackage,
+        company,
+        date,
+        time
+      };
+      const token = localStorage.getItem('token');
+      const response = await axios.post('http://localhost:8000/api/deliveries', delivery, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        responseType: 'blob'
+      });
+
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+
+      // Enviar SMS
+      await sendSMS(phoneNumber);
+
+      setMessage(t('deliveryRegisteredSuccessfully'));
+      setSelectedDepartment('');
+      setTypeOfPackage('');
+      setCompany('');
+      setDate('');
+      setTime('');
+    } catch (error) {
+      setMessage(t('errorRegisteringDelivery'));
+      console.error('Error submitting form:', error);
+    }
+  };
+
+  const sendSMS = async (phone) => {
+    try {
+      await axios.post('http://localhost:8000/api/send-sms', { phone, message: t('yourPackageArrived') });
+    } catch (error) {
+      console.error('Error sending SMS:', error);
+    }
+  };
 
   useEffect(() => {
     const fetchDepartments = async () => {
+      if (!user || !user._id) {
+        return;
+      }
+
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:8000/api/departments', {
+        const response = await axios.get(`http://localhost:8000/api/departments/${user._id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -31,34 +84,31 @@ function Delivery() {
     };
 
     fetchDepartments();
-  }, [t]);
+  }, [t, user]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const delivery = {
-        department: selectedDepartment,
-        Name, // Asegúrate de que coincida con el nombre del estado
-        Date, // Asegúrate de que coincida con el nombre del estado
-        Time // Asegúrate de que coincida con el nombre del estado
-      };
-      const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:8000/api/deliveries', delivery, {
-        headers: {
-          Authorization: `Bearer ${token}`
+  useEffect(() => {
+    const fetchDepartmentPhone = async () => {
+      if (selectedDepartment) {
+        try {
+          const token = localStorage.getItem('token');
+          const response = await axios.get(`http://localhost:8000/api/department/${selectedDepartment}`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          setPhoneNumber(response.data.phone);
+        } catch (error) {
+          console.error('Error fetching department phone:', error);
         }
-      });
-      setMessage('Delivery registered successfully');
-      setSelectedDepartment('');
-      setName('');
-      setDate('');
-      setTime('');
-      console.log(response.data);
-    } catch (error) {
-      setMessage('Error registering delivery');
-      console.error('Error submitting form:', error);
-    }
-  };
+      }
+    };
+
+    fetchDepartmentPhone();
+  }, [selectedDepartment]);
+
+  if (!isAuthenticated) {
+    return <div>{t('loading')}</div>;
+  }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
@@ -66,7 +116,7 @@ function Delivery() {
       <Container>
         <Row className="justify-content-md-center">
           <Col lg={6}>
-            {message && <Alert variant={message.startsWith('Error') ? 'danger' : 'success'}>{message}</Alert>}
+            {message && <Alert variant={message.startsWith(t('errorPrefix')) ? 'danger' : 'success'}>{message}</Alert>}
             <Form onSubmit={handleSubmit}>
               <Form.Group controlId="deliveryForm.DepartmentSelect">
                 <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('department')}</Form.Label>
@@ -78,38 +128,48 @@ function Delivery() {
                 </Form.Control>
               </Form.Group>
 
-              <Form.Group controlId="deliveryForm.Name">
-                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('Name')}</Form.Label>
+              <Form.Group controlId="deliveryForm.TypeOfPackage">
+                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('typeOfPackage')}</Form.Label>
                 <Form.Control
                   type="text"
-                  value={Name}
-                  onChange={e => setName(e.target.value)}
+                  value={typeOfPackage}
+                  onChange={e => setTypeOfPackage(e.target.value)}
+                  style={{ fontSize: '1.2rem' }}
+                />
+              </Form.Group>
+
+              <Form.Group controlId="deliveryForm.Company">
+                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('company')}</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={company}
+                  onChange={e => setCompany(e.target.value)}
                   style={{ fontSize: '1.2rem' }}
                 />
               </Form.Group>
 
               <Form.Group controlId="deliveryForm.Date">
-                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('Date')}</Form.Label>
+                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('date')}</Form.Label>
                 <Form.Control
                   type="date"
-                  value={Date}
+                  value={date}
                   onChange={e => setDate(e.target.value)}
                   style={{ fontSize: '1.2rem' }}
                 />
               </Form.Group>
 
               <Form.Group controlId="deliveryForm.Time">
-                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('Time')}</Form.Label>
+                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('time')}</Form.Label>
                 <Form.Control
                   type="time"
-                  value={Time}
+                  value={time}
                   onChange={e => setTime(e.target.value)}
                   style={{ fontSize: '1.2rem' }}
                 />
               </Form.Group>
 
               <Button variant="primary" type="submit" className='my-4 btn-lg'>
-                {t('Register Delivery')}
+                {t('registerDelivery')}
               </Button>
             </Form>
           </Col>

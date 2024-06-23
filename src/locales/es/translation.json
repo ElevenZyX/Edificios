@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "welcome": "¡Bienvenido a BuildingBuddy!",
     "login": "Iniciar sesión",
     "login.username": "Nombre de Usuario",
@@ -44,3 +45,39 @@
     "plate":"Placa Patente"
   }
   
+=======
+  "welcome": "¡Bienvenido a BuildingBuddy!",
+  "login": "Iniciar sesión",
+  "login.username": "Nombre de Usuario",
+  "login.password": "Contraseña",
+  "logout": "Cerrar sesión",
+  "username": "Nombre de usuario",
+  "password": "Contraseña",
+  "invalidCredentials": "Usuario o contraseña inválidos",
+  "userNotRegistered": "Usuario no registrado o contraseña incorrecta",
+  "loginError": "error en el inicio de sesión",
+  "home": "Inicio",
+  "delivery": "Correspondencias",
+  "visitors": "Visitas",
+  "vehicles": "Vehículos",
+  "visitRegister": "Registro de Visitas no Frecuentes",
+  "department": "Departamento",
+  "selectDepartment": "Seleccione un departamento",
+  "typeOfPackage": "Tipo de paquete",
+  "company": "Empresa",
+  "date": "Fecha",
+  "time": "Hora",
+  "registerVisit": "Registrar Visita",
+  "registerDelivery": "Registrar Correspondencia",
+  "consoleDptoError": "Hubo un error al recuperar los departamentos:",
+  "recoveringDptoError": "Error al recuperar los departamentos",
+  "errorRegisteringDelivery": "Error al registrar la correspondencia",
+  "deliveryRegisteredSuccessfully": "Correspondencia registrada exitosamente y SMS enviado",
+  "yourPackageArrived": "Su paquete ha llegado",
+  "loading": "Cargando...",
+  "rightsReserved": "Todos los derechos reservados",
+  "rut": "Rut Formato: xxxxxxxx-x",
+  "logoutSuccessMessage": "Su sesión se ha cerrado exitosamente",
+  "errorPrefix": "Error"
+}
+>>>>>>> delivery-suazo

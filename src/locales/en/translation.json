@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "welcome": "Welcome to BuildingBuddy!",
     "login": "Login",
     "login.username": "User",
@@ -44,3 +45,39 @@
     "plate":"Car License Plate"
   }
   
+=======
+  "welcome": "Welcome to BuildingBuddy!",
+  "login": "Login",
+  "login.username": "User",
+  "login.password": "Password",
+  "logout": "Logout",
+  "username": "Username",
+  "password": "Password",
+  "invalidCredentials": "Invalid username or password",
+  "userNotRegistered": "user not registered or password incorrect",
+  "loginError": "Login error",
+  "home": "Home",
+  "delivery": "Delivery",
+  "visitors": "Visitors",
+  "vehicles": "Vehicles",
+  "visitRegister": "No Frecuent Visit Register",
+  "department": "Department",
+  "selectDepartment": "Select department",
+  "typeOfPackage": "Type of package",
+  "company": "Company",
+  "date": "Date",
+  "time": "Time",
+  "registerVisit": "Register Visit",
+  "registerDelivery": "Register Delivery",
+  "consoleDptoError": "There was an error retrieving the departments:",
+  "recoveringDptoError": "Error retrieving departments",
+  "errorRegisteringDelivery": "Error registering delivery",
+  "deliveryRegisteredSuccessfully": "Delivery registered successfully and SMS sent",
+  "yourPackageArrived": "Your package has arrived",
+  "loading": "Loading...",
+  "rightsReserved": "All rights reserved",
+  "rut": "Rut Format: xxxxxxxx-x",
+  "logoutSuccessMessage": "You have log out successfully",
+  "errorPrefix": "Error"
+}
+>>>>>>> delivery-suazo
