@@ -4,6 +4,7 @@ import { Navbar, Nav, Container, Button, Alert } from 'react-bootstrap';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from './AuthContext'; // Importa el contexto de autenticación
 import { LinkContainer } from 'react-router-bootstrap';  // Asegúrate de importar LinkContainer
+import './styles.css'; // Importa el archivo CSS
 
 function NavBar() {
   const { t } = useTranslation();
@@ -25,15 +26,7 @@ function NavBar() {
 
   return (
     <>
-      <style>
-        {`
-          .navbar-link:hover {
-            background-color: #C2FAFB;
-            border-radius: 10px;
-          }
-        `}
-      </style>
-      <Navbar bg="info" expand="lg" className="mx-3 my-3 rounded">
+      <Navbar expand="lg" className="navbar-custom mx-3 my-3 rounded">
         <Container fluid>
           <LinkContainer to="/home">
             <Navbar.Brand style={{ fontSize: '1.5rem', cursor: 'pointer' }}>{t('welcome')}</Navbar.Brand>

@@ -139,7 +139,7 @@ function Delivery() {
               </Form.Group>
 
               <Form.Group controlId="deliveryForm.Company">
-                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('Company')}</Form.Label>
+                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('company')}</Form.Label>
                 <Form.Control
                   type="text"
                   value={company}

@@ -24,7 +24,6 @@ app.post("/login", async (req, res) => {
 
         if (user) {
             const passwordIsValid = await bcrypt.compare(password, user.password);
-
             if (passwordIsValid) {
                 const token = jwt.sign({ id: user._id, name: user.name }, JWT_SECRET, { expiresIn: '12h' });
                 res.json({ token });
@@ -40,7 +39,6 @@ app.post("/login", async (req, res) => {
     }
 });
 
-// Middleware to verify token
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -62,7 +60,6 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
-// Función para validar RUT
 const validateRut = (rut) => {
     const rutRegex = /^[0-9]{7,8}-[0-9Kk]{1}$/;
     return rutRegex.test(rut);
@@ -88,24 +85,54 @@ app.get('/api/users/:userId', authenticateToken, async (req, res) => {
 // Protected routes
 app.get('/api/departments/:userId', authenticateToken, async (req, res) => {
     try {
-        const userId = req.params.userId;
-        const user = await User.findById(userId);
-
-        if (!user) {
-            console.log('User not found');
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        const userBuildingName = user.name;
-        const regex = new RegExp(`^${userBuildingName}$`, 'i');
-        const departments = await Department.find({ name: { $regex: regex } });
-
-        res.json(departments);
+      const user = await User.findById(req.params.userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      res.json({
+        hour: user.hour,
+        alert: user.alert
+      });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error retrieving departments' });
+      console.error('Error fetching user settings:', error);
+      res.status(500).json({ message: 'Error fetching user settings' });
     }
-});
+  });
+  
+  // Protected routes
+  app.get('/api/departments/:userId', authenticateToken, async (req, res) => {
+      try {
+          const userId = req.params.userId;
+          const user = await User.findById(userId);
+  
+          if (!user) {
+              console.log('User not found');
+              return res.status(404).json({ message: 'User not found' });
+          }
+  
+          const userBuildingName = user.name;
+          const regex = new RegExp(`^${userBuildingName}$`, 'i');
+          const departments = await Department.find({ name: { $regex: regex } });
+  
+          res.json(departments);
+      } catch (error) {
+          console.error(error);
+          res.status(500).json({ message: 'Error retrieving departments' });
+      }
+  });
+  
+  app.get('/api/pdf/:id', authenticateToken, async (req, res) => {
+      try {
+          const doc = await generatePDF(req.params.id);
+          const pdfBytes = await doc.save();
+          res.setHeader('Content-Type', 'application/pdf');
+          res.send(pdfBytes);
+      } catch (error) {
+          console.error('Error generating PDF:', error);
+          res.status(500).json({ message: 'Error generating PDF' });
+      }
+  });
+  
 
 app.get('/api/pdf/:id', authenticateToken, async (req, res) => {
     try {
@@ -314,7 +341,7 @@ app.get('/api/parking/:name', authenticateToken, async (req, res) => {
   });
   
   // Registrar la entrada de un vehículo
-  app.post('/api/parking/:name/enter', authenticateToken, async (req, res) => {
+app.post('/api/parking/:name/enter', authenticateToken, async (req, res) => {
     console.log(`Registering vehicle with license plate ${req.body.licensePlate} for ${req.params.name}`);
     try {
       const { licensePlate, nombre, department, spaceNumber } = req.body;

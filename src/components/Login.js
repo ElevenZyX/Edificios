@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { Row, Col, Form, Button, Alert } from 'react-bootstrap';
 import Footer from './Footer';
 import { useAuth } from './AuthContext';
+import logo from '../img/logo.png'; // Importa la imagen del logo
+import './styles.css'; // Importa el archivo CSS
 
 function Login() {
   const { t } = useTranslation();
@@ -34,15 +36,15 @@ function Login() {
   };
 
   return (
-    <div className="d-flex flex-column min-vh-100">
-      <header>
-        <h1 className="text-primary text-center display-2">BuildingBuddyy</h1>
+    <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
+      <header className="header">
+        <img src={logo} alt="BuildingBuddyy Logo" className="logo" /> {/* Usa la imagen del logo */}
       </header>
-      <main className="flex-grow-1">
-        <Row className="justify-content-center mt-5 p-3 bg-info rounded mx-3">
-          <Col xs={12} sm={8} md={6}>
+      <main className="flex-grow-1 w-100 d-flex flex-column align-items-center justify-content-start">
+        <Row className="justify-content-center form-container w-100" style={{ maxWidth: '600px', margin: '0 20px' }}>
+          <Col xs={12}>
             <div>
-              <h1>{t('login')}</h1>
+              <h1 className="text-center">{t('login')}</h1>
               {error && <Alert variant="danger">{error}</Alert>}
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="my-4" controlId="formBasicUsername">
@@ -63,7 +65,7 @@ function Login() {
                     className="form-control-lg"
                   />
                 </Form.Group>
-                <Button variant="primary" type="submit" className="btn-lg">
+                <Button variant="primary" type="submit" className="btn-lg w-100">
                   {t('login')}
                 </Button>
               </Form>
@@ -71,8 +73,8 @@ function Login() {
             </div>
           </Col>
         </Row>
+        <Footer />
       </main>
-      <Footer />
     </div>
   );
 }
