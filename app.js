@@ -187,9 +187,6 @@ app.get('/api/frequent/car/:licensePlate', authenticateToken, async (req, res) =
     }
 });
 
-
-
-
 // Rutas de estacionamiento
 
 // Obtener el estado del estacionamiento

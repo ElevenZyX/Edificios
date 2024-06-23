@@ -70,7 +70,7 @@ function Vehicles() {
     }
 
     try {
-      const response = await axios.get(`http://localhost:8000/api/frequent/rut/${licensePlate.toUpperCase()}`, {
+      const response = await axios.get(`http://localhost:8000/api/frequent/car/${licensePlate.toUpperCase()}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
