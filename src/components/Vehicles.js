@@ -19,6 +19,7 @@ function Vehicles() {
   const [name, setName] = useState('');
   const [department, setDepartment] = useState('');
   const [departments, setDepartments] = useState([]);
+  const [spaceNumber, setSpaceNumber] = useState('');
   const [message, setMessage] = useState(null);
   const [showManualForm, setShowManualForm] = useState(false);
   const [maxHours, setMaxHours] = useState(1); // default max time in hours
@@ -102,7 +103,7 @@ function Vehicles() {
 
   const handleEnter = async (e) => {
     e.preventDefault();  
-    if (!validateLicensePlate(licensePlate)) {
+    if (!validateLicensePlate(licensePlate) || !spaceNumber) {
       setMessage(t('platerror'));
       setTimeout(() => setMessage(null), 4000);
       return;
@@ -121,7 +122,7 @@ function Vehicles() {
 
         const postResponse = await axios.post(
           `http://localhost:8000/api/parking/${user.name}/enter`,
-          { licensePlate: licensePlate.toUpperCase(), nombre, department, parkedAt: new Date() },
+          { licensePlate: licensePlate.toUpperCase(), nombre, department, parkedAt: new Date(), spaceNumber },
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -129,6 +130,7 @@ function Vehicles() {
         setLicensePlate('');
         setName('');
         setDepartment('');
+        setSpaceNumber('');
         setShowManualForm(false);
       } else {
         setMessage(t('platerror'));
@@ -152,7 +154,7 @@ function Vehicles() {
 
   const handleManualSubmit = async (e) => {
     e.preventDefault();
-    if (!validateLicensePlate(licensePlate)) {
+    if (!validateLicensePlate(licensePlate) || !spaceNumber) {
       setMessage(t('platerror'));
       setTimeout(() => setMessage(null), 4000);
       return;
@@ -161,13 +163,14 @@ function Vehicles() {
     try {
       const response = await axios.post(
         `http://localhost:8000/api/parking/${user.name}/enter`,
-        { licensePlate: licensePlate.toUpperCase(), nombre: name, department, parkedAt: new Date() },
+        { licensePlate: licensePlate.toUpperCase(), nombre: name, department, parkedAt: new Date(), spaceNumber },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setParking(response.data);
       setLicensePlate('');
       setName('');
       setDepartment('');
+      setSpaceNumber('');
       setShowManualForm(false);
     } catch (error) {
       setMessage(t('visiterror'));
@@ -214,7 +217,10 @@ function Vehicles() {
                         </Button>
                       </>
                     ) : (
-                      <p>{t('available')}</p>
+                      <>
+                        <p>{t('available')}</p>
+                        <p>{parking.availableSpaces[i]}</p>
+                      </>
                     )}
                   </div>
                 </Col>
@@ -228,6 +234,19 @@ function Vehicles() {
                   value={licensePlate}
                   onChange={(e) => setLicensePlate(e.target.value)}
                 />
+              </Form.Group>
+              <Form.Group controlId="formSpaceNumber">
+                <Form.Label>{t('spaceNumber')}</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={spaceNumber}
+                  onChange={(e) => setSpaceNumber(e.target.value)}
+                >
+                  <option value="">{t('selectSpaceNumber')}</option>
+                  {parking.availableSpaces.map((space, index) => (
+                    <option key={index} value={space}>{space}</option>
+                  ))}
+                </Form.Control>
               </Form.Group>
               {!showManualForm && (
                 <Button className="mt-3" type="submit">{t('enter')}</Button>

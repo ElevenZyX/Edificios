@@ -314,10 +314,10 @@ app.get('/api/parking/:name', authenticateToken, async (req, res) => {
   });
   
   // Registrar la entrada de un vehículo
-app.post('/api/parking/:name/enter', authenticateToken, async (req, res) => {
+  app.post('/api/parking/:name/enter', authenticateToken, async (req, res) => {
     console.log(`Registering vehicle with license plate ${req.body.licensePlate} for ${req.params.name}`);
     try {
-      const { licensePlate, nombre, department } = req.body;
+      const { licensePlate, nombre, department, spaceNumber } = req.body;
       const parking = await Parking.findOne({ name: req.params.name });
       if (!parking) {
         console.log(`Parking not found for ${req.params.name}`);
@@ -333,7 +333,16 @@ app.post('/api/parking/:name/enter', authenticateToken, async (req, res) => {
       const maxHours = user.hour;
       const notificationMinutes = user.alert;
   
-      parking.occupiedSpaces.push({ licensePlate, nombre, department, parkedAt: new Date(), maxHours, notificationMinutes });
+      parking.occupiedSpaces.push({
+        licensePlate,
+        nombre,
+        department,
+        parkedAt: new Date(),
+        spaceNumber,
+        maxHours,
+        notificationMinutes
+      });
+      parking.availableSpaces = parking.availableSpaces.filter(space => space !== spaceNumber);
       await parking.save();
       console.log(`Vehicle registered: ${licensePlate}`);
       res.json(parking);
@@ -354,7 +363,11 @@ app.post('/api/parking/:name/enter', authenticateToken, async (req, res) => {
         return res.status(404).json({ message: 'Parking not found' });
       }
   
+      const spaceToRemove = parking.occupiedSpaces.find(space => space.licensePlate === licensePlate);
       parking.occupiedSpaces = parking.occupiedSpaces.filter(space => space.licensePlate !== licensePlate);
+      if (spaceToRemove) {
+        parking.availableSpaces.push(spaceToRemove.spaceNumber);
+      }
       await parking.save();
       console.log(`Vehicle removed: ${licensePlate}`);
       res.json(parking);
@@ -363,6 +376,7 @@ app.post('/api/parking/:name/enter', authenticateToken, async (req, res) => {
       res.status(500).json({ message: 'Error removing vehicle' });
     }
   });
+  
 
 app.listen(8000, () => {
     console.log("Server running on port 8000");

@@ -158,8 +158,18 @@ const parkingSchema = new mongoose.Schema({
         default: Date.now,
         required: true,
       },
+      spaceNumber: {
+        type: String,
+        required: true,
+      },
     },
   ],
+  availableSpaces: {
+    type: [String],
+    default: function() {
+      return Array.from({ length: this.spaces }, (_, i) => `V${i + 1}`);
+    },
+  },
 });
 
 const Parking = mongoose.model('Parking', parkingSchema, 'parking');
