@@ -202,22 +202,23 @@ function Vehicles() {
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <NavBar />
       <Container fluid style={{ flex: "1" }}>
-        <h1 className="mt-5">{t('vehicles')}</h1>
+        <h1 className="my-5 text center">{t('vehicles')}</h1>
         {message && <Alert variant="danger">{message}</Alert>}
         {parking && (
           <>
-            <h2>{t('totalSpaces')}: {parking.spaces}</h2>
-            <h3>{t('occupiedSpaces')}: {parking.occupiedSpaces.length}</h3>
+            <h2 className='my-3 '>{t('totalSpaces')}: {parking.spaces}</h2>
+            <h2 className='mt-3 mb-5'>{t('occupiedSpaces')}: {parking.occupiedSpaces.length}</h2>
             <Row>
-              {sortSpaces(parking.availableSpaces.filter(space => !parking.occupiedSpaces.find(s => s.spaceNumber === space))).map((space, i) => (
-                <Col key={i} className="mb-3">
-                  <div className="p-3 border bg-light">
-                    <p>{t('available')}</p>
-                    <p>{space}</p>
-                  </div>
-                </Col>
-              ))}
-            </Row>
+  {sortSpaces(parking.availableSpaces.filter(space => !parking.occupiedSpaces.find(s => s.spaceNumber === space))).map((space, i) => (
+    <Col key={i} className="mb-3 text-center"> {/* Añadido 'text-center' para centrar horizontalmente */}
+      <div className="p-3 border bg-light">
+        <p>{t('available')}</p>
+        <p>{space}</p>
+      </div>
+    </Col>
+  ))}
+</Row>
+
             {parking.occupiedSpaces.map((space, i) => (
               <Row key={i}>
                 <Col className="mb-3">
