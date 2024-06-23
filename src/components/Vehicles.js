@@ -237,7 +237,7 @@ function Vehicles() {
             ))}
             <Form className="text-center" onSubmit={handleEnter}>
               <Form.Group controlId="formLicensePlate">
-                <Form.Label className='mt-3 mb-5'>{t('enterLicensePlate')}</Form.Label>
+                <Form.Label className='my-3'>{t('enterLicensePlate')}</Form.Label>
                 <Form.Control
                   type="text"
                   value={licensePlate}
@@ -245,7 +245,7 @@ function Vehicles() {
                 />
               </Form.Group>
               <Form.Group controlId="formSpaceNumber">
-                <Form.Label className='mt-3 mb-5'>{t('selectSpaceNumber')}</Form.Label>
+                <Form.Label className='my-3'>{t('selectSpaceNumber')}</Form.Label>
                 <Form.Control
                   as="select"
                   value={spaceNumber}
