@@ -4,21 +4,63 @@ import axios from 'axios';
 import NavBar from './NavBar';
 import Footer from './Footer';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from './AuthContext'; // Importa el contexto de autenticación
 
 function Delivery() {
   const { t } = useTranslation();
+  const { user, isAuthenticated } = useAuth(); // Obtén la información del usuario y el estado de autenticación
   const [departments, setDepartments] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
-  const [Name, setName] = useState('');
-  const [Date, setDate] = useState('');
-  const [Time, setTime] = useState('');
+  const [typeOfPackage, setTypeOfPackage] = useState('');
+  const [company, setCompany] = useState('');
+  const [date, setDate] = useState('');
+  const [time, setTime] = useState('');
   const [message, setMessage] = useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const delivery = {
+        department: selectedDepartment,
+        typeOfPackage,
+        company,
+        date,
+        time
+      };
+      const token = localStorage.getItem('token');
+      const response = await axios.post('http://localhost:8000/api/deliveries', delivery, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        responseType: 'blob' // Esperamos una respuesta de tipo blob (archivo)
+      });
+
+      // Crear un objeto URL para el blob y abrirlo en una nueva ventana o pestaña
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+
+      setMessage('Delivery registered successfully');
+      setSelectedDepartment('');
+      setTypeOfPackage('');
+      setCompany('');
+      setDate('');
+      setTime('');
+    } catch (error) {
+      setMessage('Error registering delivery');
+      console.error('Error submitting form:', error);
+    }
+  };
 
   useEffect(() => {
     const fetchDepartments = async () => {
+      if (!user || !user._id) {
+        return;
+      }
+
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:8000/api/departments', {
+        const response = await axios.get(`http://localhost:8000/api/departments/${user._id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -31,34 +73,11 @@ function Delivery() {
     };
 
     fetchDepartments();
-  }, [t]);
+  }, [t, user]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const delivery = {
-        department: selectedDepartment,
-        Name, // Asegúrate de que coincida con el nombre del estado
-        Date, // Asegúrate de que coincida con el nombre del estado
-        Time // Asegúrate de que coincida con el nombre del estado
-      };
-      const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:8000/api/deliveries', delivery, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setMessage('Delivery registered successfully');
-      setSelectedDepartment('');
-      setName('');
-      setDate('');
-      setTime('');
-      console.log(response.data);
-    } catch (error) {
-      setMessage('Error registering delivery');
-      console.error('Error submitting form:', error);
-    }
-  };
+  if (!isAuthenticated) {
+    return <div>{t('loading')}</div>;
+  }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
@@ -78,12 +97,22 @@ function Delivery() {
                 </Form.Control>
               </Form.Group>
 
-              <Form.Group controlId="deliveryForm.Name">
-                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('Name')}</Form.Label>
+              <Form.Group controlId="deliveryForm.TypeOfPackage">
+                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('Type of package')}</Form.Label>
                 <Form.Control
                   type="text"
-                  value={Name}
-                  onChange={e => setName(e.target.value)}
+                  value={typeOfPackage}
+                  onChange={e => setTypeOfPackage(e.target.value)}
+                  style={{ fontSize: '1.2rem' }}
+                />
+              </Form.Group>
+
+              <Form.Group controlId="deliveryForm.Company">
+                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('Company')}</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={company}
+                  onChange={e => setCompany(e.target.value)}
                   style={{ fontSize: '1.2rem' }}
                 />
               </Form.Group>
@@ -92,7 +121,7 @@ function Delivery() {
                 <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('Date')}</Form.Label>
                 <Form.Control
                   type="date"
-                  value={Date}
+                  value={date}
                   onChange={e => setDate(e.target.value)}
                   style={{ fontSize: '1.2rem' }}
                 />
@@ -102,7 +131,7 @@ function Delivery() {
                 <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('Time')}</Form.Label>
                 <Form.Control
                   type="time"
-                  value={Time}
+                  value={time}
                   onChange={e => setTime(e.target.value)}
                   style={{ fontSize: '1.2rem' }}
                 />

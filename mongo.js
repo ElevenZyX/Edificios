@@ -2,12 +2,12 @@
 const mongoose = require("mongoose");
 
 mongoose.connect("mongodb+srv://Programacion:enter@proyect.t0wuu2a.mongodb.net/Proyect?retryWrites=true&w=majority")
-    .then(() => {
-        console.log("mongodb connected");
-    })
-    .catch(() => {
-        console.log('failed');
-    });
+  .then(() => {
+    console.log("mongodb connected");
+  })
+  .catch(() => {
+    console.log('failed');
+  });
 
     const userSchema = new mongoose.Schema({
       username: {
@@ -73,10 +73,26 @@ const visitSchema = new mongoose.Schema({
 const Visit = mongoose.model('Visit', visitSchema);
 
 const deliverySchema = new mongoose.Schema({
-  department: String,
-  name: String,
-  date: Date,
-  time: String
+  department: {
+    type: String,
+    required: true
+  },
+  typeOfPackage: {
+    type: String,
+    required: true
+  },
+  company: {
+    type: String,
+    required: true
+  },
+  date: {
+    type: Date,
+    required: true
+  },
+  time: {
+    type: String,
+    required: true
+  }
 });
 
 const Delivery = mongoose.model('Delivery', deliverySchema);

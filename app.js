@@ -3,7 +3,7 @@ const { User, Department, Visit, Delivery, Frequent, Parking } = require("./mong
 const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
+const { PDFDocument } = require('pdf-lib');
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -20,7 +20,6 @@ app.post("/login", async (req, res) => {
 
         if (user) {
             const passwordIsValid = await bcrypt.compare(password, user.password);
-
             if (passwordIsValid) {
                 const token = jwt.sign({ id: user._id, name: user.name }, JWT_SECRET, { expiresIn: '12h' });
                 res.json({ token });
@@ -36,7 +35,6 @@ app.post("/login", async (req, res) => {
     }
 });
 
-// Middleware to verify token
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -58,50 +56,61 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
-// Función para validar RUT
 const validateRut = (rut) => {
     const rutRegex = /^[0-9]{7,8}-[0-9Kk]{1}$/;
     return rutRegex.test(rut);
 };
 
-// Obtener la configuración del administrador
 app.get('/api/users/:userId', authenticateToken, async (req, res) => {
-  try {
-    const user = await User.findById(req.params.userId);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    res.json({
-      hour: user.hour,
-      alert: user.alert
-    });
-  } catch (error) {
-    console.error('Error fetching user settings:', error);
-    res.status(500).json({ message: 'Error fetching user settings' });
-  }
-});
-
-// Protected routes
-app.get('/api/departments/:userId', authenticateToken, async (req, res) => {
     try {
-        const userId = req.params.userId;
-        const user = await User.findById(userId);
-
-        if (!user) {
-            console.log('User not found');
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        const userBuildingName = user.name;
-        const regex = new RegExp(`^${userBuildingName}$`, 'i');
-        const departments = await Department.find({ name: { $regex: regex } });
-
-        res.json(departments);
+      const user = await User.findById(req.params.userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      res.json({
+        hour: user.hour,
+        alert: user.alert
+      });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error retrieving departments' });
+      console.error('Error fetching user settings:', error);
+      res.status(500).json({ message: 'Error fetching user settings' });
     }
-});
+  });
+  
+  // Protected routes
+  app.get('/api/departments/:userId', authenticateToken, async (req, res) => {
+      try {
+          const userId = req.params.userId;
+          const user = await User.findById(userId);
+  
+          if (!user) {
+              console.log('User not found');
+              return res.status(404).json({ message: 'User not found' });
+          }
+  
+          const userBuildingName = user.name;
+          const regex = new RegExp(`^${userBuildingName}$`, 'i');
+          const departments = await Department.find({ name: { $regex: regex } });
+  
+          res.json(departments);
+      } catch (error) {
+          console.error(error);
+          res.status(500).json({ message: 'Error retrieving departments' });
+      }
+  });
+  
+  app.get('/api/pdf/:id', authenticateToken, async (req, res) => {
+      try {
+          const doc = await generatePDF(req.params.id);
+          const pdfBytes = await doc.save();
+          res.setHeader('Content-Type', 'application/pdf');
+          res.send(pdfBytes);
+      } catch (error) {
+          console.error('Error generating PDF:', error);
+          res.status(500).json({ message: 'Error generating PDF' });
+      }
+  });
+  
 
 app.post('/api/visitas', authenticateToken, async (req, res) => {
     try {
@@ -125,13 +134,34 @@ app.post('/api/deliveries', authenticateToken, async (req, res) => {
     try {
         const newDelivery = new Delivery({
             department: req.body.department,
-            name: req.body.name,
+            typeOfPackage: req.body.typeOfPackage,
+            company: req.body.company,
             date: req.body.date,
             time: req.body.time
         });
 
         const savedDelivery = await newDelivery.save();
-        res.status(201).json(savedDelivery);
+
+        // Generar el contenido del PDF
+        const pdfDoc = await PDFDocument.create();
+        const page = pdfDoc.addPage();
+        const { width, height } = page.getSize();
+
+        // Contenido del PDF
+        page.drawText(`Department: ${savedDelivery.department}`, { x: 50, y: height - 100 });
+        page.drawText(`Type of Package: ${savedDelivery.typeOfPackage}`, { x: 50, y: height - 120 });
+        page.drawText(`Company: ${savedDelivery.company}`, { x: 50, y: height - 140 });
+        page.drawText(`Date: ${savedDelivery.date.toDateString()}`, { x: 50, y: height - 160 });
+        page.drawText(`Time: ${savedDelivery.time}`, { x: 50, y: height - 180 });
+
+        // Serializar el PDF a bytes
+        const pdfBytes = await pdfDoc.save();
+
+        // Establecer los encabezados de la respuesta para indicar que se enviará un archivo PDF
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'inline; filename=delivery.pdf');
+        res.send(Buffer.from(pdfBytes));
+
     } catch (error) {
         console.error('Error saving delivery:', error);
         res.status(500).json({ message: 'Error registering delivery' });
@@ -277,3 +307,5 @@ app.post('/api/parking/:name/enter', authenticateToken, async (req, res) => {
 app.listen(8000, () => {
     console.log("Server running on port 8000");
 });
+
+
