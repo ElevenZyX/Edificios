@@ -26,11 +26,7 @@ app.post("/login", async (req, res) => {
         if (user) {
             const passwordIsValid = await bcrypt.compare(password, user.password);
             if (passwordIsValid) {
-<<<<<<< HEAD
                 const token = jwt.sign({ id: user._id, name: user.name }, JWT_SECRET, { expiresIn: '12h' });
-=======
-                const token = jwt.sign({ id: user._id, name: user.name }, JWT_SECRET, { expiresIn: '1h' });
->>>>>>> delivery-suazo
                 res.json({ token });
             } else {
                 res.status(401).json({ message: 'Invalid credentials' });
@@ -54,16 +50,12 @@ const authenticateToken = (req, res, next) => {
     }
 
     jwt.verify(token, JWT_SECRET, (err, user) => {
-<<<<<<< HEAD
         if (err) {
             console.log('Invalid token');
             return res.status(403).json({ message: 'Invalid token' });
         }
 
         console.log(`Authenticated user: ${user.name}`);
-=======
-        if (err) return res.status(403).json({ message: 'Invalid token' });
->>>>>>> delivery-suazo
         req.user = user;
         next();
     });
@@ -76,27 +68,6 @@ const validateRut = (rut) => {
 
 app.get('/api/pdf/:id', authenticateToken, async (req, res) => {
     try {
-<<<<<<< HEAD
-        const userId = req.params.userId;
-        const user = await User.findById(userId);
-
-        if (!user) {
-            console.log('User not found');
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        const userBuildingName = user.name;
-        const regex = new RegExp(`^${userBuildingName}$`, 'i');
-        const departments = await Department.find({ name: { $regex: regex } });
-
-        res.json(departments);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error retrieving departments' });
-    }
-});
-
-=======
         const doc = await generatePDF(req.params.id);
         const pdfBytes = await doc.save();
         res.setHeader('Content-Type', 'application/pdf');
@@ -138,7 +109,6 @@ app.get('/api/department/:number', authenticateToken, async (req, res) => {
     }
 });
 
->>>>>>> delivery-suazo
 app.post('/api/visitas', authenticateToken, async (req, res) => {
     try {
         const newVisit = new Visit({
@@ -157,8 +127,6 @@ app.post('/api/visitas', authenticateToken, async (req, res) => {
     }
 });
 
-<<<<<<< HEAD
-=======
 app.post('/api/frecuentes', authenticateToken, async (req, res) => {
     try {
         const { nombre, apellido, rut, patente } = req.body;
@@ -180,7 +148,6 @@ app.post('/api/frecuentes', authenticateToken, async (req, res) => {
     }
 });
 
->>>>>>> delivery-suazo
 app.post('/api/deliveries', authenticateToken, async (req, res) => {
     try {
         const { department, typeOfPackage, company, date, time } = req.body;
@@ -192,19 +159,12 @@ app.post('/api/deliveries', authenticateToken, async (req, res) => {
         }
         
         const newDelivery = new Delivery({
-<<<<<<< HEAD
-            department: req.body.department,
-            name: req.body.name,
-            date: req.body.date,
-            time: req.body.time
-=======
             department,
             typeOfPackage,
             company,
             date,
             time,
             buildingName: departmentInfo.name // Guardar el nombre del edificio
->>>>>>> delivery-suazo
         });
 
         const savedDelivery = await newDelivery.save();
@@ -248,7 +208,6 @@ app.post('/api/deliveries', authenticateToken, async (req, res) => {
     }
 });
 
-<<<<<<< HEAD
 app.get('/api/frequent', authenticateToken, async (req, res) => {
     try {
         const frequents = await Frequent.find();
@@ -382,8 +341,6 @@ app.get('/api/parking/:name', authenticateToken, async (req, res) => {
   });
   
 
-=======
->>>>>>> delivery-suazo
 app.listen(8000, () => {
     console.log("Server running on port 8000");
 });
