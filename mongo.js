@@ -9,11 +9,7 @@ mongoose.connect("mongodb+srv://Programacion:enter@proyect.t0wuu2a.mongodb.net/P
     console.log('failed');
   });
 
-<<<<<<< HEAD
-const userSchema = new mongoose.Schema({
-=======
 const newSchema = new mongoose.Schema({
->>>>>>> delivery-suazo
   username: {
     type: String,
     required: true
@@ -28,11 +24,7 @@ const newSchema = new mongoose.Schema({
   }
 });
 
-<<<<<<< HEAD
-const User = mongoose.model("users", userSchema);
-=======
-const collection = mongoose.model("users", newSchema);
->>>>>>> delivery-suazo
+const User = mongoose.model("users", newSchema);
 
 const departmentSchema = new mongoose.Schema({
   Number: {
@@ -42,13 +34,10 @@ const departmentSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
-<<<<<<< HEAD
-=======
   },
   phone: {
     type: String,
     required: true
->>>>>>> delivery-suazo
   }
 });
 
@@ -70,25 +59,16 @@ const visitSchema = new mongoose.Schema({
   hora: {
     type: String,
     required: true
-<<<<<<< HEAD
   },
   name: {
     type: String,
     required: true
-=======
->>>>>>> delivery-suazo
   }
 });
 
 const Visit = mongoose.model('Visit', visitSchema);
 
 const deliverySchema = new mongoose.Schema({
-<<<<<<< HEAD
-  department: String,
-  name: String,
-  date: Date,
-  time: String
-=======
   department: {
     type: String,
     required: true
@@ -113,7 +93,6 @@ const deliverySchema = new mongoose.Schema({
     type: String,
     required: false
   }
->>>>>>> delivery-suazo
 });
 
 const Delivery = mongoose.model('Delivery', deliverySchema);
@@ -134,19 +113,15 @@ const frequentSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
-<<<<<<< HEAD
   },
   car: {
     type: String,
     required: true
-=======
->>>>>>> delivery-suazo
   }
 });
 
 const Frequent = mongoose.model('frequent', frequentSchema, 'frequent');
 
-<<<<<<< HEAD
 const parkingSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -182,6 +157,3 @@ const parkingSchema = new mongoose.Schema({
 const Parking = mongoose.model('Parking', parkingSchema, 'parking');
 
 module.exports = { User, Department, Visit, Delivery, Frequent, Parking };
-=======
-module.exports = { collection, Department, Visit, Delivery, Frequent };
->>>>>>> delivery-suazo
