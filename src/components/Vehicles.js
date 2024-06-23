@@ -78,7 +78,7 @@ function Vehicles() {
           if (timeRemaining <= notificationMinutes && timeRemaining > 0 && !showNotification) {
             setNotificationDetails({
               licensePlate: space.licensePlate,
-              timeRemaining: Math.ceil(timeRemaining),
+              timeRemaining: notificationMinutes
             });
             setShowNotification(true);
           }
@@ -204,14 +204,16 @@ function Vehicles() {
             <h2>{t('totalSpaces')}: {parking.spaces}</h2>
             <h3>{t('occupiedSpaces')}: {parking.occupiedSpaces.length}</h3>
             <Row>
-              {parking.availableSpaces.filter(space => !parking.occupiedSpaces.find(s => s.spaceNumber === space)).map((space, i) => (
-                <Col key={i} className="mb-3">
-                  <div className="p-3 border bg-light">
-                    <p>{t('available')}</p>
-                    <p>{space}</p>
-                  </div>
-                </Col>
-              ))}
+              {parking.availableSpaces.filter(space => !parking.occupiedSpaces.find(s => s.spaceNumber === space))
+                .sort((a, b) => a.localeCompare(b))
+                .map((space, i) => (
+                  <Col key={i} className="mb-3">
+                    <div className="p-3 border bg-light">
+                      <p>{t('available')}</p>
+                      <p>{space}</p>
+                    </div>
+                  </Col>
+                ))}
             </Row>
             {parking.occupiedSpaces.map((space, i) => (
               <Row key={i}>
@@ -238,19 +240,23 @@ function Vehicles() {
                   onChange={(e) => setLicensePlate(e.target.value)}
                 />
               </Form.Group>
-              <Form.Group controlId="formSpaceNumber">
-                <Form.Label>{t('selectSpaceNumber')}</Form.Label>
-                <Form.Control
-                  as="select"
-                  value={spaceNumber}
-                  onChange={(e) => setSpaceNumber(e.target.value)}
-                >
-                  <option value="">{t('selectSpaceNumber')}</option>
-                  {parking.availableSpaces.filter(space => !parking.occupiedSpaces.find(s => s.spaceNumber === space)).map((space, index) => (
-                    <option key={index} value={space}>{space}</option>
-                  ))}
-                </Form.Control>
-              </Form.Group>
+              {!showManualForm && (
+                <Form.Group controlId="formSpaceNumber">
+                  <Form.Label>{t('selectSpaceNumber')}</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={spaceNumber}
+                    onChange={(e) => setSpaceNumber(e.target.value)}
+                  >
+                    <option value="">{t('selectSpaceNumber')}</option>
+                    {parking.availableSpaces.filter(space => !parking.occupiedSpaces.find(s => s.spaceNumber === space))
+                      .sort((a, b) => a.localeCompare(b))
+                      .map((space, index) => (
+                        <option key={index} value={space}>{space}</option>
+                      ))}
+                  </Form.Control>
+                </Form.Group>
+              )}
               {!showManualForm && (
                 <Button className="mt-3" type="submit">{t('enter')}</Button>
               )}
@@ -278,7 +284,7 @@ function Vehicles() {
                     ))}
                   </Form.Control>
                 </Form.Group>
-                <Form.Group controlId="formSpaceNumber">
+                <Form.Group controlId="formSpaceNumberManual">
                   <Form.Label>{t('selectSpaceNumber')}</Form.Label>
                   <Form.Control
                     as="select"
@@ -286,9 +292,11 @@ function Vehicles() {
                     onChange={(e) => setSpaceNumber(e.target.value)}
                   >
                     <option value="">{t('selectSpaceNumber')}</option>
-                    {parking.availableSpaces.filter(space => !parking.occupiedSpaces.find(s => s.spaceNumber === space)).map((space, index) => (
-                      <option key={index} value={space}>{space}</option>
-                    ))}
+                    {parking.availableSpaces.filter(space => !parking.occupiedSpaces.find(s => s.spaceNumber === space))
+                      .sort((a, b) => a.localeCompare(b))
+                      .map((space, index) => (
+                        <option key={index} value={space}>{space}</option>
+                      ))}
                   </Form.Control>
                 </Form.Group>
                 <Button type="submit" className="mt-3">{t('enter')}</Button>
