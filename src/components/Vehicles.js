@@ -25,6 +25,7 @@ function Vehicles() {
   const [maxHours, setMaxHours] = useState(1); 
   const [notificationMinutes, setNotificationMinutes] = useState(15); 
   const [showNotification, setShowNotification] = useState(false);
+  const [notificationDetails, setNotificationDetails] = useState({});
 
   const convertToMinutes = (hours) => {
     return hours * 60;
@@ -75,6 +76,10 @@ function Vehicles() {
           const timeRemaining = maxTimeInMinutes - elapsedTime;
 
           if (timeRemaining <= notificationMinutes && timeRemaining > 0 && !showNotification) {
+            setNotificationDetails({
+              licensePlate: space.licensePlate,
+              timeRemaining: Math.ceil(timeRemaining),
+            });
             setShowNotification(true);
           }
         });
@@ -297,7 +302,9 @@ function Vehicles() {
         <Modal.Header closeButton>
           <Modal.Title>{t('notification')}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>{t('timeAlmostUp')}</Modal.Body>
+        <Modal.Body>
+          {t('timeAlmostUp')} {notificationDetails.licensePlate} {t('in')} {notificationDetails.timeRemaining} {t('minutes')}
+        </Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={() => setShowNotification(false)}>
             {t('close')}
