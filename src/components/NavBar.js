@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Navbar, Nav, Container, Button, Alert } from 'react-bootstrap';
+import { Navbar, Nav, Container, Button, Alert, NavItem } from 'react-bootstrap';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from './AuthContext'; // Importa el contexto de autenticación
 import { LinkContainer } from 'react-router-bootstrap';  // Asegúrate de importar LinkContainer
+import LanguageSelector from './LanguageSelector'; // Importa el LanguageSelector
 import './styles.css'; // Importa el archivo CSS
 
 function NavBar() {
@@ -37,7 +38,6 @@ function NavBar() {
               <LinkContainer to="/home">
                 <Nav.Link className="navbar-link">{t('home')}</Nav.Link>
               </LinkContainer>
-              {/* Agrega el enlace al componente Delivery */}
               <LinkContainer to="/delivery">
                 <Nav.Link className="navbar-link">{t('delivery')}</Nav.Link>
               </LinkContainer>
@@ -48,9 +48,14 @@ function NavBar() {
                 <Nav.Link className="navbar-link">{t('vehicles')}</Nav.Link>
               </LinkContainer>
             </Nav>
-            {isAuthenticated && (
-              <Button variant="outline-light" onClick={handleLogout}>{t('logout')}</Button>
-            )}
+            <Nav className="ml-auto align-items-center">
+              <Nav.Item className="d-flex align-items-center">
+                <LanguageSelector />
+              </Nav.Item>
+              {isAuthenticated && (
+                <Button variant="outline-light" onClick={handleLogout}>{t('logout')}</Button>
+              )}
+            </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>

@@ -16,7 +16,6 @@ function App() {
     <AuthProvider>
       <Router>
         <div className="App">
-          <LanguageSelector />
           <Container fluid className="main-container">
             <Routes>
               <Route path="/" element={<Login />} />

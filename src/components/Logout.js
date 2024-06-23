@@ -4,7 +4,7 @@ import { Button } from 'react-bootstrap';
 
 function Logout({ onLogout }) {
   return (
-    <div className="mt-3">
+    <div className="mt-3 mx-3">
       <Button onClick={onLogout}>Logout</Button>
     </div>
   );

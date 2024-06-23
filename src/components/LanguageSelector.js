@@ -1,21 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import i18n from './i18n';
-import EnglishFlag from "../img/english.png";
-import SpanishFlag from "../img/español.png";
 
 function LanguageSelector() {
-  const { t } = useTranslation(); // Access translation function
+  const { t } = useTranslation();
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
+
+  useEffect(() => {
+    const currentLanguage = localStorage.getItem('i18nextLng');
+    if (currentLanguage) {
+      setSelectedLanguage(currentLanguage);
+      i18n.changeLanguage(currentLanguage);
+    }
+  }, []);
 
   const changeLanguage = (language) => {
-    i18n.changeLanguage(language); // Use i18n from the context
+    setSelectedLanguage(language);
+    i18n.changeLanguage(language);
+    localStorage.setItem('i18nextLng', language);
   };
 
   return (
-    <div className='mt-5 mx-3'>
+    <div className='mx-4'>
       <select 
+        value={selectedLanguage}
         onChange={(e) => changeLanguage(e.target.value)}
-        style={{ padding: '5px' }} // Agrega un padding al selector
+        style={{ padding: '5px' }}
       >
         <option value="en"> English </option>
         <option value="es"> Español </option>

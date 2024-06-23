@@ -65,7 +65,7 @@ function Login() {
                     className="form-control-lg"
                   />
                 </Form.Group>
-                <Button variant="primary" type="submit" className="btn-primary w-100">
+                <Button variant="primary" type="submit" className="btn-lg-2 w-100">
                   {t('login')}
                 </Button>
               </Form>
