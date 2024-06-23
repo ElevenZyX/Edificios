@@ -24,6 +24,7 @@ function Vehicles() {
   const [maxHours, setMaxHours] = useState(1); // default max time in hours
   const [notificationMinutes, setNotificationMinutes] = useState(15); // default notification time in minutes
   const [showNotification, setShowNotification] = useState(false);
+  const [notificationDetails, setNotificationDetails] = useState({ licensePlate: '', timeRemaining: 0 });
 
   const convertToMinutes = (hours) => {
     return hours * 60;
@@ -73,7 +74,11 @@ function Vehicles() {
           const elapsedTime = (currentTime - parkedTime) / 60000; 
           const timeRemaining = maxTimeInMinutes - elapsedTime;
 
-          if (timeRemaining <= notificationMinutes && timeRemaining > 0 && !showNotification) {
+          if (timeRemaining <= notificationMinutes && timeRemaining > 0) {
+            setNotificationDetails({
+              licensePlate: space.licensePlate,
+              timeRemaining: Math.ceil(timeRemaining)
+            });
             setShowNotification(true);
           }
         });
@@ -81,7 +86,7 @@ function Vehicles() {
     }, 60000); 
 
     return () => clearInterval(timer);
-  }, [parking, maxHours, notificationMinutes, showNotification]);
+  }, [parking, maxHours, notificationMinutes]);
 
   const fetchDepartments = async () => {
     try {
@@ -96,7 +101,7 @@ function Vehicles() {
   };
 
   const handleEnter = async (e) => {
-    e.preventDefault();  // Prevent default form submission behavior
+    e.preventDefault();  
     if (!validateLicensePlate(licensePlate)) {
       setMessage(t('platerror'));
       setTimeout(() => setMessage(null), 4000);
@@ -112,7 +117,7 @@ function Vehicles() {
 
       if (response.data && response.data.name.toLowerCase() === user.name.toLowerCase()) {
         const frequentUser = response.data;
-        const { nombre, Number: department } = frequentUser;  // Aquí aseguramos que el campo correcto sea asignado
+        const { nombre, Number: department } = frequentUser;  
 
         const postResponse = await axios.post(
           `http://localhost:8000/api/parking/${user.name}/enter`,
@@ -165,7 +170,7 @@ function Vehicles() {
       setDepartment('');
       setShowManualForm(false);
     } catch (error) {
-      setMessage('visiterror');
+      setMessage(t('visiterror'));
       setTimeout(() => setMessage(null), 4000);
     }
   };
@@ -262,7 +267,9 @@ function Vehicles() {
         <Modal.Header closeButton>
           <Modal.Title>{t('notification')}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>{t('timeAlmostUp')}</Modal.Body>
+        <Modal.Body>
+          {t('timeAlmostUp')} {notificationDetails.licensePlate} {t('in')} {notificationDetails.timeRemaining} {t('minutes')}
+        </Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={() => setShowNotification(false)}>
             {t('close')}

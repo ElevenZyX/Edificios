@@ -60,6 +60,9 @@
   "notification":"Notificación",
   "close":"Cerrar",
   "exit":"Eliminar ocupación",
-  "enter":"Ingresar estacionamiento"
+  "enter":"Ingresar estacionamiento",
+  "timeAlmostUp": "La patente",
+  "in": "le faltan",
+  "minutes": "minutos para que se cumpla el tiempo"
 
 }

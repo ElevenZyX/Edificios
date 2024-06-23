@@ -60,6 +60,9 @@
     "notification": "Notification",
     "close": "Close",
     "exit":"Remove occupancy",
-    "enter":"Enter parking"
+    "enter":"Enter parking",
+    "timeAlmostUp": "The license plate",
+    "in": "has",
+    "minutes": "minutes left before the time is up"
   }
   
