@@ -42,6 +42,14 @@
     "Yes":"Yes",
     "No":"No",
     "car":"Do you have a car?",
-    "plate":"Car License Plate"
+    "plate":"Car License Plate",
+    "typeOfPackage": "Type of package",
+    "Company": "Company",
+    "registerDelivery": "Register Delivery",
+    "errorRegisteringDelivery": "Error registering delivery",
+    "deliveryRegisteredSuccessfully": "Delivery registered successfully and SMS sent",
+    "yourPackageArrived": "Your package has arrived",
+    "loading": "Loading...",
+    "errorPrefix": "Error"
   }
   
