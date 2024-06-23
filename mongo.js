@@ -121,10 +121,15 @@ const parkingSchema = new mongoose.Schema({
         type: String,
         required: true,
       },
+      parkedAt: {
+        type: Date,
+        default: Date.now,
+        required: true,
+      },
     },
   ],
 });
 
-const Parking = mongoose.model('Parking', parkingSchema, 'parking'); 
+const Parking = mongoose.model('Parking', parkingSchema, 'parking');
 
 module.exports = { User, Department, Visit, Delivery, Frequent, Parking };

@@ -191,67 +191,68 @@ app.get('/api/frequent/car/:licensePlate', authenticateToken, async (req, res) =
 
 // Obtener el estado del estacionamiento
 app.get('/api/parking/:name', authenticateToken, async (req, res) => {
-  console.log(`Fetching parking data for ${req.params.name}`);
-  try {
-    const parking = await Parking.findOne({ name: req.params.name });
-    if (!parking) {
-      console.log(`Parking not found for ${req.params.name}`);
-      return res.status(404).json({ message: 'Parking not found' });
+    console.log(`Fetching parking data for ${req.params.name}`);
+    try {
+      const parking = await Parking.findOne({ name: req.params.name });
+      if (!parking) {
+        console.log(`Parking not found for ${req.params.name}`);
+        return res.status(404).json({ message: 'Parking not found' });
+      }
+      console.log(`Parking data: ${parking}`);
+      res.json(parking);
+    } catch (error) {
+      console.error('Error fetching parking data:', error);
+      res.status(500).json({ message: 'Error fetching parking data' });
     }
-    console.log(`Parking data: ${parking}`);
-    res.json(parking);
-  } catch (error) {
-    console.error('Error fetching parking data:', error);
-    res.status(500).json({ message: 'Error fetching parking data' });
-  }
-});
-
-// Registrar la entrada de un vehículo
-app.post('/api/parking/:name/enter', authenticateToken, async (req, res) => {
-  console.log(`Registering vehicle with license plate ${req.body.licensePlate} for ${req.params.name}`);
-  try {
-    const { licensePlate, nombre, department } = req.body;
-    const parking = await Parking.findOne({ name: req.params.name });
-    if (!parking) {
-      console.log(`Parking not found for ${req.params.name}`);
-      return res.status(404).json({ message: 'Parking not found' });
+  });
+  
+  // Registrar la entrada de un vehículo
+  app.post('/api/parking/:name/enter', authenticateToken, async (req, res) => {
+    console.log(`Registering vehicle with license plate ${req.body.licensePlate} for ${req.params.name}`);
+    try {
+      const { licensePlate, nombre, department } = req.body;
+      const parking = await Parking.findOne({ name: req.params.name });
+      if (!parking) {
+        console.log(`Parking not found for ${req.params.name}`);
+        return res.status(404).json({ message: 'Parking not found' });
+      }
+  
+      if (parking.occupiedSpaces.length >= parking.spaces) {
+        console.log(`No available spaces for ${req.params.name}`);
+        return res.status(400).json({ message: 'No available spaces' });
+      }
+  
+      parking.occupiedSpaces.push({ licensePlate, nombre, department, parkedAt: new Date() });
+      await parking.save();
+      console.log(`Vehicle registered: ${licensePlate}`);
+      res.json(parking);
+    } catch (error) {
+      console.error('Error registering vehicle:', error);
+      res.status(500).json({ message: 'Error registering vehicle' });
     }
-
-    if (parking.occupiedSpaces.length >= parking.spaces) {
-      console.log(`No available spaces for ${req.params.name}`);
-      return res.status(400).json({ message: 'No available spaces' });
+  });
+  
+  // Registrar la salida de un vehículo
+  app.post('/api/parking/:name/exit', authenticateToken, async (req, res) => {
+    console.log(`Removing vehicle with license plate ${req.body.licensePlate} for ${req.params.name}`);
+    try {
+      const { licensePlate } = req.body;
+      const parking = await Parking.findOne({ name: req.params.name });
+      if (!parking) {
+        console.log(`Parking not found for ${req.params.name}`);
+        return res.status(404).json({ message: 'Parking not found' });
+      }
+  
+      parking.occupiedSpaces = parking.occupiedSpaces.filter(space => space.licensePlate !== licensePlate);
+      await parking.save();
+      console.log(`Vehicle removed: ${licensePlate}`);
+      res.json(parking);
+    } catch (error) {
+      console.error('Error removing vehicle:', error);
+      res.status(500).json({ message: 'Error removing vehicle' });
     }
-
-    parking.occupiedSpaces.push({ licensePlate, nombre, department });
-    await parking.save();
-    console.log(`Vehicle registered: ${licensePlate}`);
-    res.json(parking);
-  } catch (error) {
-    console.error('Error registering vehicle:', error);
-    res.status(500).json({ message: 'Error registering vehicle' });
-  }
-});
-
-// Registrar la salida de un vehículo
-app.post('/api/parking/:name/exit', authenticateToken, async (req, res) => {
-  console.log(`Removing vehicle with license plate ${req.body.licensePlate} for ${req.params.name}`);
-  try {
-    const { licensePlate } = req.body;
-    const parking = await Parking.findOne({ name: req.params.name });
-    if (!parking) {
-      console.log(`Parking not found for ${req.params.name}`);
-      return res.status(404).json({ message: 'Parking not found' });
-    }
-
-    parking.occupiedSpaces = parking.occupiedSpaces.filter(space => space.licensePlate !== licensePlate);
-    await parking.save();
-    console.log(`Vehicle removed: ${licensePlate}`);
-    res.json(parking);
-  } catch (error) {
-    console.error('Error removing vehicle:', error);
-    res.status(500).json({ message: 'Error removing vehicle' });
-  }
-});
+  });
+  
 
 app.listen(8000, () => {
     console.log("Server running on port 8000");
