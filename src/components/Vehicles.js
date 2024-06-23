@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import NavBar from './NavBar'; 
-import Footer from './Footer'; 
+import NavBar from './NavBar';
+import Footer from './Footer';
 import { Container, Row, Col, Button, Form, Alert, Modal } from 'react-bootstrap';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
@@ -21,19 +21,12 @@ function Vehicles() {
   const [departments, setDepartments] = useState([]);
   const [message, setMessage] = useState(null);
   const [showManualForm, setShowManualForm] = useState(false);
-  const [maxHours, setMaxHours] = useState(() => {
-    return parseInt(localStorage.getItem('maxHours')) || 1;
-  });
-  const [maxMinutes, setMaxMinutes] = useState(() => {
-    return parseInt(localStorage.getItem('maxMinutes')) || 0;
-  });
-  const [notificationMinutes, setNotificationMinutes] = useState(() => {
-    return parseInt(localStorage.getItem('notificationMinutes')) || 15;
-  });
+  const [maxHours, setMaxHours] = useState(1); // default max time in hours
+  const [notificationMinutes, setNotificationMinutes] = useState(15); // default notification time in minutes
   const [showNotification, setShowNotification] = useState(false);
 
-  const convertToMinutes = (hours, minutes) => {
-    return hours * 60 + minutes;
+  const convertToMinutes = (hours) => {
+    return hours * 60;
   };
 
   useEffect(() => {
@@ -51,35 +44,30 @@ function Vehicles() {
         setTimeout(() => setMessage(null), 4000);
       }
     };
-    fetchParking();
-  }, [user.name, token]);
 
-  useEffect(() => {
-    const fetchDepartments = async () => {
-      if (!user || !user._id) {
-        return;
-      }
+    const fetchUserSettings = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/departments/${user._id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+        const response = await axios.get(`http://localhost:8000/api/users/${user._id}`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
-        setDepartments(response.data);
+        const userData = response.data;
+        setMaxHours(userData.hour);
+        setNotificationMinutes(userData.alert);
       } catch (error) {
-        setMessage(t('recoveringDptoError'));
-        console.error(t('consoleDptoError'), error);
+        console.error('Error fetching user settings:', error);
+        setMessage('Error fetching user settings');
         setTimeout(() => setMessage(null), 4000);
       }
     };
 
-    fetchDepartments();
-  }, [t, user, token]);
+    fetchParking();
+    fetchUserSettings();
+  }, [user.name, user._id, token]);
 
   useEffect(() => {
     const timer = setInterval(() => {
       if (parking) {
-        const maxTimeInMinutes = convertToMinutes(maxHours, maxMinutes);
+        const maxTimeInMinutes = convertToMinutes(maxHours);
         parking.occupiedSpaces.forEach(space => {
           const currentTime = new Date();
           const parkedTime = new Date(space.parkedAt);
@@ -94,19 +82,7 @@ function Vehicles() {
     }, 60000); // check every minute
 
     return () => clearInterval(timer);
-  }, [parking, maxHours, maxMinutes, notificationMinutes, showNotification]);
-
-  useEffect(() => {
-    localStorage.setItem('maxHours', maxHours);
-  }, [maxHours]);
-
-  useEffect(() => {
-    localStorage.setItem('maxMinutes', maxMinutes);
-  }, [maxMinutes]);
-
-  useEffect(() => {
-    localStorage.setItem('notificationMinutes', notificationMinutes);
-  }, [notificationMinutes]);
+  }, [parking, maxHours, notificationMinutes, showNotification]);
 
   const handleEnter = async (e) => {
     e.preventDefault();  // Prevent default form submission behavior
@@ -203,35 +179,6 @@ function Vehicles() {
       <Container fluid style={{ flex: "1" }}>
         <h1 className="mt-5">{t('vehicles')}</h1>
         {message && <Alert variant="danger">{message}</Alert>}
-        <Form className="text-center mb-4">
-          <Form.Group controlId="formMaxTimeHours">
-            <Form.Label>{t('maximumTimeHours')}</Form.Label>
-            <Form.Control
-              type="number"
-              value={maxHours}
-              onChange={(e) => setMaxHours(e.target.value)}
-              min="0"
-            />
-          </Form.Group>
-          <Form.Group controlId="formMaxTimeMinutes">
-            <Form.Label>{t('maximumTimeMinutes')}</Form.Label>
-            <Form.Control
-              type="number"
-              value={maxMinutes}
-              onChange={(e) => setMaxMinutes(e.target.value)}
-              min="0"
-            />
-          </Form.Group>
-          <Form.Group controlId="formNotificationTime">
-            <Form.Label>{t('notificationTimeMinutes')}</Form.Label>
-            <Form.Control
-              type="number"
-              value={notificationMinutes}
-              onChange={(e) => setNotificationMinutes(e.target.value)}
-              min="1"
-            />
-          </Form.Group>
-        </Form>
         {parking && (
           <>
             <h2>{t('totalSpaces')}: {parking.spaces}</h2>
@@ -245,7 +192,7 @@ function Vehicles() {
                         <p>{t('licensePlate')}: {parking.occupiedSpaces[i].licensePlate}</p>
                         <p>{t('name')}: {parking.occupiedSpaces[i].nombre}</p>
                         <p>{t('department')}: {parking.occupiedSpaces[i].department}</p>
-                        <p>{t('timeRemaining')}: {Math.max(0, (convertToMinutes(maxHours, maxMinutes) - ((new Date() - new Date(parking.occupiedSpaces[i].parkedAt)) / 60000)).toFixed(2))} min</p>
+                        <p>{t('timeRemaining')}: {Math.max(0, (convertToMinutes(maxHours) - ((new Date() - new Date(parking.occupiedSpaces[i].parkedAt)) / 60000)).toFixed(2))} min</p>
                         <Button variant="danger" onClick={() => handleExit(parking.occupiedSpaces[i].licensePlate)}>
                           {t('exit')}
                         </Button>

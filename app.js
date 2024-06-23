@@ -64,6 +64,23 @@ const validateRut = (rut) => {
     return rutRegex.test(rut);
 };
 
+// Obtener la configuración del administrador
+app.get('/api/users/:userId', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json({
+      hour: user.hour,
+      alert: user.alert
+    });
+  } catch (error) {
+    console.error('Error fetching user settings:', error);
+    res.status(500).json({ message: 'Error fetching user settings' });
+  }
+});
+
 // Protected routes
 app.get('/api/departments/:userId', authenticateToken, async (req, res) => {
     try {
@@ -207,7 +224,7 @@ app.get('/api/parking/:name', authenticateToken, async (req, res) => {
   });
   
   // Registrar la entrada de un vehículo
-  app.post('/api/parking/:name/enter', authenticateToken, async (req, res) => {
+app.post('/api/parking/:name/enter', authenticateToken, async (req, res) => {
     console.log(`Registering vehicle with license plate ${req.body.licensePlate} for ${req.params.name}`);
     try {
       const { licensePlate, nombre, department } = req.body;
@@ -222,7 +239,11 @@ app.get('/api/parking/:name', authenticateToken, async (req, res) => {
         return res.status(400).json({ message: 'No available spaces' });
       }
   
-      parking.occupiedSpaces.push({ licensePlate, nombre, department, parkedAt: new Date() });
+      const user = await User.findById(req.user.id);
+      const maxHours = user.hour;
+      const notificationMinutes = user.alert;
+  
+      parking.occupiedSpaces.push({ licensePlate, nombre, department, parkedAt: new Date(), maxHours, notificationMinutes });
       await parking.save();
       console.log(`Vehicle registered: ${licensePlate}`);
       res.json(parking);
@@ -252,7 +273,6 @@ app.get('/api/parking/:name', authenticateToken, async (req, res) => {
       res.status(500).json({ message: 'Error removing vehicle' });
     }
   });
-  
 
 app.listen(8000, () => {
     console.log("Server running on port 8000");
