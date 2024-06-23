@@ -9,22 +9,30 @@ mongoose.connect("mongodb+srv://Programacion:enter@proyect.t0wuu2a.mongodb.net/P
     console.log('failed');
   });
 
-const newSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: true
-  },
-  password: {
-    type: String,
-    required: true
-  },
-  name: {
-    type: String,
-    required: true
-  }
-});
-
-const User = mongoose.model("users", newSchema);
+    const userSchema = new mongoose.Schema({
+      username: {
+        type: String,
+        required: true
+      },
+      password: {
+        type: String,
+        required: true
+      },
+      name: {
+        type: String,
+        required: true
+      },
+      hour: {
+        type: Number,
+        required: true
+      },
+      alert: {
+        type: Number,
+        required: true
+      }
+    });
+    
+    const User = mongoose.model("users", userSchema);
 
 const departmentSchema = new mongoose.Schema({
   Number: {
@@ -32,10 +40,6 @@ const departmentSchema = new mongoose.Schema({
     required: true
   },
   name: {
-    type: String,
-    required: true
-  },
-  phone: {
     type: String,
     required: true
   }
@@ -88,10 +92,6 @@ const deliverySchema = new mongoose.Schema({
   time: {
     type: String,
     required: true
-  },
-  buildingName: { // Nuevo campo
-    type: String,
-    required: false
   }
 });
 
