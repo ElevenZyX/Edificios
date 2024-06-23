@@ -171,6 +171,25 @@ app.get('/api/frequent/rut/:rut', authenticateToken, async (req, res) => {
     }
 });
 
+app.get('/api/frequent/car/:licensePlate', authenticateToken, async (req, res) => {
+    try {
+        const licensePlate = req.params.licensePlate.toUpperCase(); // Convierte a mayúsculas la patente recibida
+        const frequentUser = await Frequent.findOne({ car: { $regex: new RegExp(`^${licensePlate}$`, 'i') }, name: req.user.name });
+
+        if (frequentUser) {
+            res.json(frequentUser);
+        } else {
+            res.status(404).json({ message: 'License plate not found in frequent collection' });
+        }
+    } catch (error) {
+        console.error('Error retrieving license plate from frequent:', error);
+        res.status(500).json({ message: 'Error retrieving license plate' });
+    }
+});
+
+
+
+
 // Rutas de estacionamiento
 
 // Obtener el estado del estacionamiento
