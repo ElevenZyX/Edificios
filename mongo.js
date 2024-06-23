@@ -2,12 +2,12 @@
 const mongoose = require("mongoose");
 
 mongoose.connect("mongodb+srv://Programacion:enter@proyect.t0wuu2a.mongodb.net/Proyect?retryWrites=true&w=majority")
-  .then(() => {
-    console.log("mongodb connected");
-  })
-  .catch(() => {
-    console.log('failed');
-  });
+    .then(() => {
+        console.log("mongodb connected");
+    })
+    .catch(() => {
+        console.log('failed');
+    });
 
     const userSchema = new mongoose.Schema({
       username: {
@@ -34,16 +34,20 @@ mongoose.connect("mongodb+srv://Programacion:enter@proyect.t0wuu2a.mongodb.net/P
     
     const User = mongoose.model("users", userSchema);
 
-const departmentSchema = new mongoose.Schema({
-  Number: {
-    type: String,
-    required: true
-  },
-  name: {
-    type: String,
-    required: true
-  }
-});
+    const departmentSchema = new mongoose.Schema({
+      Number: {
+        type: String,
+        required: true
+      },
+      name: {
+        type: String,
+        required: true
+      },
+      phone: {
+        type: String,
+        required: true
+      }
+    });
 
 const Department = mongoose.model('departments', departmentSchema);
 
@@ -92,6 +96,10 @@ const deliverySchema = new mongoose.Schema({
   time: {
     type: String,
     required: true
+  },
+  buildingName: { 
+    type: String,
+    required: false
   }
 });
 
@@ -150,8 +158,18 @@ const parkingSchema = new mongoose.Schema({
         default: Date.now,
         required: true,
       },
+      spaceNumber: {
+        type: String,
+        required: true,
+      },
     },
   ],
+  availableSpaces: {
+    type: [String],
+    default: function() {
+      return Array.from({ length: this.spaces }, (_, i) => `V${i + 1}`);
+    },
+  },
 });
 
 const Parking = mongoose.model('Parking', parkingSchema, 'parking');
