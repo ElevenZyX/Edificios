@@ -32,19 +32,20 @@ function Vehicles() {
   useEffect(() => {
     const fetchParking = async () => {
       try {
-        console.log(`Fetching parking data for ${user.name} with token: ${token}`);
         const response = await axios.get(`http://localhost:8000/api/parking/${user.name}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        console.log(response.data);
         setParking(response.data);
       } catch (error) {
-        console.error('Error fetching parking data:', error);
         setMessage('Error fetching parking data');
         setTimeout(() => setMessage(null), 4000);
       }
     };
 
+    fetchParking();
+  }, [user.name, token]);
+
+  useEffect(() => {
     const fetchUserSettings = async () => {
       try {
         const response = await axios.get(`http://localhost:8000/api/users/${user._id}`, {
@@ -54,15 +55,13 @@ function Vehicles() {
         setMaxHours(userData.hour);
         setNotificationMinutes(userData.alert);
       } catch (error) {
-        console.error('Error fetching user settings:', error);
         setMessage('Error fetching user settings');
         setTimeout(() => setMessage(null), 4000);
       }
     };
 
-    fetchParking();
     fetchUserSettings();
-  }, [user.name, user._id, token]);
+  }, [user._id, token]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -83,6 +82,18 @@ function Vehicles() {
 
     return () => clearInterval(timer);
   }, [parking, maxHours, notificationMinutes, showNotification]);
+
+  const fetchDepartments = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8000/api/departments/${user._id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setDepartments(response.data);
+    } catch (error) {
+      setMessage('Error fetching departments');
+      setTimeout(() => setMessage(null), 4000);
+    }
+  };
 
   const handleEnter = async (e) => {
     e.preventDefault();  // Prevent default form submission behavior
@@ -116,16 +127,18 @@ function Vehicles() {
         setShowManualForm(false);
       } else {
         setMessage(t('platerror'));
+        setShowManualForm(true);
+        fetchDepartments();
         setTimeout(() => setMessage(null), 4000);
       }
     } catch (error) {
       if (error.response && error.response.status === 404) {
         setMessage(t('RUTnoRegistred'));
         setShowManualForm(true);
+        fetchDepartments();
         setName('');
         setDepartment('');
       } else {
-        console.error('Error registering vehicle:', error);
         setMessage('Error registering vehicle');
       }
       setTimeout(() => setMessage(null), 4000);
@@ -152,7 +165,6 @@ function Vehicles() {
       setDepartment('');
       setShowManualForm(false);
     } catch (error) {
-      console.error('Error registering vehicle:', error);
       setMessage('Error registering vehicle');
       setTimeout(() => setMessage(null), 4000);
     }
@@ -167,7 +179,6 @@ function Vehicles() {
       );
       setParking(response.data);
     } catch (error) {
-      console.error('Error removing vehicle:', error);
       setMessage('Error removing vehicle');
       setTimeout(() => setMessage(null), 4000);
     }
