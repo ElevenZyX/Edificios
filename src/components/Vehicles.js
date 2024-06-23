@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import NavBar from './NavBar'; 
-import Footer from './Footer'; 
+import NavBar from './NavBar';
+import Footer from './Footer';
 import { Container, Row, Col, Button, Form, Alert, Modal } from 'react-bootstrap';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
-import "./styles.css"
 
 const validateLicensePlate = (plate) => {
   const licensePlateRegex = /^[A-Za-z0-9]{6}$/;
@@ -19,98 +18,88 @@ function Vehicles() {
   const [licensePlate, setLicensePlate] = useState('');
   const [name, setName] = useState('');
   const [department, setDepartment] = useState('');
+  const [spaceNumber, setSpaceNumber] = useState('');
   const [departments, setDepartments] = useState([]);
   const [message, setMessage] = useState(null);
   const [showManualForm, setShowManualForm] = useState(false);
-  const [maxHours, setMaxHours] = useState(() => {
-    return parseInt(localStorage.getItem('maxHours')) || 1;
-  });
-  const [maxMinutes, setMaxMinutes] = useState(() => {
-    return parseInt(localStorage.getItem('maxMinutes')) || 0;
-  });
-  const [notificationMinutes, setNotificationMinutes] = useState(() => {
-    return parseInt(localStorage.getItem('notificationMinutes')) || 15;
-  });
+  const [maxHours, setMaxHours] = useState(1); 
+  const [notificationMinutes, setNotificationMinutes] = useState(15); 
   const [showNotification, setShowNotification] = useState(false);
+  const [notificationDetails, setNotificationDetails] = useState({ licensePlate: '', timeRemaining: 0 });
 
-  const convertToMinutes = (hours, minutes) => {
-    return hours * 60 + minutes;
+  const convertToMinutes = (hours) => {
+    return hours * 60;
   };
 
   useEffect(() => {
     const fetchParking = async () => {
       try {
-        console.log(`Fetching parking data for ${user.name} with token: ${token}`);
         const response = await axios.get(`http://localhost:8000/api/parking/${user.name}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        console.log(response.data);
         setParking(response.data);
       } catch (error) {
-        console.error('Error fetching parking data:', error);
-        setMessage('Error fetching parking data');
+        setMessage(t('errorgeneral'));
         setTimeout(() => setMessage(null), 4000);
       }
     };
+
     fetchParking();
   }, [user.name, token]);
 
   useEffect(() => {
-    const fetchDepartments = async () => {
-      if (!user || !user._id) {
-        return;
-      }
+    const fetchUserSettings = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/departments/${user._id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+        const response = await axios.get(`http://localhost:8000/api/users/${user._id}`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
-        setDepartments(response.data);
+        const userData = response.data;
+        setMaxHours(userData.hour);
+        setNotificationMinutes(userData.alert);
       } catch (error) {
-        setMessage(t('recoveringDptoError'));
-        console.error(t('consoleDptoError'), error);
+        setMessage(t('errorgeneral'));
         setTimeout(() => setMessage(null), 4000);
       }
     };
 
-    fetchDepartments();
-  }, [t, user, token]);
+    fetchUserSettings();
+  }, [user._id, token]);
 
   useEffect(() => {
     const timer = setInterval(() => {
       if (parking) {
-        const maxTimeInMinutes = convertToMinutes(maxHours, maxMinutes);
+        const maxTimeInMinutes = convertToMinutes(maxHours);
         parking.occupiedSpaces.forEach(space => {
           const currentTime = new Date();
           const parkedTime = new Date(space.parkedAt);
-          const elapsedTime = (currentTime - parkedTime) / 60000; // elapsed time in minutes
+          const elapsedTime = (currentTime - parkedTime) / 60000; 
           const timeRemaining = maxTimeInMinutes - elapsedTime;
 
           if (timeRemaining <= notificationMinutes && timeRemaining > 0 && !showNotification) {
+            setNotificationDetails({ licensePlate: space.licensePlate, timeRemaining: timeRemaining.toFixed(2) });
             setShowNotification(true);
           }
         });
       }
-    }, 60000); // check every minute
+    }, 60000); 
 
     return () => clearInterval(timer);
-  }, [parking, maxHours, maxMinutes, notificationMinutes, showNotification]);
+  }, [parking, maxHours, notificationMinutes, showNotification]);
 
-  useEffect(() => {
-    localStorage.setItem('maxHours', maxHours);
-  }, [maxHours]);
-
-  useEffect(() => {
-    localStorage.setItem('maxMinutes', maxMinutes);
-  }, [maxMinutes]);
-
-  useEffect(() => {
-    localStorage.setItem('notificationMinutes', notificationMinutes);
-  }, [notificationMinutes]);
+  const fetchDepartments = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8000/api/departments/${user._id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setDepartments(response.data);
+    } catch (error) {
+      setMessage(t('errorgeneral'));
+      setTimeout(() => setMessage(null), 4000);
+    }
+  };
 
   const handleEnter = async (e) => {
-    e.preventDefault();  // Prevent default form submission behavior
+    e.preventDefault();
     if (!validateLicensePlate(licensePlate)) {
       setMessage(t('platerror'));
       setTimeout(() => setMessage(null), 4000);
@@ -126,11 +115,11 @@ function Vehicles() {
 
       if (response.data && response.data.name.toLowerCase() === user.name.toLowerCase()) {
         const frequentUser = response.data;
-        const { nombre, Number: department } = frequentUser;  // Aquí aseguramos que el campo correcto sea asignado
+        const { nombre, Number: department } = frequentUser; 
 
         const postResponse = await axios.post(
           `http://localhost:8000/api/parking/${user.name}/enter`,
-          { licensePlate: licensePlate.toUpperCase(), nombre, department, parkedAt: new Date() },
+          { licensePlate: licensePlate.toUpperCase(), nombre, department, parkedAt: new Date(), spaceNumber },
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -138,20 +127,24 @@ function Vehicles() {
         setLicensePlate('');
         setName('');
         setDepartment('');
+        setSpaceNumber('');
         setShowManualForm(false);
       } else {
         setMessage(t('platerror'));
+        setShowManualForm(true);
+        fetchDepartments();
         setTimeout(() => setMessage(null), 4000);
       }
     } catch (error) {
       if (error.response && error.response.status === 404) {
-        setMessage(t('RUTnoRegistred'));
+        setMessage(t('notcar'));
         setShowManualForm(true);
+        fetchDepartments();
         setName('');
         setDepartment('');
+        setSpaceNumber('');
       } else {
-        console.error('Error registering vehicle:', error);
-        setMessage('Error registering vehicle');
+        setMessage(t('visiterror'));
       }
       setTimeout(() => setMessage(null), 4000);
     }
@@ -168,17 +161,17 @@ function Vehicles() {
     try {
       const response = await axios.post(
         `http://localhost:8000/api/parking/${user.name}/enter`,
-        { licensePlate: licensePlate.toUpperCase(), nombre: name, department, parkedAt: new Date() },
+        { licensePlate: licensePlate.toUpperCase(), nombre: name, department, parkedAt: new Date(), spaceNumber },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setParking(response.data);
       setLicensePlate('');
       setName('');
       setDepartment('');
+      setSpaceNumber('');
       setShowManualForm(false);
     } catch (error) {
-      console.error('Error registering vehicle:', error);
-      setMessage('Error registering vehicle');
+      setMessage(t('visiterror'));
       setTimeout(() => setMessage(null), 4000);
     }
   };
@@ -192,73 +185,55 @@ function Vehicles() {
       );
       setParking(response.data);
     } catch (error) {
-      console.error('Error removing vehicle:', error);
-      setMessage('Error removing vehicle');
+      setMessage(t("errorgeneral"));
       setTimeout(() => setMessage(null), 4000);
     }
+  };
+
+  const sortSpaces = (spaces) => {
+    return spaces.sort((a, b) => {
+      const numA = parseInt(a.slice(1), 10);
+      const numB = parseInt(b.slice(1), 10);
+      return numA - numB;
+    });
   };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <NavBar />
       <Container fluid style={{ flex: "1" }}>
-        <h1 className="my-4 text-center">{t('vehicles')}</h1>
+        <h1 className="mt-5">{t('vehicles')}</h1>
         {message && <Alert variant="danger">{message}</Alert>}
-        <Form className="text-center mb-4">
-          <Form.Group controlId="formMaxTimeHours">
-            <Form.Label>{t('maximumTimeHours')}</Form.Label>
-            <Form.Control
-              type="number"
-              value={maxHours}
-              onChange={(e) => setMaxHours(e.target.value)}
-              min="0"
-            />
-          </Form.Group>
-          <Form.Group controlId="formMaxTimeMinutes">
-            <Form.Label>{t('maximumTimeMinutes')}</Form.Label>
-            <Form.Control
-              type="number"
-              value={maxMinutes}
-              onChange={(e) => setMaxMinutes(e.target.value)}
-              min="0"
-            />
-          </Form.Group>
-          <Form.Group controlId="formNotificationTime">
-            <Form.Label>{t('notificationTimeMinutes')}</Form.Label>
-            <Form.Control
-              type="number"
-              value={notificationMinutes}
-              onChange={(e) => setNotificationMinutes(e.target.value)}
-              min="1"
-            />
-          </Form.Group>
-        </Form>
         {parking && (
           <>
-           <h2 className="mb-3">{t('totalSpaces')}: {parking.spaces}</h2>
-            <h2 className="mb-4">{t('occupiedSpaces')}: {parking.occupiedSpaces.length}</h2>
+            <h2>{t('totalSpaces')}: {parking.spaces}</h2>
+            <h3>{t('occupiedSpaces')}: {parking.occupiedSpaces.length}</h3>
             <Row>
-  {Array.from({ length: parking.spaces }, (_, i) => (
-    <Col key={i} className="mb-3">
-      <div className="p-3 border bg-light text-center">
-        {parking.occupiedSpaces[i] ? (
-          <>
-            <p>{t('licensePlate')}: {parking.occupiedSpaces[i].licensePlate}</p>
-            <p>{t('name')}: {parking.occupiedSpaces[i].nombre}</p>
-            <p>{t('department')}: {parking.occupiedSpaces[i].department}</p>
-            <p>{t('timeRemaining')}: {Math.max(0, (convertToMinutes(maxHours, maxMinutes) - ((new Date() - new Date(parking.occupiedSpaces[i].parkedAt)) / 60000)).toFixed(2))} min</p>
-            <Button variant="danger" onClick={() => handleExit(parking.occupiedSpaces[i].licensePlate)}>
-              {t('exit')}
-            </Button>
-          </>
-        ) : (
-          <p>{t('available')}</p>
-        )}
-      </div>
-    </Col>
-  ))}
-</Row>
-
+              {sortSpaces(parking.availableSpaces.filter(space => !parking.occupiedSpaces.find(s => s.spaceNumber === space))).map((space, i) => (
+                <Col key={i} className="mb-3">
+                  <div className="p-3 border bg-light">
+                    <p>{t('available')}</p>
+                    <p>{space}</p>
+                  </div>
+                </Col>
+              ))}
+            </Row>
+            {parking.occupiedSpaces.map((space, i) => (
+              <Row key={i}>
+                <Col className="mb-3">
+                  <div className="p-3 border bg-light">
+                    <p>{t('licensePlate')}: {space.licensePlate}</p>
+                    <p>{t('name')}: {space.nombre}</p>
+                    <p>{t('department')}: {space.department}</p>
+                    <p>{t('spaceNumber')}: {space.spaceNumber}</p>
+                    <p>{t('timeRemaining')}: {Math.max(0, (convertToMinutes(maxHours) - ((new Date() - new Date(space.parkedAt)) / 60000)).toFixed(2))} min</p>
+                    <Button variant="danger" onClick={() => handleExit(space.licensePlate)}>
+                      {t('exit')}
+                    </Button>
+                  </div>
+                </Col>
+              </Row>
+            ))}
             <Form className="text-center" onSubmit={handleEnter}>
               <Form.Group controlId="formLicensePlate">
                 <Form.Label>{t('enterLicensePlate')}</Form.Label>
@@ -268,8 +243,21 @@ function Vehicles() {
                   onChange={(e) => setLicensePlate(e.target.value)}
                 />
               </Form.Group>
+              <Form.Group controlId="formSpaceNumber">
+                <Form.Label>{t('selectSpaceNumber')}</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={spaceNumber}
+                  onChange={(e) => setSpaceNumber(e.target.value)}
+                >
+                  <option value="">{t('selectSpaceNumber')}</option>
+                  {sortSpaces(parking.availableSpaces.filter(space => !parking.occupiedSpaces.find(s => s.spaceNumber === space))).map((space, index) => (
+                    <option key={index} value={space}>{space}</option>
+                  ))}
+                </Form.Control>
+              </Form.Group>
               {!showManualForm && (
-                <Button className="mt-3 w-100 btn-lg-2" type="submit">{t('enter')}</Button>
+                <Button className="mt-3" type="submit">{t('enter')}</Button>
               )}
             </Form>
             {showManualForm && (
@@ -295,6 +283,19 @@ function Vehicles() {
                     ))}
                   </Form.Control>
                 </Form.Group>
+                <Form.Group controlId="formSpaceNumber">
+                  <Form.Label>{t('selectSpaceNumber')}</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={spaceNumber}
+                    onChange={(e) => setSpaceNumber(e.target.value)}
+                  >
+                    <option value="">{t('selectSpaceNumber')}</option>
+                    {sortSpaces(parking.availableSpaces.filter(space => !parking.occupiedSpaces.find(s => s.spaceNumber === space))).map((space, index) => (
+                      <option key={index} value={space}>{space}</option>
+                    ))}
+                  </Form.Control>
+                </Form.Group>
                 <Button type="submit" className="mt-3">{t('enter')}</Button>
               </Form>
             )}
@@ -306,7 +307,7 @@ function Vehicles() {
         <Modal.Header closeButton>
           <Modal.Title>{t('notification')}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>{t('timeAlmostUp')}</Modal.Body>
+        <Modal.Body>{`${t('timeAlmostUp')} ${notificationDetails.licensePlate} ${t('in')} ${notificationDetails.timeRemaining} ${t('minutes')}`}</Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={() => setShowNotification(false)}>
             {t('close')}
