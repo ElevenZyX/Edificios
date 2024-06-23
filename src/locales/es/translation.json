@@ -64,5 +64,9 @@
   "in": "tiene",
   "minutes": "minutos antes de que el tiempo se agote",
   "spaceNumber": "Número de espacio de estacionamiento",
-  "selectSpaceNumber": "Seleccione el número de espacio de estacionamiento"
+  "selectSpaceNumber": "Seleccione el número de espacio de estacionamiento",
+  "contactUsNow":"¡Contáctanos!",
+  "firstSlideLabel":"Bienvenido a la plataforma de la comunidad",
+  "secondSlideLabel":"Registra y administra correspondencias de manera eficiente",
+  "thirdSlideLabel":"Controla y supervisa las visitas y estacionamientos fácilmente."
 }
