@@ -9,6 +9,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+const PORT = process.env.PORT || 8000;
 
 const JWT_SECRET = '1234'; // Simple secret key for this project
 const accountSid = 'AC67444ea956f96df2af70ddc11ae55d61'; // Obtén esto de tu consola de Twilio
@@ -367,6 +368,13 @@ app.get('/api/parking/:name', authenticateToken, async (req, res) => {
       res.status(500).json({ message: 'Error removing vehicle' });
     }
   });
-app.listen(8000, () => {
-    console.log("Server running on port 8000");
+
+  app.use(express.static("./build"));
+  app.get("*", (req, res) => {
+      res.sendFile(path.resolve(__dirname, "build", "index.html"));
+  });
+  
+
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
