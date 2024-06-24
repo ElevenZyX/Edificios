@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 8000;
 
 const JWT_SECRET = '1234'; // Simple secret key for this project
 const accountSid = 'AC67444ea956f96df2af70ddc11ae55d61'; // Obtén esto de tu consola de Twilio
-const authToken = '1f6513458c5555b4ed3a1c7acd6d0a0d'; // Obtén esto de tu consola de Twilio
+const authToken = 'd96c22ffdd7e3bcc66ddda48008a34c7'; // Obtén esto de tu consola de Twilio
 const twilioClient = new twilio(accountSid, authToken);
 
 // Endpoint for login
