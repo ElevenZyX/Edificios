@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
 const { PDFDocument } = require('pdf-lib');
 const twilio = require('twilio');
+const path = require('path'); // Asegúrate de importar path
 const { User, Department, Visit, Delivery, Frequent, Parking } = require("./mongo");
 const app = express();
 app.use(express.json());
@@ -369,12 +370,14 @@ app.get('/api/parking/:name', authenticateToken, async (req, res) => {
     }
   });
 
-  app.use(express.static("./build"));
-  app.get("*", (req, res) => {
-      res.sendFile(path.resolve(__dirname, "build", "index.html"));
-  });
-  
+// Configuración para servir archivos estáticos
+app.use(express.static(path.join(__dirname, 'build')));
 
-  app.listen(PORT, () => {
+// Ruta para manejar cualquier otra petición y devolver `index.html`
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
+app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
