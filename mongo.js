@@ -1,134 +1,139 @@
 // mongo.js
 const mongoose = require("mongoose");
 
-mongoose.connect("mongodb+srv://Programacion:enter@proyect.t0wuu2a.mongodb.net/Proyect?retryWrites=true&w=majority")
-    .then(() => {
-        console.log("mongodb connected");
-    })
-    .catch(() => {
-        console.log('failed');
-    });
+const uri =
+  "mongodb+srv://Programacion:enter@proyect.t0wuu2a.mongodb.net/Proyect?retryWrites=true&w=majority"
+console.log(uri);
 
-    const userSchema = new mongoose.Schema({
-      username: {
-        type: String,
-        required: true
-      },
-      password: {
-        type: String,
-        required: true
-      },
-      name: {
-        type: String,
-        required: true
-      },
-      hour: {
-        type: Number,
-        required: true
-      },
-      alert: {
-        type: Number,
-        required: true
-      }
-    });
-    
-    const User = mongoose.model("users", userSchema);
+async function connectToMongo() {
+  try {
+    await mongoose.connect(uri);
+    console.log("Connected to MongoDB");
+  } catch (error) {
+    console.error("Error connecting to MongoDB:", error.message);
+  }
+}
 
-    const departmentSchema = new mongoose.Schema({
-      Number: {
-        type: String,
-        required: true
-      },
-      name: {
-        type: String,
-        required: true
-      },
-      phone: {
-        type: String,
-        required: true
-      }
-    });
+const userSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  hour: {
+    type: Number,
+    required: true,
+  },
+  alert: {
+    type: Number,
+    required: true,
+  },
+});
 
-const Department = mongoose.model('departments', departmentSchema);
+const User = mongoose.model("users", userSchema);
+
+const departmentSchema = new mongoose.Schema({
+  Number: {
+    type: String,
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  phone: {
+    type: String,
+    required: true,
+  },
+});
+
+const Department = mongoose.model("departments", departmentSchema);
 
 const visitSchema = new mongoose.Schema({
   departamento: {
     type: String,
-    required: true
+    required: true,
   },
   nombre: {
     type: String,
-    required: true
+    required: true,
   },
   fecha: {
     type: Date,
-    required: true
+    required: true,
   },
   hora: {
     type: String,
-    required: true
+    required: true,
   },
   name: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
 
-const Visit = mongoose.model('Visit', visitSchema);
+const Visit = mongoose.model("Visit", visitSchema);
 
 const deliverySchema = new mongoose.Schema({
   department: {
     type: String,
-    required: true
+    required: true,
   },
   typeOfPackage: {
     type: String,
-    required: true
+    required: true,
   },
   company: {
     type: String,
-    required: true
+    required: true,
   },
   date: {
     type: Date,
-    required: true
+    required: true,
   },
   time: {
     type: String,
-    required: true
+    required: true,
   },
-  buildingName: { 
+  buildingName: {
     type: String,
-    required: false
-  }
+    required: false,
+  },
 });
 
-const Delivery = mongoose.model('Delivery', deliverySchema);
+const Delivery = mongoose.model("Delivery", deliverySchema);
 
 const frequentSchema = new mongoose.Schema({
   Number: {
     type: String,
-    required: true
+    required: true,
   },
   nombre: {
     type: String,
-    required: true
+    required: true,
   },
   rut: {
     type: String,
-    required: true
+    required: true,
   },
   name: {
     type: String,
-    required: true
+    required: true,
   },
   car: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
 
-const Frequent = mongoose.model('frequent', frequentSchema, 'frequent');
+const Frequent = mongoose.model("frequent", frequentSchema, "frequent");
 
 const parkingSchema = new mongoose.Schema({
   name: {
@@ -166,12 +171,20 @@ const parkingSchema = new mongoose.Schema({
   ],
   availableSpaces: {
     type: [String],
-    default: function() {
+    default: function () {
       return Array.from({ length: this.spaces }, (_, i) => `V${i + 1}`);
     },
   },
 });
 
-const Parking = mongoose.model('Parking', parkingSchema, 'parking');
+const Parking = mongoose.model("Parking", parkingSchema, "parking");
 
-module.exports = { User, Department, Visit, Delivery, Frequent, Parking };
+module.exports = {
+  connectToMongo,
+  User,
+  Department,
+  Visit,
+  Delivery,
+  Frequent,
+  Parking,
+};

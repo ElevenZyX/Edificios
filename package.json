@@ -1,7 +1,6 @@
 {
   "name": "nombre-del-proyecto",
   "version": "0.1.0",
-  "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -10,14 +9,14 @@
     "bcryptjs": "^2.4.3",
     "bootstrap": "^5.3.3",
     "cors": "^2.8.5",
-    "exxpress": "^1.0.0",
+    "express": "^4.19.2",
     "i18next": "^23.11.2",
     "i18next-browser-languagedetector": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
     "mongodb": "^6.7.0",
     "mongoose": "^8.3.2",
-    "nodemon": "^3.1.0",
+    "nodemon": "^3.1.4",
     "pdf-lib": "^1.17.1",
     "qrcode.react": "^3.1.0",
     "react": "^18.3.1",
@@ -31,7 +30,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node app.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

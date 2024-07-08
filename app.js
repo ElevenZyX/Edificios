@@ -5,24 +5,55 @@ const jwt = require("jsonwebtoken");
 const { PDFDocument } = require('pdf-lib');
 const twilio = require('twilio');
 const path = require('path'); // Asegúrate de importar path
-const { User, Department, Visit, Delivery, Frequent, Parking } = require("./mongo");
+const { User, Department, Visit, Delivery, Frequent, Parking, connectToMongo } = require("./mongo");
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 const PORT = process.env.PORT || 8000;
+connectToMongo();
 
 const JWT_SECRET = '1234'; // Simple secret key for this project
 const accountSid = 'AC67444ea956f96df2af70ddc11ae55d61'; // Obtén esto de tu consola de Twilio
 const authToken = 'd96c22ffdd7e3bcc66ddda48008a34c7'; // Obtén esto de tu consola de Twilio
 const twilioClient = new twilio(accountSid, authToken);
 
+// Create a user using POST "/api/auth/createUser", doesn't require authentication
+app.post('/createuser', async (req, res) => {
+    let success = false;
+    try {
+      let user = await User.findOne({ username: req.body.username });
+      if (user) {
+        return res.status(400).json({ success, error: "A user with this username already exists" });
+      }
+      const salt = await bcrypt.genSalt(10);
+      const secPass = await bcrypt.hash(req.body.password, salt);
+      user = await User.create({
+        username: req.body.username,
+        password: secPass,
+        name: req.body.name,
+        hour: req.body.hour,
+        alert: req.body.alert
+      });
+      //send a token to user
+      const data = { user: user._id };
+      const authtoken = jwt.sign(data, JWT_SECRET);
+      success = true;
+      res.json({ success, authtoken });
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).json({ error: 'Server error' });
+    }
+  });
+
 // Endpoint for login
 app.post("/login", async (req, res) => {
     const { username, password } = req.body;
+    console.log(`Received credentials: ${username} ${password}`);
 
     try {
         const user = await User.findOne({ username: username });
+        console.log(`Found user: ${user}`);
 
         if (user) {
             const passwordIsValid = await bcrypt.compare(password, user.password);
@@ -173,9 +204,11 @@ app.post('/api/visitas', authenticateToken, async (req, res) => {
 app.post('/api/deliveries', authenticateToken, async (req, res) => {
     try {
         const { department, typeOfPackage, company, date, time } = req.body;
+        console.log("here=====");
 
         // Obtener el nombre del edificio del departamento
         const departmentInfo = await Department.findOne({ Number: department });
+        console.log(departmentInfo);
         if (!departmentInfo) {
           return res.status(404).json({ message: 'Department not found' });
         }
