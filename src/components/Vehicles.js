@@ -34,7 +34,7 @@ function Vehicles() {
   useEffect(() => {
     const fetchParking = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/parking/${user.name}`, {
+        const response = await axios.get(`https://proyectobuildingbuddy.azurewebsites.net/api/parking/${user.name}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setParking(response.data);
@@ -50,7 +50,7 @@ function Vehicles() {
   useEffect(() => {
     const fetchUserSettings = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/users/${user._id}`, {
+        const response = await axios.get(`https://proyectobuildingbuddy.azurewebsites.net/api/users/${user._id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const userData = response.data;
@@ -88,7 +88,7 @@ function Vehicles() {
 
   const fetchDepartments = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/api/departments/${user._id}`, {
+      const response = await axios.get(`https://proyectobuildingbuddy.azurewebsites.net/api/departments/${user._id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setDepartments(response.data);
@@ -107,7 +107,7 @@ function Vehicles() {
     }
 
     try {
-      const response = await axios.get(`http://localhost:8000/api/frequent/car/${licensePlate.toUpperCase()}`, {
+      const response = await axios.get(`https://proyectobuildingbuddy.azurewebsites.net/api/frequent/car/${licensePlate.toUpperCase()}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -118,7 +118,7 @@ function Vehicles() {
         const { nombre, Number: department } = frequentUser; 
 
         const postResponse = await axios.post(
-          `http://localhost:8000/api/parking/${user.name}/enter`,
+          `https://proyectobuildingbuddy.azurewebsites.net/api/parking/${user.name}/enter`,
           { licensePlate: licensePlate.toUpperCase(), nombre, department, parkedAt: new Date(), spaceNumber },
           { headers: { Authorization: `Bearer ${token}` } }
         );
@@ -160,7 +160,7 @@ function Vehicles() {
 
     try {
       const response = await axios.post(
-        `http://localhost:8000/api/parking/${user.name}/enter`,
+        `https://proyectobuildingbuddy.azurewebsites.net/api/parking/${user.name}/enter`,
         { licensePlate: licensePlate.toUpperCase(), nombre: name, department, parkedAt: new Date(), spaceNumber },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -179,7 +179,7 @@ function Vehicles() {
   const handleExit = async (plate) => {
     try {
       const response = await axios.post(
-        `http://localhost:8000/api/parking/${user.name}/exit`,
+        `https://proyectobuildingbuddy.azurewebsites.net/api/parking/${user.name}/exit`,
         { licensePlate: plate },
         { headers: { Authorization: `Bearer ${token}` } }
       );

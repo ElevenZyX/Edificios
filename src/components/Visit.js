@@ -31,7 +31,7 @@ function Visit() {
 
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`http://localhost:8000/api/departments/${user._id}`, {
+        const response = await axios.get(`https://proyectobuildingbuddy.azurewebsites.net/api/departments/${user._id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -68,7 +68,7 @@ function Visit() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:8000/api/frequent/rut/${rut}`, {
+      const response = await axios.get(`https://proyectobuildingbuddy.azurewebsites.net/api/frequent/rut/${rut}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -124,7 +124,7 @@ function Visit() {
         car: hasCar ? licensePlate : 'N/A'
       };
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:8000/api/frequent', frequentVisit, {
+      const response = await axios.post('https://proyectobuildingbuddy.azurewebsites.net/api/frequent', frequentVisit, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -155,7 +155,7 @@ function Visit() {
         name: user.name // Añade el campo name con el nombre del edificio
       };
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:8000/api/visitas', visita, {
+      const response = await axios.post('https://proyectobuildingbuddy.azurewebsites.net/api/visitas', visita, {
         headers: {
           Authorization: `Bearer ${token}`
         }
