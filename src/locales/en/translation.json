@@ -67,5 +67,7 @@
   "firstSlideLabel": "Welcome to the community platform",
   "secondSlideLabel": "Register and manage your building efficiently",
   "thirdSlideLabel": "Control and monitor visits and parking easily",
-  "registerVisitNoFrequent": "Register no frequent visit"
+  "registerVisitNoFrequent": "Register no frequent visit",
+  "company": "Company",
+  "typeOfPackage": "Type of package"
 }
