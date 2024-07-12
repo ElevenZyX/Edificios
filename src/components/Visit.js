@@ -194,9 +194,9 @@ function Visit() {
   );
 
   const renderRUTForm = () => (
-    <Form onSubmit={handleRUTSubmit}>
+    <Form onSubmit={handleRUTSubmit} className='form-container mt-3'>
       <Form.Group controlId="rutForm.Rut">
-        <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('rut')}</Form.Label>
+        <Form.Label className='my-3' style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('rut')}</Form.Label>
         <Form.Control
           type="text"
           value={rut}
@@ -217,9 +217,9 @@ function Visit() {
   );
 
   const renderFrequentForm = () => (
-    <Form onSubmit={handleFrequentSubmit}>
+    <Form onSubmit={handleFrequentSubmit} className='form-container mt-3'>
       <Form.Group controlId="frequentForm.DepartmentSelect">
-        <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('department')}</Form.Label>
+        <Form.Label className='mb-3 mt-1' style={{ fontSize: '1.2rem' }}>{t('department')}</Form.Label>
         <Form.Control as="select" value={selectedDepartment} onChange={e => setSelectedDepartment(e.target.value)} style={{ fontSize: '1.2rem' }}>
           <option value="">{t('selectDepartment')}</option>
           {departments.map((dept, index) => (
@@ -229,7 +229,7 @@ function Visit() {
       </Form.Group>
 
       <Form.Group controlId="frequentForm.Nombre">
-        <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('name')}</Form.Label>
+        <Form.Label className='my-3' style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('name')}</Form.Label>
         <Form.Control
           type="text"
           value={nombre}
@@ -239,7 +239,7 @@ function Visit() {
       </Form.Group>
 
       <Form.Group controlId="frequentForm.Rut">
-        <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('rut')}</Form.Label>
+        <Form.Label className='my-3' style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('rut')}</Form.Label>
         <Form.Control
           type="text"
           value={rut}
@@ -249,7 +249,7 @@ function Visit() {
       </Form.Group>
 
       <Form.Group controlId="frequentForm.HasCar">
-        <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('car')}</Form.Label>
+        <Form.Label className='my-3' style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('car')}</Form.Label>
         <div>
           <Form.Check
             type="radio"
@@ -273,7 +273,7 @@ function Visit() {
       {hasCar && (
        
        <Form.Group controlId="frequentForm.Car">
-       <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('plate')}</Form.Label>
+       <Form.Label className='my-3' style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('plate')}</Form.Label>
        <Form.Control
          type="text"
          value={licensePlate}
@@ -295,9 +295,9 @@ function Visit() {
 );
 
 const renderFullForm = () => (
- <Form onSubmit={handleSubmit}>
+ <Form onSubmit={handleSubmit} className='form-container mt-3'>
    <Form.Group controlId="visitasForm.Nombre">
-     <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('name')}</Form.Label>
+     <Form.Label className='my-3' style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('name')}</Form.Label>
      <Form.Control
        type="text"
        value={nombre}
@@ -306,7 +306,7 @@ const renderFullForm = () => (
      />
    </Form.Group>
    <Form.Group controlId="visitasForm.DepartmentSelect">
-     <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('department')}</Form.Label>
+     <Form.Label className='my-3' style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('department')}</Form.Label>
      <Form.Control as="select" value={selectedDepartment} onChange={e => setSelectedDepartment(e.target.value)} style={{ fontSize: '1.2rem' }}>
        <option value="">{t('selectDepartment')}</option>
        {departments.map((dept, index) => (
@@ -316,7 +316,7 @@ const renderFullForm = () => (
    </Form.Group>
 
    <Form.Group controlId="visitasForm.Fecha">
-     <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('date')}</Form.Label>
+     <Form.Label className='my-3' style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('date')}</Form.Label>
      <Form.Control
        type="date"
        value={fecha}
@@ -326,7 +326,7 @@ const renderFullForm = () => (
    </Form.Group>
 
    <Form.Group controlId="visitasForm.Hora">
-     <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('time')}</Form.Label>
+     <Form.Label className='my-3' style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('time')}</Form.Label>
      <Form.Control
        type="time"
        value={hora}
@@ -347,7 +347,7 @@ const renderFullForm = () => (
 );
 
 const renderPartialForm = () => (
- <Form onSubmit={handleSubmit}>
+ <Form onSubmit={handleSubmit} className='form-container mt-3'>
    <Form.Group controlId="visitasForm.Nombre">
      <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('name')}</Form.Label>
      <Form.Control

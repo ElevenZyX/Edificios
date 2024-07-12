@@ -5,6 +5,7 @@ import NavBar from './NavBar';
 import Footer from './Footer';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
+import './styles.css'; 
 
 function Delivery() {
   const { t } = useTranslation();
@@ -117,9 +118,9 @@ function Delivery() {
         <Row className="justify-content-md-center">
           <Col lg={6}>
             {message && <Alert variant={message.startsWith(t('errorPrefix')) ? 'danger' : 'success'}>{message}</Alert>}
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit} className='form-container mt-3'>
               <Form.Group controlId="deliveryForm.DepartmentSelect">
-                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('department')}</Form.Label>
+                <Form.Label className='mb-3 mt-1' style={{ fontSize: '1.2rem' }}>{t('department')}</Form.Label>
                 <Form.Control as="select" value={selectedDepartment} onChange={e => setSelectedDepartment(e.target.value)} style={{ fontSize: '1.2rem' }}>
                   <option value="">{t('selectDepartment')}</option>
                   {departments.map((dept, index) => (
@@ -129,7 +130,7 @@ function Delivery() {
               </Form.Group>
 
               <Form.Group controlId="deliveryForm.TypeOfPackage">
-                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('typeOfPackage')}</Form.Label>
+                <Form.Label className='my-3' style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('typeOfPackage')}</Form.Label>
                 <Form.Control
                   type="text"
                   value={typeOfPackage}
@@ -139,7 +140,7 @@ function Delivery() {
               </Form.Group>
 
               <Form.Group controlId="deliveryForm.Company">
-                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('company')}</Form.Label>
+                <Form.Label className='my-3' style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('company')}</Form.Label>
                 <Form.Control
                   type="text"
                   value={company}
@@ -149,7 +150,7 @@ function Delivery() {
               </Form.Group>
 
               <Form.Group controlId="deliveryForm.Date">
-                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('date')}</Form.Label>
+                <Form.Label className='my-3' style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('date')}</Form.Label>
                 <Form.Control
                   type="date"
                   value={date}
@@ -159,7 +160,7 @@ function Delivery() {
               </Form.Group>
 
               <Form.Group controlId="deliveryForm.Time">
-                <Form.Label style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('time')}</Form.Label>
+                <Form.Label className='my-3' style={{ fontSize: '1.2rem', marginTop: '1.5rem' }}>{t('time')}</Form.Label>
                 <Form.Control
                   type="time"
                   value={time}

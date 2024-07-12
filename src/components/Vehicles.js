@@ -235,7 +235,7 @@ function Vehicles() {
                 </Col>
               </Row>
             ))}
-            <Form className="text-center" onSubmit={handleEnter}>
+            <Form className="text-center form-container mt-3" onSubmit={handleEnter}>
               <Form.Group controlId="formLicensePlate">
                 <Form.Label className='my-3'>{t('enterLicensePlate')}</Form.Label>
                 <Form.Control
@@ -262,9 +262,9 @@ function Vehicles() {
               )}
             </Form>
             {showManualForm && (
-              <Form onSubmit={handleManualSubmit} className="text-center mt-3">
+              <Form onSubmit={handleManualSubmit} className="text-center mt-3 form-container">
                 <Form.Group controlId="formName">
-                  <Form.Label>{t('name')}</Form.Label>
+                  <Form.Label className='my-3'>{t('name')}</Form.Label>
                   <Form.Control
                     type="text"
                     value={name}
@@ -272,7 +272,7 @@ function Vehicles() {
                   />
                 </Form.Group>
                 <Form.Group controlId="formDepartment">
-                  <Form.Label>{t('department')}</Form.Label>
+                  <Form.Label className='my-3'>{t('department')}</Form.Label>
                   <Form.Control
                     as="select"
                     value={department}
@@ -285,7 +285,7 @@ function Vehicles() {
                   </Form.Control>
                 </Form.Group>
                 <Form.Group controlId="formSpaceNumber">
-                  <Form.Label>{t('selectSpaceNumber')}</Form.Label>
+                  <Form.Label className='my-3'>{t('selectSpaceNumber')}</Form.Label>
                   <Form.Control
                     as="select"
                     value={spaceNumber}
